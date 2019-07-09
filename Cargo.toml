@@ -1,0 +1,7 @@
+[package]
+name = "avr-avogadro"
+version = "0.1.0"
+authors = ["mlafroce <matias@shishi>"]
+edition = "2018"
+
+[dependencies]
