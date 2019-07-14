@@ -1,9 +1,10 @@
 ///# RegisterBank
 ///
 /// MCU's general purpouse and specific registers
-
-struct Flags {
-    carry: bool,
+#[derive(Clone, Copy)]
+pub struct Flags {
+    pub carry: bool,
+    pub zero: bool,
 }
 
 pub struct RegisterBank {
@@ -18,7 +19,7 @@ impl RegisterBank {
     pub fn new() -> RegisterBank {
         let registers = [0; 32];
         let program_counter = 0;
-        let flags = Flags{carry: false};
+        let flags = Flags{carry: false, zero: false};
         RegisterBank {registers, program_counter, flags}
     }
 
@@ -26,11 +27,11 @@ impl RegisterBank {
         self.program_counter += INSTRUCTION_SIZE;
     }
 
-    pub fn set_carry(&mut self, carry: bool) {
-        self.flags.carry = carry;
+    pub fn set_flags(&mut self, flags: Flags) {
+        self.flags = flags;
     }
 
-    pub fn get_carry(&self) -> bool {
-        self.flags.carry
+    pub fn get_flags(&self) -> Flags {
+        self.flags
     }
 }

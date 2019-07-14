@@ -1,4 +1,4 @@
-use super::register_bank::RegisterBank;
+use super::register_bank::{RegisterBank, Flags};
 use super::memory_bank::MemoryBank;
 use super::alu::Alu;
 
@@ -33,6 +33,10 @@ impl Mcu {
 
     pub fn set_register(&mut self, reg_num: u8, value: u8) {
         self.reg_bank.registers[reg_num as usize] = value;
+    }
+
+    pub fn get_flags(&self) -> Flags {
+        self.reg_bank.get_flags()
     }
 
     fn execute_step(&mut self) {
