@@ -1,3 +1,5 @@
+use std::num::Wrapping;
+
 use super::register_bank::RegisterBank;
 use super::memory_bank::MemoryBank;
 /// # ALU
@@ -45,7 +47,12 @@ impl Alu {
         let rdu = rd as usize;
         let rru = rr as usize;
         match op {
+            0x1 => {
+                let carry = if register_bank.get_flags().carry {1} else {0};
+                Alu::compare(rdu, rru, register_bank, carry)
+            },
             0x3 => Alu::add(rdu, rru, register_bank, 0),
+            0x5 => Alu::compare(rdu, rru, register_bank, 0),
             0x7 => {
                 let carry = if register_bank.get_flags().carry {1} else {0};
                 Alu::add(rdu, rru, register_bank, carry)
@@ -61,6 +68,18 @@ impl Alu {
         let mut flags = register_bank.get_flags();
         flags.carry = sum > 0xFF;
         flags.zero = (sum & 0xFF) == 0;
+        register_bank.set_flags(flags);
+    }
+
+    fn compare(rdu: usize, rru: usize, register_bank: &mut RegisterBank, carry: u8) {
+        // wrapping sub as it could overflow
+        let rrPlusC = (register_bank.registers[rru] as u8)
+            .wrapping_add(carry as u8) as u16;
+        let result: u16 = (register_bank.registers[rdu] as u16)
+            .wrapping_sub(rrPlusC);
+        let mut flags = register_bank.get_flags();
+        Fflags.carry = result > 0xFF;
+        flags.zero = (result & 0xFF) == 0;
         register_bank.set_flags(flags);
     }
 }

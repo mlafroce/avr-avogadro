@@ -39,6 +39,10 @@ impl Mcu {
         self.reg_bank.get_flags()
     }
 
+    pub fn set_flags(&mut self, flags: Flags) {
+        self.reg_bank.set_flags(flags);
+    }
+
     fn execute_step(&mut self) {
         let instruction = self.memory_bank.get_instruction(self.reg_bank.program_counter);
         let decoded = Alu::decode(instruction);
