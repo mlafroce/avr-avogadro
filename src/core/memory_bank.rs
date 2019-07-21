@@ -12,7 +12,7 @@ impl MemoryBank {
         self.data = data.clone();
     }
 
-    pub fn get_instruction(&self, address: u16) -> u16 {
+    pub fn get_word(&self, address: u16) -> u16 {
         let mut instruction = self.data[address as usize] as u16;
         instruction += (self.data[address as usize + 1] as u16) << 8;
         instruction

@@ -1,7 +1,7 @@
 ///# RegisterBank
 ///
 /// MCU's general purpouse and specific registers
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Flags {
     pub carry: bool,
     pub zero: bool,
@@ -33,5 +33,9 @@ impl RegisterBank {
 
     pub fn get_flags(&self) -> Flags {
         self.flags
+    }
+
+    pub fn get_carry_as_u8(&self) -> u8 {
+        if self.get_flags().carry {1} else {0}
     }
 }

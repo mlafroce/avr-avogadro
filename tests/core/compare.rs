@@ -119,9 +119,9 @@ fn test_cpc_rr_overflow() {
     assert!(flags.zero);
 }
 
-#[test]
 /// Tests simple compare instruction. Rd is less than (rr + C),
 /// so carry should be set and zero should be zero
+#[test]
 fn test_cpc_rd_less() {
     let mut mcu = Mcu::new();
     mcu.set_register(1, 128);
@@ -136,4 +136,69 @@ fn test_cpc_rd_less() {
     flags = mcu.get_flags();
     assert!(flags.carry);
     assert!(!flags.zero);
+}
+
+/// Tests compare-skip instruction. Rd and rr are not equals
+/// No skip should happen
+#[test]
+fn test_cpse_no_skip() {
+    let mut mcu = Mcu::new();
+    mcu.set_register(6, 5);
+    mcu.set_register(20, 255);
+    let memory_data = vec![0x46, 0x11, 0x12, 0x0C];
+    mcu.load_memory(&memory_data);
+    let mut flags = mcu.get_flags();
+    flags.carry = true;
+    mcu.set_flags(flags);
+    
+    assert_eq!(mcu.get_program_counter(), 0x0);
+    flags = mcu.get_flags();
+    mcu.step();
+    let new_flags = mcu.get_flags();
+    assert_eq!(mcu.get_program_counter(), 0x2);
+    assert_eq!(flags, new_flags);
+}
+
+
+/// Tests compare-skip instruction. Rd and rr are equals
+/// Next instruction is 1 word, should skip only one
+#[test]
+fn test_cpse_skip_simple() {
+    let mut mcu = Mcu::new();
+    mcu.set_register(6, 255);
+    mcu.set_register(20, 255);
+    let memory_data = vec![0x46, 0x11, 0x12, 0x0C];
+    mcu.load_memory(&memory_data);
+    let mut flags = mcu.get_flags();
+    flags.carry = true;
+    mcu.set_flags(flags);
+    
+    assert_eq!(mcu.get_program_counter(), 0x0);
+    flags = mcu.get_flags();
+    mcu.step();
+    let new_flags = mcu.get_flags();
+    assert_eq!(mcu.get_program_counter(), 0x4);
+    assert_eq!(flags, new_flags);
+}
+
+/// Tests compare-skip instruction. Rd and rr are equals
+/// Next instruction is 2 word, should skip two words
+/// LDS r5, 0x1234 -> 1001 0000 0101 0000 -> 90 50
+#[test]
+fn test_cpse_skip_double() {
+    let mut mcu = Mcu::new();
+    mcu.set_register(6, 255);
+    mcu.set_register(20, 255);
+    let memory_data = vec![0x46, 0x11, 0x50, 0x90];
+    mcu.load_memory(&memory_data);
+    let mut flags = mcu.get_flags();
+    flags.carry = true;
+    mcu.set_flags(flags);
+    
+    assert_eq!(mcu.get_program_counter(), 0x0);
+    flags = mcu.get_flags();
+    mcu.step();
+    let new_flags = mcu.get_flags();
+    assert_eq!(mcu.get_program_counter(), 0x6);
+    assert_eq!(flags, new_flags);
 }

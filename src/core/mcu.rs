@@ -44,7 +44,7 @@ impl Mcu {
     }
 
     fn execute_step(&mut self) {
-        let instruction = self.memory_bank.get_instruction(self.reg_bank.program_counter);
+        let instruction = self.memory_bank.get_word(self.reg_bank.program_counter);
         let decoded = Alu::decode(instruction);
         Alu::execute(&decoded, &mut self.reg_bank, &mut self.memory_bank);
     }
