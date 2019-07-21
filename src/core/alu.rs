@@ -65,7 +65,11 @@ impl Alu {
                 let carry = register_bank.get_carry_as_u8();
                 Alu::add(rdu, rru, register_bank, carry)
             },
-            _ => unimplemented!()
+            0x8 => Alu::and(rdu, rru, register_bank),
+            0x9 => Alu::eor(rdu, rru, register_bank),
+            0xA => Alu::or(rdu, rru, register_bank),
+            0xB => Alu::mov(rdu, rru, register_bank), 
+            _ => unreachable!()
         }
     }
 
@@ -115,5 +119,36 @@ impl Alu {
         if store_result {
             register_bank.registers[rdu] = result as u8;
         }
+    }
+
+    fn and(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
+        let result = register_bank.registers[rdu] &
+            register_bank.registers[rru];
+        register_bank.registers[rdu] = result;
+        let mut flags = register_bank.get_flags();
+        flags.zero = result == 0;
+        register_bank.set_flags(flags);
+    }
+
+    fn eor(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
+        let result = register_bank.registers[rdu] ^
+            register_bank.registers[rru];
+        register_bank.registers[rdu] = result;
+        let mut flags = register_bank.get_flags();
+        flags.zero = result == 0;
+        register_bank.set_flags(flags);
+    }
+
+    fn or(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
+        let result = register_bank.registers[rdu] |
+            register_bank.registers[rru];
+        register_bank.registers[rdu] = result;
+        let mut flags = register_bank.get_flags();
+        flags.zero = result == 0;
+        register_bank.set_flags(flags);
+    }
+
+    fn mov(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
+        register_bank.registers[rdu] = register_bank.registers[rru];
     }
 }
