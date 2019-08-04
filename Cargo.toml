@@ -3,5 +3,10 @@ name = "avr-avogadro"
 version = "0.1.0"
 authors = ["mlafroce <matias@shishi>"]
 edition = "2018"
+build = "build.rs"
 
 [dependencies]
+libc = "0.2.60"
+
+[build-dependencies]
+cmake = "0.1"
