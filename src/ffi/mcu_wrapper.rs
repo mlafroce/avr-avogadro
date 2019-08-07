@@ -17,7 +17,7 @@ pub extern fn mcu_destroy(p_mcu: *mut *mut Mcu) {
 }
 
 #[no_mangle]
-pub extern "C" fn mcu_step(p_mcu: *mut Mcu) {
+pub extern fn mcu_step(p_mcu: *mut Mcu) {
     unsafe {
         (*p_mcu).step();
     }
@@ -51,6 +51,21 @@ pub fn mcu_get_register(p_mcu: *mut Mcu, reg_num: u8) -> u8 {
 pub fn mcu_set_register(p_mcu: *mut Mcu, reg_num: u8, value: u8) {
     unsafe {
         (*p_mcu).set_register(reg_num, value);
+    }
+}
+
+#[no_mangle]
+pub fn mcu_get_register_array(p_mcu: *mut Mcu, buffer: *mut u8) {
+    unsafe {
+        let mut registers = (*p_mcu).get_register_array();
+        ptr::copy_nonoverlapping(registers.as_mut_ptr(), buffer, 32);        
+    }
+}
+
+#[no_mangle]
+pub fn mcu_set_register_array(p_mcu: *mut Mcu, reg_array: [u8; 32]) {
+    unsafe {
+        (*p_mcu).set_register_array(reg_array);
     }
 }
 /*

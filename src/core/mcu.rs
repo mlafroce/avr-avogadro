@@ -2,6 +2,8 @@ use super::register_bank::{RegisterBank, Flags};
 use super::memory_bank::MemoryBank;
 use super::alu::Alu;
 
+const MEMORY_INITIAL_SIZE: u16 = 1024;
+
 pub struct Mcu {
     reg_bank: RegisterBank,
     memory_bank: MemoryBank,
@@ -10,7 +12,7 @@ pub struct Mcu {
 impl Mcu {
     pub fn new() -> Mcu {
         let reg_bank = RegisterBank::new();
-        let memory_bank = MemoryBank::new();
+        let memory_bank = MemoryBank::new(MEMORY_INITIAL_SIZE).unwrap();
         Mcu {reg_bank, memory_bank}
     }
 
@@ -35,6 +37,14 @@ impl Mcu {
         self.reg_bank.registers[reg_num as usize] = value;
     }
 
+    pub fn get_register_array(&self) -> [u8; 32] {
+        self.reg_bank.registers
+    }
+
+    pub fn set_register_array(&mut self, reg_array: [u8; 32]) {
+        self.reg_bank.registers = reg_array;
+    }
+
     pub fn get_flags(&self) -> Flags {
         self.reg_bank.get_flags()
     }
@@ -44,8 +54,12 @@ impl Mcu {
     }
 
     fn execute_step(&mut self) {
-        let instruction = self.memory_bank.get_word(self.reg_bank.program_counter);
+        let instruction = self.fetch();
         let decoded = Alu::decode(instruction);
         Alu::execute(&decoded, &mut self.reg_bank, &mut self.memory_bank);
+    }
+
+    fn fetch(&self) -> u16 {
+        self.memory_bank.get_word(self.reg_bank.program_counter)
     }
 }

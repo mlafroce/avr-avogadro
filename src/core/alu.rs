@@ -39,8 +39,7 @@ impl Alu {
         match instruction {
             Instruction::Nop => (),
             Instruction::TwoOperand{op, rd, rr} => Alu::execute_arithmetic(
-                *op, *rd, *rr, &mut register_bank, &mut memory_bank),
-            _ => unimplemented!()
+                *op, *rd, *rr, &mut register_bank, &mut memory_bank)
         }
     }
 

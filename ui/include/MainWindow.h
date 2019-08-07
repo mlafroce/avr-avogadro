@@ -11,6 +11,7 @@ public:
 private:
     void mcuStep();
     void connectEvents();
+    void updateRegisters();
     Mcu* mcu;
 };
 
