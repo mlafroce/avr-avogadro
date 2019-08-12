@@ -2,6 +2,10 @@ use super::register_bank::{RegisterBank, Flags};
 use super::memory_bank::MemoryBank;
 use super::alu::Alu;
 
+use std::fs::File;
+use std::io;
+use std::io::Read;
+
 const MEMORY_INITIAL_SIZE: u16 = 1024;
 
 pub struct Mcu {
@@ -27,6 +31,13 @@ impl Mcu {
 
     pub fn load_memory(&mut self, memory: &Vec<u8>) {
         self.memory_bank.set_memory_data(memory)
+    }
+
+    pub fn load_memory_from_file(&mut self, filename: &str) -> io::Result<()> {
+        let mut file = File::open(filename)?;
+        let mut buffer = Vec::new();
+        file.read_to_end(&mut buffer)?;
+        self.memory_bank.copy_memory(&buffer)
     }
 
     pub fn get_register(&self, reg_num: u8) -> u8 {

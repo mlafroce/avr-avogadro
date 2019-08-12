@@ -1,5 +1,8 @@
 use crate::core::mcu::Mcu;
+
+use libc::c_char;
 use std::ptr;
+use std::ffi::CStr;
 
 #[no_mangle]
 pub extern fn mcu_create(p_mcu: *mut *mut Mcu) {
@@ -20,6 +23,20 @@ pub extern fn mcu_destroy(p_mcu: *mut *mut Mcu) {
 pub extern fn mcu_step(p_mcu: *mut Mcu) {
     unsafe {
         (*p_mcu).step();
+    }
+}
+
+
+#[no_mangle]
+pub fn mcu_load_file(p_mcu: *mut Mcu, p_filename: *const c_char) -> u8 {
+    unsafe {
+        let filename = CStr::from_ptr(p_filename).to_str();
+        if (*p_mcu).load_memory_from_file(filename.unwrap()).is_ok() {
+            0
+        } else {
+            println!("Error");
+            1
+        }
     }
 }
 

@@ -1,15 +1,17 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-#include <QWidget>
+#include <QMainWindow>
 #include "mcu_wrapper.h"
 
-class MainWindow : public QWidget {
+class MainWindow : public QMainWindow {
 public:
-    explicit MainWindow(QWidget *parent, Mcu* mcu);
+    explicit MainWindow(QMainWindow *parent, Mcu* mcu);
     virtual ~MainWindow();
 private:
     void mcuStep();
+    void loadFile();
+	std::string getSelectedFilename();    
     void connectEvents();
     void updateRegisters();
     Mcu* mcu;

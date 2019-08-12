@@ -1,3 +1,6 @@
+use std::io;
+use std::io::{Error, ErrorKind};
+
 pub struct MemoryBank {
     data: Vec<u8>,
     address_mask: u16
@@ -25,5 +28,14 @@ impl MemoryBank {
         let mut instruction = self.data[wrapped_address as usize] as u16;
         instruction += (self.data[wrapped_address as usize + 1] as u16) << 8;
         instruction
+    }
+
+    pub fn copy_memory(&mut self, data: &Vec<u8>) -> io::Result<()> {
+        if self.data.len() >= data.len() {
+            self.data[..data.len()].copy_from_slice(&data);
+            Ok(())
+        } else {
+            Err(Error::new(ErrorKind::Other, "Memory"))
+        }
     }
 }
