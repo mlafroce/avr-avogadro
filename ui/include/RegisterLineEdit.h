@@ -7,10 +7,10 @@ class RegisterLineEdit : public QLineEdit {
     Q_OBJECT
 public:
     explicit RegisterLineEdit(QWidget *parent);
-    virtual void registerEdited();
+    void onRegisterChanged();
     void setId(int id);
 signals:
-    void test(int id);
+    void registerChanged(int id, int value);
 private:
     int id;
 };

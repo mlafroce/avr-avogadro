@@ -5,12 +5,12 @@
 RegisterLineEdit::RegisterLineEdit(QWidget *parent) : 
     QLineEdit(parent) {
     QObject::connect(this, &QLineEdit::editingFinished,
-                     this, &RegisterLineEdit::registerEdited);   
+                     this, &RegisterLineEdit::onRegisterChanged);   
 }
 
-void RegisterLineEdit::registerEdited() {
-    std::cout << "editingFinished" << std::endl;
-    emit test(id);
+void RegisterLineEdit::onRegisterChanged() {
+    int value = text().toInt(0, 16);
+    emit registerChanged(id, value);
 }
 
 void RegisterLineEdit::setId(int id) {

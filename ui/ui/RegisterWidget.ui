@@ -28,14 +28,17 @@
    <item row="1" column="1">
     <widget class="RegisterLineEdit" name="r0Edit"/>
    </item>
-   <item row="5" column="1">
-    <widget class="QLineEdit" name="r4Edit"/>
+   <item row="2" column="1">
+    <widget class="RegisterLineEdit" name="r1Edit"/>
+   </item>
+   <item row="3" column="3">
+    <widget class="RegisterLineEdit" name="r10Edit"/>
    </item>
    <item row="4" column="1">
-    <widget class="QLineEdit" name="r3Edit"/>
+    <widget class="RegisterLineEdit" name="r3Edit"/>
    </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="r1Edit"/>
+   <item row="5" column="1">
+    <widget class="RegisterLineEdit" name="r4Edit"/>
    </item>
    <item row="8" column="0">
     <widget class="QLabel" name="r7Label">
@@ -44,11 +47,8 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="3">
-    <widget class="QLineEdit" name="r10Edit"/>
-   </item>
    <item row="5" column="3">
-    <widget class="QLineEdit" name="r12Edit"/>
+    <widget class="RegisterLineEdit" name="r12Edit"/>
    </item>
    <item row="2" column="6">
     <widget class="QLabel" name="r25Label">
@@ -58,7 +58,7 @@
     </widget>
    </item>
    <item row="7" column="5">
-    <widget class="QLineEdit" name="r22Edit"/>
+    <widget class="RegisterLineEdit" name="r22Edit"/>
    </item>
    <item row="6" column="2">
     <widget class="QLabel" name="r13Label">
@@ -75,7 +75,7 @@
     </widget>
    </item>
    <item row="3" column="5">
-    <widget class="QLineEdit" name="r18Edit"/>
+    <widget class="RegisterLineEdit" name="r18Edit"/>
    </item>
    <item row="4" column="6">
     <widget class="QLabel" name="r27Label">
@@ -85,7 +85,7 @@
     </widget>
    </item>
    <item row="8" column="3">
-    <widget class="QLineEdit" name="r15Edit"/>
+    <widget class="RegisterLineEdit" name="r15Edit"/>
    </item>
    <item row="8" column="2">
     <widget class="QLabel" name="r15Label">
@@ -95,22 +95,22 @@
     </widget>
    </item>
    <item row="2" column="7">
-    <widget class="QLineEdit" name="r25Edit"/>
+    <widget class="RegisterLineEdit" name="r25Edit"/>
    </item>
    <item row="4" column="5">
-    <widget class="QLineEdit" name="r19Edit"/>
+    <widget class="RegisterLineEdit" name="r19Edit"/>
    </item>
    <item row="7" column="1">
-    <widget class="QLineEdit" name="r6Edit"/>
+    <widget class="RegisterLineEdit" name="r6Edit"/>
    </item>
    <item row="1" column="7">
-    <widget class="QLineEdit" name="r24Edit"/>
+    <widget class="RegisterLineEdit" name="r24Edit"/>
    </item>
    <item row="2" column="5">
-    <widget class="QLineEdit" name="r17Edit"/>
+    <widget class="RegisterLineEdit" name="r17Edit"/>
    </item>
    <item row="7" column="7">
-    <widget class="QLineEdit" name="r30Edit"/>
+    <widget class="RegisterLineEdit" name="r30Edit"/>
    </item>
    <item row="6" column="4">
     <widget class="QLabel" name="r21Label">
@@ -120,7 +120,7 @@
     </widget>
    </item>
    <item row="1" column="3">
-    <widget class="QLineEdit" name="r8Edit"/>
+    <widget class="RegisterLineEdit" name="r8Edit"/>
    </item>
    <item row="5" column="2">
     <widget class="QLabel" name="r12Label">
@@ -130,10 +130,10 @@
     </widget>
    </item>
    <item row="8" column="5">
-    <widget class="QLineEdit" name="r23Edit"/>
+    <widget class="RegisterLineEdit" name="r23Edit"/>
    </item>
    <item row="5" column="7">
-    <widget class="QLineEdit" name="r28Edit"/>
+    <widget class="RegisterLineEdit" name="r28Edit"/>
    </item>
    <item row="1" column="6">
     <widget class="QLabel" name="r24Label">
@@ -164,10 +164,10 @@
     </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QLineEdit" name="r5Edit"/>
+    <widget class="RegisterLineEdit" name="r5Edit"/>
    </item>
    <item row="8" column="1">
-    <widget class="QLineEdit" name="r7Edit"/>
+    <widget class="RegisterLineEdit" name="r7Edit"/>
    </item>
    <item row="2" column="4">
     <widget class="QLabel" name="r17Label">
@@ -184,7 +184,7 @@
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QLineEdit" name="r2Edit"/>
+    <widget class="RegisterLineEdit" name="r2Edit"/>
    </item>
    <item row="7" column="0">
     <widget class="QLabel" name="r6Label">
@@ -194,10 +194,10 @@
     </widget>
    </item>
    <item row="1" column="5">
-    <widget class="QLineEdit" name="r16Edit"/>
+    <widget class="RegisterLineEdit" name="r16Edit"/>
    </item>
    <item row="4" column="3">
-    <widget class="QLineEdit" name="r11Edit"/>
+    <widget class="RegisterLineEdit" name="r11Edit"/>
    </item>
    <item row="1" column="4">
     <widget class="QLabel" name="r16Label">
@@ -207,10 +207,10 @@
     </widget>
    </item>
    <item row="6" column="3">
-    <widget class="QLineEdit" name="r13Edit"/>
+    <widget class="RegisterLineEdit" name="r13Edit"/>
    </item>
    <item row="2" column="3">
-    <widget class="QLineEdit" name="r9Edit"/>
+    <widget class="RegisterLineEdit" name="r9Edit"/>
    </item>
    <item row="3" column="2">
     <widget class="QLabel" name="r10Label">
@@ -227,7 +227,7 @@
     </widget>
    </item>
    <item row="6" column="5">
-    <widget class="QLineEdit" name="r21Edit"/>
+    <widget class="RegisterLineEdit" name="r21Edit"/>
    </item>
    <item row="8" column="4">
     <widget class="QLabel" name="r23Label">
@@ -244,7 +244,7 @@
     </widget>
    </item>
    <item row="6" column="7">
-    <widget class="QLineEdit" name="r29Edit"/>
+    <widget class="RegisterLineEdit" name="r29Edit"/>
    </item>
    <item row="7" column="4">
     <widget class="QLabel" name="r22Label">
@@ -261,7 +261,7 @@
     </widget>
    </item>
    <item row="7" column="3">
-    <widget class="QLineEdit" name="r14Edit"/>
+    <widget class="RegisterLineEdit" name="r14Edit"/>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="r2Label">
@@ -271,7 +271,7 @@
     </widget>
    </item>
    <item row="4" column="7">
-    <widget class="QLineEdit" name="r27Edit"/>
+    <widget class="RegisterLineEdit" name="r27Edit"/>
    </item>
    <item row="6" column="6">
     <widget class="QLabel" name="r29Label">
@@ -281,10 +281,10 @@
     </widget>
    </item>
    <item row="8" column="7">
-    <widget class="QLineEdit" name="r31Edit"/>
+    <widget class="RegisterLineEdit" name="r31Edit"/>
    </item>
    <item row="5" column="5">
-    <widget class="QLineEdit" name="r20Edit"/>
+    <widget class="RegisterLineEdit" name="r20Edit"/>
    </item>
    <item row="4" column="4">
     <widget class="QLabel" name="r19Label">
@@ -329,7 +329,7 @@
     </widget>
    </item>
    <item row="3" column="7">
-    <widget class="QLineEdit" name="r26Edit"/>
+    <widget class="RegisterLineEdit" name="r26Edit"/>
    </item>
   </layout>
  </widget>
@@ -340,6 +340,40 @@
    <header>RegisterLineEdit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>r0Edit</tabstop>
+  <tabstop>r1Edit</tabstop>
+  <tabstop>r2Edit</tabstop>
+  <tabstop>r3Edit</tabstop>
+  <tabstop>r4Edit</tabstop>
+  <tabstop>r5Edit</tabstop>
+  <tabstop>r6Edit</tabstop>
+  <tabstop>r7Edit</tabstop>
+  <tabstop>r8Edit</tabstop>
+  <tabstop>r9Edit</tabstop>
+  <tabstop>r10Edit</tabstop>
+  <tabstop>r11Edit</tabstop>
+  <tabstop>r12Edit</tabstop>
+  <tabstop>r13Edit</tabstop>
+  <tabstop>r14Edit</tabstop>
+  <tabstop>r15Edit</tabstop>
+  <tabstop>r16Edit</tabstop>
+  <tabstop>r17Edit</tabstop>
+  <tabstop>r18Edit</tabstop>
+  <tabstop>r19Edit</tabstop>
+  <tabstop>r20Edit</tabstop>
+  <tabstop>r21Edit</tabstop>
+  <tabstop>r22Edit</tabstop>
+  <tabstop>r23Edit</tabstop>
+  <tabstop>r24Edit</tabstop>
+  <tabstop>r25Edit</tabstop>
+  <tabstop>r26Edit</tabstop>
+  <tabstop>r27Edit</tabstop>
+  <tabstop>r28Edit</tabstop>
+  <tabstop>r29Edit</tabstop>
+  <tabstop>r30Edit</tabstop>
+  <tabstop>r31Edit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

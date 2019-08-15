@@ -12,6 +12,7 @@ MainWindow::MainWindow(QMainWindow *parent, Mcu* mcu) : QMainWindow(parent), mcu
     Ui::MainWindow window;
     window.setupUi(this);
     QGroupBox* registerGroupBox = findChild<QGroupBox*>("registerGroupBox");
+    findChild<RegisterWidget*>("registerWidget")->setMcu(mcu);
     registerGroupBox->setVisible(false);
     updateRegisters();
     connectEvents();

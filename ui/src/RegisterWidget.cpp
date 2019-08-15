@@ -8,7 +8,7 @@ const int NUM_REGISTERS = 32;
 const int NAME_BUF_SIZE = sizeof("rxxEdit");
 
 RegisterWidget::RegisterWidget(QWidget *parent) : 
-        QWidget(parent) {
+        QWidget(parent), mcu(0) {
     Ui::RegisterWidget registerWidgetUi;
     registerWidgetUi.setupUi(this);
     connectEvents();
@@ -16,14 +16,23 @@ RegisterWidget::RegisterWidget(QWidget *parent) :
 
 RegisterWidget::~RegisterWidget() {}
 
-void RegisterWidget::testSlot(int id) {
-    std::cout << "Test slot: " << id << std::endl;
+void RegisterWidget::onRegisterChanged(int id, int value) {
+    mcu_set_register(this->mcu, id, value);
+}
+
+void RegisterWidget::setMcu(Mcu* mcu) {
+    this->mcu = mcu;
 }
 
 void RegisterWidget::connectEvents() {
-    RegisterLineEdit* testEdit = findChild<RegisterLineEdit*>("r0Edit");
-    QObject::connect(testEdit, &RegisterLineEdit::test,
-                     this, &RegisterWidget::testSlot);
+    char nameBuf[NAME_BUF_SIZE];
+    for (int regNum = 0; regNum < NUM_REGISTERS; ++regNum) {
+        snprintf(nameBuf, sizeof(nameBuf), "r%dEdit", regNum);
+        RegisterLineEdit* lineEdit = findChild<RegisterLineEdit*>(nameBuf);
+        lineEdit->setId(regNum);
+        QObject::connect(lineEdit, &RegisterLineEdit::registerChanged,
+                         this, &RegisterWidget::onRegisterChanged);
+    }
 }
 
 void RegisterWidget::updateRegisters(char* registers) {
