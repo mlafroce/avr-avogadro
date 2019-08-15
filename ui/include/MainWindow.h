@@ -11,7 +11,7 @@ public:
 private:
     void mcuStep();
     void loadFile();
-	std::string getSelectedFilename();    
+    std::string getSelectedFilename();    
     void connectEvents();
     void updateRegisters();
     Mcu* mcu;

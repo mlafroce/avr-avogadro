@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "RegisterWidget.h"
 #include "ui_MainWindow.h"
 #include "mcu_wrapper.h"
 #include <QLineEdit>
@@ -6,11 +7,10 @@
 #include <iostream>
 
 const int NUM_REGISTERS = 32;
-const int NAME_BUF_SIZE = sizeof("rxxEdit");
 
 MainWindow::MainWindow(QMainWindow *parent, Mcu* mcu) : QMainWindow(parent), mcu(mcu) {
-    Ui::MainWindow greeter;
-    greeter.setupUi(this);
+    Ui::MainWindow window;
+    window.setupUi(this);
     QGroupBox* registerGroupBox = findChild<QGroupBox*>("registerGroupBox");
     registerGroupBox->setVisible(false);
     updateRegisters();
@@ -26,14 +26,8 @@ void MainWindow::mcuStep() {
 
 void MainWindow::updateRegisters() {
     char registers[NUM_REGISTERS];
-    char nameBuf[NAME_BUF_SIZE];
     mcu_get_register_array(this->mcu, registers);
-    for (int regNum = 0; regNum < NUM_REGISTERS; ++regNum) {
-        snprintf(nameBuf, sizeof(nameBuf), "r%dEdit", regNum);
-        QLineEdit* edit = findChild<QLineEdit*>(nameBuf);
-        QString regText = QString("%1").arg(registers[regNum], 0, 16);
-        edit->setText(regText);
-    }
+    findChild<RegisterWidget*>("registerWidget")->updateRegisters(registers);
 }
 
 void MainWindow::connectEvents() {
