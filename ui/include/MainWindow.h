@@ -2,11 +2,11 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
-#include "mcu_wrapper.h"
+#include "McuWrapper.h"
 
 class MainWindow : public QMainWindow {
 public:
-    explicit MainWindow(QMainWindow *parent, Mcu* mcu);
+    explicit MainWindow(QMainWindow *parent, void* mcu);
     virtual ~MainWindow();
 private:
     void mcuStep();
@@ -14,7 +14,7 @@ private:
     std::string getSelectedFilename();    
     void connectEvents();
     void updateRegisters();
-    Mcu* mcu;
+    McuWrapper mcu;
 };
 
 #endif // MAIN_WINDOW_H

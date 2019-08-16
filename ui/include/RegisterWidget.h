@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "mcu_wrapper.h"
+#include "McuWrapper.h"
 
 class RegisterWidget : public QWidget {
 public:
@@ -11,10 +11,10 @@ public:
     virtual ~RegisterWidget();
     void updateRegisters(char* registers);
     void onRegisterChanged(int id, int value);
-    void setMcu(Mcu* mcu);
+    void setMcu(McuWrapper mcu);
 private:
     void connectEvents();
-    Mcu* mcu;
+    McuWrapper mcu;
 };
 
 #endif // REGISTER_WIDGET_H

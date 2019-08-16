@@ -17,10 +17,10 @@ RegisterWidget::RegisterWidget(QWidget *parent) :
 RegisterWidget::~RegisterWidget() {}
 
 void RegisterWidget::onRegisterChanged(int id, int value) {
-    mcu_set_register(this->mcu, id, value);
+    this->mcu.setRegister(id, value);
 }
 
-void RegisterWidget::setMcu(Mcu* mcu) {
+void RegisterWidget::setMcu(McuWrapper mcu) {
     this->mcu = mcu;
 }
 
