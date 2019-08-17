@@ -31,9 +31,6 @@
    <item row="2" column="1">
     <widget class="RegisterLineEdit" name="r1Edit"/>
    </item>
-   <item row="3" column="3">
-    <widget class="RegisterLineEdit" name="r10Edit"/>
-   </item>
    <item row="4" column="1">
     <widget class="RegisterLineEdit" name="r3Edit"/>
    </item>
@@ -46,6 +43,9 @@
       <string>R7</string>
      </property>
     </widget>
+   </item>
+   <item row="3" column="3">
+    <widget class="RegisterLineEdit" name="r10Edit"/>
    </item>
    <item row="5" column="3">
     <widget class="RegisterLineEdit" name="r12Edit"/>

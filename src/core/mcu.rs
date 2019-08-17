@@ -25,10 +25,6 @@ impl Mcu {
         self.reg_bank.increment_pc();
     }
 
-    pub fn get_program_counter(&self) -> u16 {
-        self.reg_bank.program_counter
-    }
-
     pub fn load_memory(&mut self, memory: &Vec<u8>) {
         self.memory_bank.set_memory_data(memory)
     }
@@ -54,6 +50,14 @@ impl Mcu {
 
     pub fn set_register_array(&mut self, reg_array: [u8; 32]) {
         self.reg_bank.registers = reg_array;
+    }
+
+    pub fn get_program_counter(&self) -> u16 {
+        self.reg_bank.program_counter
+    }
+
+    pub fn set_program_counter(&mut self, value: u16) {
+        self.reg_bank.program_counter = value;
     }
 
     pub fn get_flags(&self) -> Flags {

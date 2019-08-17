@@ -51,13 +51,6 @@ pub fn mcu_load_memory(p_mcu: *mut Mcu, p_memory: *const u8, memory_size: usize)
 }
 
 #[no_mangle]
-pub fn mcu_get_program_counter(p_mcu: *mut Mcu) -> u16 {
-    unsafe {
-        (*p_mcu).get_program_counter()
-    }
-}
-
-#[no_mangle]
 pub fn mcu_get_register(p_mcu: *mut Mcu, reg_num: u8) -> u8 {
     unsafe {
         (*p_mcu).get_register(reg_num)
@@ -83,6 +76,21 @@ pub fn mcu_get_register_array(p_mcu: *mut Mcu, buffer: *mut u8) {
 pub fn mcu_set_register_array(p_mcu: *mut Mcu, reg_array: [u8; 32]) {
     unsafe {
         (*p_mcu).set_register_array(reg_array);
+    }
+}
+
+
+#[no_mangle]
+pub fn mcu_get_program_counter(p_mcu: *mut Mcu) -> u16 {
+    unsafe {
+        (*p_mcu).get_program_counter()
+    }
+}
+
+#[no_mangle]
+pub fn mcu_set_program_counter(p_mcu: *mut Mcu, value: u16) {
+    unsafe {
+        (*p_mcu).set_program_counter(value);
     }
 }
 /*

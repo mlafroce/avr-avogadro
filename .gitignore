@@ -1,2 +1,7 @@
+# Core
 /target
 **/*.rs.bk
+
+# UI
+*.kdev4
+ui/build

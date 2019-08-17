@@ -69,9 +69,82 @@
     <item>
      <widget class="QGroupBox" name="registerGroupBox">
       <property name="title">
-       <string>GroupBox</string>
+       <string>Registers</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0">
+          <widget class="QLabel" name="pcLabel">
+           <property name="text">
+            <string>Program counter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="pcEdit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="instructionLabel">
+           <property name="text">
+            <string>Instruction</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="instructionEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
        <item>
         <widget class="RegisterWidget" name="registerWidget" native="true"/>
        </item>
@@ -104,7 +177,7 @@
    </property>
    <widget class="QMenu" name="fileMenu">
     <property name="title">
-     <string>Ar&amp;chivo</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="loadFileMenuAction"/>
    </widget>
@@ -113,7 +186,10 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="loadFileMenuAction">
    <property name="text">
-    <string>&amp;Cargar memoria</string>
+    <string>&amp;Load memory</string>
+   </property>
+   <property name="iconText">
+    <string>Load memory</string>
    </property>
   </action>
  </widget>
@@ -134,12 +210,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>269</x>
-     <y>50</y>
+     <x>373</x>
+     <y>80</y>
     </hint>
     <hint type="destinationlabel">
-     <x>159</x>
-     <y>198</y>
+     <x>168</x>
+     <y>146</y>
     </hint>
    </hints>
   </connection>

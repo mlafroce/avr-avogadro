@@ -10,10 +10,12 @@ public:
     virtual ~MainWindow();
 private:
     void mcuStep();
-    void loadFile();
     std::string getSelectedFilename();    
+    void loadFile();
     void connectEvents();
     void updateRegisters();
+    void updateProgramCounter();
+    void onProgramCounterChanged();
     McuWrapper mcu;
 };
 
