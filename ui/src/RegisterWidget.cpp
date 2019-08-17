@@ -2,7 +2,7 @@
 #include "RegisterLineEdit.h"
 #include "ui_RegisterWidget.h"
 #include <QLineEdit>
-#include <iostream>
+#include <cstdio>
 
 const int NUM_REGISTERS = 32;
 const int NAME_BUF_SIZE = sizeof("rxxEdit");
