@@ -29,3 +29,12 @@ apt install build-essential cmake qt5-default
 Just run `cargo build` and rust's package manager will download and build dependencies.
 
 Run `cargo run` to run the application.
+
+## Linter
+
+Clippy is used as Rust linter.
+
+~~~
+rustup component add clippy
+cargo clippy
+~~~

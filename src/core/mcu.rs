@@ -25,7 +25,7 @@ impl Mcu {
         self.reg_bank.increment_pc();
     }
 
-    pub fn load_memory(&mut self, memory: &Vec<u8>) {
+    pub fn load_memory(&mut self, memory: &[u8]) {
         self.memory_bank.set_memory_data(memory)
     }
 

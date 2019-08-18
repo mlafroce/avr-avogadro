@@ -6,7 +6,7 @@ edition = "2018"
 build = "build.rs"
 
 [dependencies]
-libc = "0.2.60"
+libc = "0.2.62"
 
 [build-dependencies]
 cmake = "0.1"

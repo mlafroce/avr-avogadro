@@ -1,3 +1,5 @@
+#![allow(clippy::verbose_bit_mask)]
+
 mod core;
 mod ffi;
 
@@ -6,13 +8,16 @@ use crate::core::mcu::Mcu;
 use libc::{c_char, c_void};
 use std::ffi::CString;
 
+#[link(name = "avogadrogui")]
+#[link(name = "Qt5Widgets")]
+#[link(name = "Qt5Core")]
+#[link(name = "stdc++")]
 extern "C" { 
-    // this is rustified prototype of the function from our C library
     fn run_avogadro_gui(argc: usize, argv: *const *const c_char, mcu: *const c_void); 
 }
 
 fn main() {
-    let mut mcu = Mcu::new();
+    let mcu = Mcu::new();
     // create a vector of zero terminated strings
     let args = std::env::args().map(|arg| CString::new(arg).unwrap() ).collect::<Vec<CString>>();
     // convert the strings to raw pointers

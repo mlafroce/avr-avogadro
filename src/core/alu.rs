@@ -22,7 +22,7 @@ impl Alu {
         // This one is pretty common
         if raw_instruction == 0 {return Instruction::Nop};
         let opcode = raw_instruction & RAW_OPCODE_MASK;
-        let instruction = match opcode {
+        match opcode {
             0x0000 | 0x1000 | 0x2000 => {
                 let rd = ((raw_instruction & 0x01F0) >> 4) as u8;
                 let mut rr = (raw_instruction & 0x000F) as u8;
@@ -30,8 +30,7 @@ impl Alu {
                 Instruction::TwoOperand{op: raw_instruction >> 10, rd, rr}
                 },
             _ => Instruction::Nop
-        };
-        instruction
+        }
     }
 
     pub fn execute(instruction: &Instruction,

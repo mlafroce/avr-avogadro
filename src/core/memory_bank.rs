@@ -19,18 +19,18 @@ impl MemoryBank {
         Ok(MemoryBank {data, address_mask})
     }
 
-    pub fn set_memory_data(&mut self, data: &Vec<u8>) {
-        self.data = data.clone();
+    pub fn set_memory_data(&mut self, data: &[u8]) {
+        self.data = data.to_owned();
     }
 
     pub fn get_word(&self, address: u16) -> u16 {
         let wrapped_address = address & self.address_mask;
-        let mut instruction = self.data[wrapped_address as usize] as u16;
-        instruction += (self.data[wrapped_address as usize + 1] as u16) << 8;
+        let mut instruction = u16::from(self.data[wrapped_address as usize]);
+        instruction += (u16::from(self.data[wrapped_address as usize + 1])) << 8;
         instruction
     }
 
-    pub fn copy_memory(&mut self, data: &Vec<u8>) -> io::Result<()> {
+    pub fn copy_memory(&mut self, data: &[u8]) -> io::Result<()> {
         if self.data.len() >= data.len() {
             self.data[..data.len()].copy_from_slice(&data);
             Ok(())
