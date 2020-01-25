@@ -39,3 +39,9 @@ impl RegisterBank {
         if self.get_flags().carry {1} else {0}
     }
 }
+
+impl Default for RegisterBank {
+    fn default() -> Self {
+        Self::new()
+    }
+}

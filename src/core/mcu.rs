@@ -78,3 +78,9 @@ impl Mcu {
         self.memory_bank.get_word(self.reg_bank.program_counter)
     }
 }
+
+impl Default for Mcu {
+    fn default() -> Self {
+        Self::new()
+    }
+}

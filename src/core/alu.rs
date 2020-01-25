@@ -5,12 +5,14 @@ use super::memory_bank::MemoryBank;
 /// Decodes and executes instructions
 pub struct Alu;
 
-const RAW_OPCODE_MASK: u16 = 0xF000;
-const LDS_STS_MASK: u16 = 0xFC0F;
+type RawInstruction = u16;
+
+const RAW_OPCODE_MASK: RawInstruction = 0xF000;
+const LDS_STS_MASK: RawInstruction = 0xFC0F;
 
 #[derive(Debug)]
 pub enum Instruction {
-    TwoOperand {op: u16, rd: u8, rr: u8},
+    TwoOperand {op: RawInstruction, rd: u8, rr: u8},
 //    Branch,
 //    Transfer,
 //    Bitwise,
@@ -18,7 +20,8 @@ pub enum Instruction {
 }
 
 impl Alu {
-    pub fn decode(raw_instruction: u16) -> Instruction {
+    /// Decodes a 2-byte instruction into a struct with decoded operands
+    pub fn decode(raw_instruction: RawInstruction) -> Instruction {
         // This one is pretty common
         if raw_instruction == 0 {return Instruction::Nop};
         let opcode = raw_instruction & RAW_OPCODE_MASK;
@@ -33,6 +36,8 @@ impl Alu {
         }
     }
 
+    /// Executes decoded operation, using registers in register_bank and data
+    /// in memory_bank
     pub fn execute(instruction: &Instruction,
         mut register_bank: &mut RegisterBank, mut memory_bank: &mut MemoryBank) {
         match instruction {
@@ -42,7 +47,7 @@ impl Alu {
         }
     }
 
-    pub fn execute_arithmetic(op: u16, rd: u8, rr: u8,
+    pub fn execute_arithmetic(op: RawInstruction, rd: u8, rr: u8,
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
         let rdu = rd as usize;
         let rru = rr as usize;

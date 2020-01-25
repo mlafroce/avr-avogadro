@@ -1,5 +1,3 @@
-#![allow(clippy::verbose_bit_mask)]
-
 mod core;
 mod ffi;
 

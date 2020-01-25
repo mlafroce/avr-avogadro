@@ -1,108 +1,96 @@
+//! This module contains the C API to interact with the MCU
 use crate::core::mcu::Mcu;
+use crate::core::register_bank::Flags;
 
-use libc::c_char;
-use std::ptr;
 use std::ffi::CStr;
+use std::os::raw::c_char;
+use std::ptr;
 
+/// Calls `Mcu::step()`, executing one clock cycle of the mcu
 #[no_mangle]
-pub extern fn mcu_create(p_mcu: *mut *mut Mcu) {
-    unsafe {
-        let mcu = Box::new(Mcu::new());
-        *p_mcu = Box::into_raw(mcu);
+pub extern fn mcu_step(p_mcu: &mut Mcu) {
+    p_mcu.step();
+}
+
+/// Calls `Mcu::load_memory_from_file(filename)`
+/// Returns 0 if memory was loaded correctly
+/// # Safety
+///
+/// `p_mcu` must be a pointer to a valid Mcu
+/// `p_filename` must be a valid C string
+#[no_mangle]
+pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char) -> u8 {
+    let filename;
+    filename = CStr::from_ptr(p_filename).to_str();
+    if p_mcu.load_memory_from_file(filename.unwrap()).is_ok() {
+        0
+    } else {
+        println!("Error");
+        1
     }
 }
 
+/// Creates a Rust vector with size `memory_size` and contents of `p_memory`
+/// and calls `Mcu::load_memory`
+/// # Safety
+///
+/// `p_mcu` must be a pointer to a valid Mcu
+/// `p_memory` should be a char array with  size equals or larger than memory_size
 #[no_mangle]
-pub extern fn mcu_destroy(p_mcu: *mut *mut Mcu) {
-    unsafe {
-        Box::from_raw(*p_mcu);
-    }
+pub unsafe fn mcu_load_memory(p_mcu: &mut Mcu,
+        p_memory: *const u8, memory_size: usize) {
+    let mut rust_mem = Vec::with_capacity(memory_size);
+    rust_mem.set_len(memory_size);
+    ptr::copy(p_memory, rust_mem.as_mut_ptr(), memory_size);
+    p_mcu.load_memory(&rust_mem);
+}
+
+/// Gets data stored in a single register
+#[no_mangle]
+pub fn mcu_get_register(p_mcu: &mut Mcu, reg_num: u8) -> u8 {
+    p_mcu.get_register(reg_num)
+}
+
+/// Sets data into register `regnum`
+#[no_mangle]
+pub fn mcu_set_register(p_mcu: &mut Mcu, reg_num: u8, value: u8) {
+    p_mcu.set_register(reg_num, value);
+}
+
+/// Puts registers data into a buffer
+/// # Safety
+///
+/// `p_mcu` must be a pointer to a valid Mcu
+/// `buffer` must be a char array with at least 32 bytes
+///
+#[no_mangle]
+pub unsafe fn mcu_get_register_array(p_mcu: &mut Mcu, buffer: *mut u8) {
+    let mut registers = p_mcu.get_register_array();
+    ptr::copy_nonoverlapping(registers.as_mut_ptr(), buffer, 32);
 }
 
 #[no_mangle]
-pub extern fn mcu_step(p_mcu: *mut Mcu) {
-    unsafe {
-        (*p_mcu).step();
-    }
-}
-
-
-#[no_mangle]
-pub fn mcu_load_file(p_mcu: *mut Mcu, p_filename: *const c_char) -> u8 {
-    unsafe {
-        let filename = CStr::from_ptr(p_filename).to_str();
-        if (*p_mcu).load_memory_from_file(filename.unwrap()).is_ok() {
-            0
-        } else {
-            println!("Error");
-            1
-        }
-    }
-}
-
-#[no_mangle]
-pub fn mcu_load_memory(p_mcu: *mut Mcu, p_memory: *const u8, memory_size: usize) {
-    unsafe {
-        let mut rust_mem = Vec::with_capacity(memory_size);
-        rust_mem.set_len(memory_size);
-        ptr::copy(p_memory, rust_mem.as_mut_ptr(), memory_size);
-        (*p_mcu).load_memory(&rust_mem);
-    }
-}
-
-#[no_mangle]
-pub fn mcu_get_register(p_mcu: *mut Mcu, reg_num: u8) -> u8 {
-    unsafe {
-        (*p_mcu).get_register(reg_num)
-    }
-}
-
-#[no_mangle]
-pub fn mcu_set_register(p_mcu: *mut Mcu, reg_num: u8, value: u8) {
-    unsafe {
-        (*p_mcu).set_register(reg_num, value);
-    }
-}
-
-#[no_mangle]
-pub fn mcu_get_register_array(p_mcu: *mut Mcu, buffer: *mut u8) {
-    unsafe {
-        let mut registers = (*p_mcu).get_register_array();
-        ptr::copy_nonoverlapping(registers.as_mut_ptr(), buffer, 32);        
-    }
-}
-
-#[no_mangle]
-pub fn mcu_set_register_array(p_mcu: *mut Mcu, reg_array: [u8; 32]) {
-    unsafe {
-        (*p_mcu).set_register_array(reg_array);
-    }
+pub fn mcu_set_register_array(p_mcu: &mut Mcu, reg_array: [u8; 32]) {
+    p_mcu.set_register_array(reg_array);
 }
 
 
 #[no_mangle]
-pub fn mcu_get_program_counter(p_mcu: *mut Mcu) -> u16 {
-    unsafe {
-        (*p_mcu).get_program_counter()
-    }
+pub fn mcu_get_program_counter(p_mcu: &mut Mcu) -> u16 {
+    p_mcu.get_program_counter()
 }
 
 #[no_mangle]
-pub fn mcu_set_program_counter(p_mcu: *mut Mcu, value: u16) {
-    unsafe {
-        (*p_mcu).set_program_counter(value);
-    }
-}
-/*
-pub fn get_flags(p_mcu: *mut Mcu) {
-    unsafe {
-        (*p_mcu).get_flags();
-    }
+pub fn mcu_set_program_counter(p_mcu: &mut Mcu, value: u16) {
+    p_mcu.set_program_counter(value);
 }
 
-pub fn set_flags(p_mcu: *mut Mcu) {
-    unsafe {
-        (*p_mcu).get_flags();
-    }
+#[no_mangle]
+pub fn get_flags(p_mcu: &mut Mcu) {
+    p_mcu.get_flags();
 }
-*/
+
+#[no_mangle]
+pub fn set_flags(p_mcu: &mut Mcu, flags: Flags) {
+    p_mcu.set_flags(flags);
+}
