@@ -16,6 +16,7 @@ pub struct RegisterBank {
 const INSTRUCTION_SIZE: u16 = 2;
 
 impl RegisterBank {
+    /// Initializes Register bank with zeros, program counter and flags
     pub fn new() -> RegisterBank {
         let registers = [0; 32];
         let program_counter = 0;
@@ -23,18 +24,22 @@ impl RegisterBank {
         RegisterBank {registers, program_counter, flags}
     }
 
+    /// Increments program counter by 2, which is the size of an instruction.
     pub fn increment_pc(&mut self) {
         self.program_counter += INSTRUCTION_SIZE;
     }
 
+    /// Setter
     pub fn set_flags(&mut self, flags: Flags) {
         self.flags = flags;
     }
 
+    /// Getter
     pub fn get_flags(&self) -> Flags {
         self.flags
     }
 
+    /// Returns 1 if carry flag is true, otherwise 0
     pub fn get_carry_as_u8(&self) -> u8 {
         if self.get_flags().carry {1} else {0}
     }

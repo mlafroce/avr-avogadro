@@ -1,7 +1,6 @@
 extern crate avr_avogadro;
 
 use avr_avogadro::core::mcu::Mcu;
-use avr_avogadro::core::memory_bank::MemoryBank;
 
 #[test]
 /// Tests simple compare instruction

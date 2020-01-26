@@ -39,16 +39,17 @@ impl Alu {
     /// Executes decoded operation, using registers in register_bank and data
     /// in memory_bank
     pub fn execute(instruction: &Instruction,
-        mut register_bank: &mut RegisterBank, mut memory_bank: &mut MemoryBank) {
+        register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
         match instruction {
             Instruction::Nop => (),
             Instruction::TwoOperand{op, rd, rr} => Alu::execute_arithmetic(
-                *op, *rd, *rr, &mut register_bank, &mut memory_bank)
+                *op, *rd, *rr, register_bank, memory_bank)
         }
     }
 
+    /// Executes arithmetic instructions
     pub fn execute_arithmetic(op: RawInstruction, rd: u8, rr: u8,
-        register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
+        register_bank: &mut RegisterBank, memory_bank: &MemoryBank) {
         let rdu = rd as usize;
         let rru = rr as usize;
         match op {
@@ -91,7 +92,7 @@ impl Alu {
     }
 
     fn comp_skip(rdu: usize, rru: usize, register_bank: &mut RegisterBank,
-        memory_bank: &mut MemoryBank) {
+        memory_bank: &MemoryBank) {
         let rd_value = register_bank.registers[rdu];
         let rr_value = register_bank.registers[rru];
         if rd_value == rr_value {
