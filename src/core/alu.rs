@@ -12,7 +12,8 @@ const LDS_STS_MASK: RawInstruction = 0xFC0F;
 
 #[derive(Debug)]
 pub enum Instruction {
-    TwoOperand {op: RawInstruction, rd: u8, rr: u8},
+    TwoRegOp {op: RawInstruction, rd: u8, rr: u8},
+    RegConstOp {op: RawInstruction, rd: u8, constant: u8},
 //    Branch,
 //    Transfer,
 //    Bitwise,
@@ -30,8 +31,21 @@ impl Alu {
                 let rd = ((raw_instruction & 0x01F0) >> 4) as u8;
                 let mut rr = (raw_instruction & 0x000F) as u8;
                 if raw_instruction & 0x0200 != 0 {rr += 16}
-                Instruction::TwoOperand{op: raw_instruction >> 10, rd, rr}
+                Instruction::TwoRegOp{op: raw_instruction >> 10, rd, rr}
                 },
+            0x4000 | 0x5000 => {
+                let rd = ((raw_instruction & 0x00F0) >> 4) as u8;
+                let constant_upper = ((raw_instruction & 0x0F00) >> 4) as u8;
+                let constant_lower = (raw_instruction & 0x000F) as u8;
+                let constant = constant_upper + constant_lower;
+                Instruction::RegConstOp{op: raw_instruction >> 12, rd, constant}
+            },0x9000 => {
+                let rd = ((raw_instruction & 0x0030) >> 4) as u8;
+                let constant_upper = ((raw_instruction & 0x00C0) >> 2) as u8;
+                let constant_lower = (raw_instruction & 0x000F) as u8;
+                let constant = constant_upper + constant_lower;
+                Instruction::RegConstOp{op: raw_instruction >> 8, rd, constant}
+            },
             _ => Instruction::Nop
         }
     }
@@ -42,8 +56,11 @@ impl Alu {
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
         match instruction {
             Instruction::Nop => (),
-            Instruction::TwoOperand{op, rd, rr} => Alu::execute_arithmetic(
-                *op, *rd, *rr, register_bank, memory_bank)
+            Instruction::TwoRegOp{op, rd, rr} => Alu::execute_arithmetic(
+                *op, *rd, *rr, register_bank, memory_bank),
+            Instruction::RegConstOp{op, rd, constant} => 
+                Alu::execute_arith_with_constant(
+                *op, *rd, *constant, register_bank)
         }
     }
 
@@ -76,6 +93,25 @@ impl Alu {
             _ => unreachable!()
         }
     }
+
+    pub fn execute_arith_with_constant(op: RawInstruction, rd: u8, constant: u8,
+        register_bank: &mut RegisterBank) {
+        let rdu = rd as usize;
+        match op {
+            0x4 => {
+                Alu::sbci(rdu, constant, register_bank)
+            },
+            0x5 => {
+                Alu::subi(rdu, constant, register_bank)
+            },
+            0x96 => {
+                Alu::adiw(rdu, constant, register_bank)
+            },
+        _ => unreachable!()
+        }
+    }
+
+    // Two Registers instructions
 
     fn add(rdu: usize, rru: usize, register_bank: &mut RegisterBank, carry: u8) {
         let sum: u16 = register_bank.registers[rdu] as u16 +
@@ -154,5 +190,52 @@ impl Alu {
 
     fn mov(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
         register_bank.registers[rdu] = register_bank.registers[rru];
+    }
+
+    // One register - One constant operations
+
+    /// Substracts immediate to register
+    fn subi(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
+        Alu::_substract_imm_base(rdu, constant, register_bank, 0);
+    }
+
+    /// Substracts immediate to register with carry
+    fn sbci(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
+        let carry = register_bank.get_carry_as_u8();
+        println!("Carry as u8: {:?}", carry);
+        Alu::_substract_imm_base(rdu, constant, register_bank, carry);
+    }
+
+    fn _substract_imm_base(rdu: usize, constant: u8,
+        register_bank: &mut RegisterBank, carry: u8) {
+        let rd = 16 + rdu;
+        println!("_substract_imm_base: carry-> {:?}", carry);
+        let const_with_carry = constant.wrapping_add(carry) as u16;
+        let result: u16 = (register_bank.registers[rd] as u16)
+            .wrapping_sub(const_with_carry);
+        register_bank.registers[rd] = result as u8;
+        let mut flags = register_bank.get_flags();
+        flags.zero = register_bank.registers[rd+1] == 0 &&
+                      register_bank.registers[rd] == 0;
+        register_bank.set_flags(flags);
+    }
+
+    /// Adds immediate to word
+    /// Available on families >= AVR2
+    fn adiw(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
+        let rd = 24 + rdu * 2;
+        let rdl = register_bank.registers[rd] as u16;
+        let rdh = register_bank.registers[rd+1];
+        let sum: u16 = rdl + constant as u16;
+        register_bank.registers[rdu] = sum as u8;
+        if sum > 0xFF {
+            register_bank.registers[rd+1] = rdh + 1
+        }
+        let mut flags = register_bank.get_flags();
+        flags.zero = register_bank.registers[rd+1] == 0 &&
+                      register_bank.registers[rd] == 0;
+        register_bank.set_flags(flags);
+        // TODO: TEST!
+        unimplemented!();
     }
 }

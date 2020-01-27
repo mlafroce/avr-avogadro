@@ -2,10 +2,10 @@ extern crate avr_avogadro;
 
 use avr_avogadro::core::mcu::Mcu;
 
-/// Tests simple add instruction
+/// Tests simple substract instruction
 ///
-/// SUB opcode: 0000 10rd dddd rrrr
-/// add r1, r2 -> 0000 1000 0001 0002 -> 0812
+/// SUB opcode: 0001 10rd dddd rrrr
+/// sub r1, r2 -> 0001 1000 0001 0010 -> 1812
 ///
 /// Remember AVR is little endian!
 #[test]
@@ -36,7 +36,7 @@ fn test_sub_zeros() {
     assert!(flags.zero);
 }
 
-/// Tests simple substract instruction 1 minus 0
+/// Tests simple substract instruction, 1 minus 0
 #[test]
 fn test_sub_one_zero() {
     let mut mcu = Mcu::new();
@@ -51,9 +51,9 @@ fn test_sub_one_zero() {
     assert!(!flags.zero);
 }
 
-/// Tests simple substract instruction 1 minus 0
+/// Tests simple substract instruction, 3 minus -4
 #[test]
-fn test_sub_neg_minus_pos() {
+fn test_subi_pos_minus_neg() {
     let mut mcu = Mcu::new();
     let memory_data = vec![0x12, 0x18];
     mcu.load_memory(&memory_data);
@@ -65,7 +65,7 @@ fn test_sub_neg_minus_pos() {
     assert!(!flags.zero);
 }
 
-/// Tests simple substract instruction 1 minus 0
+/// Tests simple substract instruction, 0 minus 8
 #[test]
 fn test_sub_zero_minus_half() {
     let mut mcu = Mcu::new();
