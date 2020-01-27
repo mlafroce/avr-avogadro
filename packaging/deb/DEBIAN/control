@@ -1,0 +1,12 @@
+Package: avr-avogadro
+Version: 0.0-1
+Section: devel
+Priority: optional
+Architecture: amd64
+Depends: libqt5gui5 (>= 5.0)
+Maintainer: Matías Lafroce <mlafroce+avr-avogadro@gmail.com>
+Description: AVR Avogadro simulator
+ AVR simulator made in Rust and C++
+ Core library is in Rust and will expose an API for GUI in C++ (QT).
+ This simulator aims to be suited for performance analysis.
+ Visit https://github.com/mlafroce/avr-avogadro for more information
