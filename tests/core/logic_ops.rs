@@ -5,7 +5,7 @@ use avr_avogadro::core::mcu::Mcu;
 /// Tests simple and instruction
 ///
 /// AND opcode: 0010 00rd dddd rrrr
-/// add r1, r2 -> 0010 0000 0001 0002 -> 2012
+/// add r1, r2 -> 0010 0000 0001 0010 -> 2012
 ///
 /// Remember AVR is little endian!
 #[test]
@@ -24,7 +24,7 @@ fn test_and() {
 /// Tests simple add instruction where rd = 0
 ///
 /// AND opcode: 0010 00rd dddd rrrr
-/// and r1, r2 -> 0010 0000 0001 0002 -> 2012
+/// and r1, r2 -> 0010 0000 0001 0010 -> 2012
 #[test]
 fn test_and_zero() {
     let mut mcu = Mcu::new();
@@ -40,10 +40,24 @@ fn test_and_zero() {
     assert!(flags.zero);
 }
 
+#[test]
+/// ANDI opcode: 0111 kkkk dddd kkkk
+/// or r16, 0x95 -> 0111 1001 0000 0101 -> 7905
+fn test_andi() {
+    let mut mcu = Mcu::new();
+    mcu.set_register(16, 0xC5);
+    let memory_data = vec![0x05, 0x79];
+    mcu.load_memory(&memory_data);
+    assert_eq!(mcu.get_program_counter(), 0x0);
+    mcu.step();
+    assert_eq!(mcu.get_program_counter(), 0x2);
+    assert_eq!(mcu.get_register(16), 0x85);
+}
+
 /// Tests simple exc. or instruction
 ///
 /// OR opcode: 0010 01rd dddd rrrr
-/// or r1, r2 -> 0010 0100 0001 0002 -> 2412
+/// or r1, r2 -> 0010 0100 0001 0010 -> 2412
 #[test]
 fn test_eor() {
     let mut mcu = Mcu::new();
@@ -73,7 +87,7 @@ fn test_eor_zero() {
 /// Tests simple or instruction
 ///
 /// OR opcode: 0010 10rd dddd rrrr
-/// or r1, r2 -> 0010 1000 0001 0002 -> 2812
+/// or r1, r2 -> 0010 1000 0001 0010 -> 2812
 #[test]
 fn test_or() {
     let mut mcu = Mcu::new();
@@ -100,10 +114,23 @@ fn test_or_zero() {
     assert_eq!(mcu.get_register(1), 0xF0);
 }
 
+#[test]
+/// ORI opcode: 0110 kkkk dddd kkkk
+/// or r16, 0x95 -> 0110 1001 0000 0101 -> 7905
+fn test_ori() {
+    let mut mcu = Mcu::new();
+    mcu.set_register(16, 0xC5);
+    let memory_data = vec![0x05, 0x69];
+    mcu.load_memory(&memory_data);
+    assert_eq!(mcu.get_program_counter(), 0x0);
+    mcu.step();
+    assert_eq!(mcu.get_program_counter(), 0x2);
+    assert_eq!(mcu.get_register(16), 0xD5);
+}
 /// Tests simple mov instruction
 ///
 /// MOV opcode: 0010 11rd dddd rrrr
-/// mov r1, r2 -> 0010 1100 0001 0002 -> 2C12
+/// mov r1, r2 -> 0010 1100 0001 0010 -> 2C12
 #[test]
 fn test_mov() {
     let mut mcu = Mcu::new();

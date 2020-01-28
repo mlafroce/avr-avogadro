@@ -6,7 +6,7 @@
 
 **Instructions**:
 
-* **Arithmetic**: [x]`ADD`, [x]`ADC`, [x]`SUB`, [x]`SUBI`, [x]`SBC`, [x]`SBCI`, [x]`AND`, `ANDI`, [x]`OR`, `ORI`, [x]`EOR`, `COM`, `NEG`, `SBR`, `CBR`, `INC`, `DEC`, `TST`, `CLR`, `SER`
+* **Arithmetic**: [x]`ADD`, [x]`ADC`, [x]`SUB`, [x]`SUBI`, [x]`SBC`, [x]`SBCI`, [x]`AND`, [x]`ANDI`, [x]`OR`, [x]`ORI`, [x]`EOR`, `COM`, `NEG`, `SBR`, `CBR`, `INC`, `DEC`, `TST`, `CLR`, `SER`
 
 * **Branches**: `RJMP`, `RCALL`, `RET`, `RETI`, `CPSE`, `CP`, `CPC`, `CPI`, `SBRC`, `SBRS`, `SBIC`, `SBIS`, `BRBS`, `BRBC`, `BREQ`, `BRNE`, `BRCS`, `BRCC`, `BRSH`, `BRLO`, `BRMI`, `BRPL`, `BRGE`, `BRLT`, `BRHS`, `BRHC`, `BRTS`, `BRTC`, `BRVS`, `BRVC`, `BRIE`, `BRID`,
 

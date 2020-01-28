@@ -33,7 +33,7 @@ impl Alu {
                 if raw_instruction & 0x0200 != 0 {rr += 16}
                 Instruction::TwoRegOp{op: raw_instruction >> 10, rd, rr}
                 },
-            0x4000 | 0x5000 => {
+            0x4000 | 0x5000 | 0x6000 | 0x7000 => {
                 let rd = ((raw_instruction & 0x00F0) >> 4) as u8;
                 let constant_upper = ((raw_instruction & 0x0F00) >> 4) as u8;
                 let constant_lower = (raw_instruction & 0x000F) as u8;
@@ -99,10 +99,16 @@ impl Alu {
         let rdu = rd as usize;
         match op {
             0x4 => {
-                Alu::sbci(rdu, constant, register_bank)
+                Alu::sbci(rdu + 16, constant, register_bank)
             },
             0x5 => {
-                Alu::subi(rdu, constant, register_bank)
+                Alu::subi(rdu + 16, constant, register_bank)
+            },
+            0x6 => {
+                Alu::ori(rdu + 16, constant, register_bank)
+            },
+            0x7 => {
+                Alu::andi(rdu + 16, constant, register_bank)
             },
             0x96 => {
                 Alu::adiw(rdu, constant, register_bank)
@@ -162,8 +168,12 @@ impl Alu {
     }
 
     fn and(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
-        let result = register_bank.registers[rdu] &
-            register_bank.registers[rru];
+        let rr_value = register_bank.registers[rru];
+        Alu::andi(rdu, rr_value, register_bank);
+    }
+
+    fn andi(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
+        let result = register_bank.registers[rdu] & constant;
         register_bank.registers[rdu] = result;
         let mut flags = register_bank.get_flags();
         flags.zero = result == 0;
@@ -180,8 +190,12 @@ impl Alu {
     }
 
     fn or(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
-        let result = register_bank.registers[rdu] |
-            register_bank.registers[rru];
+        let rr_value = register_bank.registers[rru];
+        Alu::ori(rdu, rr_value, register_bank);
+    }
+
+    fn ori(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
+        let result = register_bank.registers[rdu] | constant;
         register_bank.registers[rdu] = result;
         let mut flags = register_bank.get_flags();
         flags.zero = result == 0;
@@ -202,21 +216,17 @@ impl Alu {
     /// Substracts immediate to register with carry
     fn sbci(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
         let carry = register_bank.get_carry_as_u8();
-        println!("Carry as u8: {:?}", carry);
         Alu::_substract_imm_base(rdu, constant, register_bank, carry);
     }
 
     fn _substract_imm_base(rdu: usize, constant: u8,
         register_bank: &mut RegisterBank, carry: u8) {
-        let rd = 16 + rdu;
-        println!("_substract_imm_base: carry-> {:?}", carry);
         let const_with_carry = constant.wrapping_add(carry) as u16;
-        let result: u16 = (register_bank.registers[rd] as u16)
+        let result: u16 = (register_bank.registers[rdu] as u16)
             .wrapping_sub(const_with_carry);
-        register_bank.registers[rd] = result as u8;
+        register_bank.registers[rdu] = result as u8;
         let mut flags = register_bank.get_flags();
-        flags.zero = register_bank.registers[rd+1] == 0 &&
-                      register_bank.registers[rd] == 0;
+        flags.zero = register_bank.registers[rdu] == 0;
         register_bank.set_flags(flags);
     }
 
