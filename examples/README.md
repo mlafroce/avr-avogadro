@@ -7,7 +7,7 @@ Small programs to be run on the simulator
 * Compile a source file
 
 ~~~{.bash}
-avr-gcc -mmcu avr2 -nostartfiles file.c -o file.o
+avr-gcc -mmcu=avr2 -nostartfiles file.c -o file.o
 ~~~
 
 * Convert into ihex / binary file

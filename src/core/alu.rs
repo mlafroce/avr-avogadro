@@ -33,7 +33,7 @@ impl Alu {
                 if raw_instruction & 0x0200 != 0 {rr += 16}
                 Instruction::TwoRegOp{op: raw_instruction >> 10, rd, rr}
                 },
-            0x4000 | 0x5000 | 0x6000 | 0x7000 => {
+            0x4000 | 0x5000 | 0x6000 | 0x7000 | 0xE000 => {
                 let rd = ((raw_instruction & 0x00F0) >> 4) as u8;
                 let constant_upper = ((raw_instruction & 0x0F00) >> 4) as u8;
                 let constant_lower = (raw_instruction & 0x000F) as u8;
@@ -110,9 +110,12 @@ impl Alu {
             0x7 => {
                 Alu::andi(rdu + 16, constant, register_bank)
             },
+            0xE => {
+                Alu::load_immediate(rdu + 16, constant, register_bank)
+            },
             0x96 => {
                 Alu::adiw(rdu, constant, register_bank)
-            },
+            }
         _ => unreachable!()
         }
     }
@@ -228,6 +231,11 @@ impl Alu {
         let mut flags = register_bank.get_flags();
         flags.zero = register_bank.registers[rdu] == 0;
         register_bank.set_flags(flags);
+    }
+
+    fn load_immediate(rdu: usize, constant: u8,
+        register_bank: &mut RegisterBank) {
+        register_bank.registers[rdu] = constant;
     }
 
     /// Adds immediate to word
