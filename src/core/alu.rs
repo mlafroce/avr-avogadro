@@ -14,8 +14,9 @@ const LDS_STS_MASK: RawInstruction = 0xFC0F;
 pub enum Instruction {
     TwoRegOp {op: RawInstruction, rd: u8, rr: u8},
     RegConstOp {op: RawInstruction, rd: u8, constant: u8},
+    Transfer {is_load: bool, reg: u8, opcode: u8},
+    OneRegOp,
 //    Branch,
-//    Transfer,
 //    Bitwise,
     Nop
 }
@@ -25,7 +26,7 @@ impl Alu {
     pub fn decode(raw_instruction: RawInstruction) -> Instruction {
         // This one is pretty common
         if raw_instruction == 0 {return Instruction::Nop};
-        let opcode = raw_instruction & RAW_OPCODE_MASK;
+        let opcode = raw_instruction & RAW_OPCODE_MASK;  // 4 most sig. bits
         match opcode {
             0x0000 | 0x1000 | 0x2000 => {
                 let rd = ((raw_instruction & 0x01F0) >> 4) as u8;
@@ -39,12 +40,17 @@ impl Alu {
                 let constant_lower = (raw_instruction & 0x000F) as u8;
                 let constant = constant_upper + constant_lower;
                 Instruction::RegConstOp{op: raw_instruction >> 12, rd, constant}
-            },0x9000 => {
-                let rd = ((raw_instruction & 0x0030) >> 4) as u8;
-                let constant_upper = ((raw_instruction & 0x00C0) >> 2) as u8;
-                let constant_lower = (raw_instruction & 0x000F) as u8;
-                let constant = constant_upper + constant_lower;
-                Instruction::RegConstOp{op: raw_instruction >> 8, rd, constant}
+            },
+            0x9000 => { // One register operations
+                match raw_instruction & 0x0E00 {
+                    0 | 0x0200 => {
+                        let reg = ((raw_instruction & 0x01F0) >> 4) as u8;
+                        let opcode = (raw_instruction & 0x000F) as u8;
+                        let is_load = raw_instruction & 0x0200 == 0;
+                        Instruction::Transfer{is_load, reg, opcode}
+                    }
+                    _ => Instruction::OneRegOp
+                }
             },
             _ => Instruction::Nop
         }
@@ -60,7 +66,12 @@ impl Alu {
                 *op, *rd, *rr, register_bank, memory_bank),
             Instruction::RegConstOp{op, rd, constant} => 
                 Alu::execute_arith_with_constant(
-                *op, *rd, *constant, register_bank)
+                *op, *rd, *constant, register_bank),
+            Instruction::Transfer{is_load, reg, opcode} =>
+                Alu::execute_transfer(*is_load, *reg, *opcode,
+                register_bank, memory_bank),
+            //Instruction::OneRegOp 
+            _ => unimplemented!()
         }
     }
 
@@ -115,8 +126,31 @@ impl Alu {
             },
             0x96 => {
                 Alu::adiw(rdu, constant, register_bank)
-            }
-        _ => unreachable!()
+            },
+            _ => unimplemented!()
+        }
+    }
+
+    fn execute_transfer(is_load: bool, reg: u8, opcode: u8,
+        register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
+        match opcode {
+            0xF => {
+                Alu::push_pop(is_load, reg, register_bank, memory_bank);
+            },
+            _ => unimplemented!()
+        }
+    }
+
+    fn push_pop(is_load: bool, reg: u8,
+        register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
+        if is_load {
+            register_bank.sp += 1;
+            let data = memory_bank.get_byte(register_bank.sp);
+            register_bank.registers[reg as usize] = data;
+        } else {
+            register_bank.sp = register_bank.sp.wrapping_sub(1);
+            let data = register_bank.registers[reg as usize];
+            memory_bank.set_byte(register_bank.sp, data);
         }
     }
 
@@ -144,7 +178,8 @@ impl Alu {
             register_bank.increment_pc();
         }
         // If next instruction is `LDS` or `STS`, should skip again
-        let next_instruction = memory_bank.get_word(register_bank.program_counter);
+        let pc = register_bank.get_program_counter();
+        let next_instruction = memory_bank.get_word(pc);
         if next_instruction & LDS_STS_MASK == 0x9000 {
             register_bank.increment_pc();
         }

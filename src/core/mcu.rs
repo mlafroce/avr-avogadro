@@ -9,14 +9,14 @@ use std::io::Read;
 const MEMORY_INITIAL_SIZE: u16 = 1024;
 
 pub struct Mcu {
-    reg_bank: RegisterBank,
     memory_bank: MemoryBank,
+    reg_bank: RegisterBank,
 }
 
 impl Mcu {
     pub fn new() -> Mcu {
-        let reg_bank = RegisterBank::new();
         let memory_bank = MemoryBank::new(MEMORY_INITIAL_SIZE).unwrap();
+        let reg_bank = RegisterBank::new();
         Mcu {reg_bank, memory_bank}
     }
 
@@ -36,6 +36,14 @@ impl Mcu {
         self.memory_bank.copy_memory(&buffer)
     }
 
+    pub fn get_memory_size(&self) -> usize {
+        self.memory_bank.size()
+    }
+
+    pub fn get_memory_byte(&self, address: u16) -> u8 {
+        self.memory_bank.get_byte(address)
+    }
+
     pub fn get_register(&self, reg_num: u8) -> u8 {
         self.reg_bank.registers[reg_num as usize]
     }
@@ -53,11 +61,11 @@ impl Mcu {
     }
 
     pub fn get_program_counter(&self) -> u16 {
-        self.reg_bank.program_counter
+        self.reg_bank.get_program_counter()
     }
 
     pub fn set_program_counter(&mut self, value: u16) {
-        self.reg_bank.program_counter = value;
+        self.reg_bank.set_program_counter(value);
     }
 
     pub fn get_flags(&self) -> Flags {
@@ -75,7 +83,7 @@ impl Mcu {
     }
 
     fn fetch(&self) -> u16 {
-        self.memory_bank.get_word(self.reg_bank.program_counter)
+        self.memory_bank.get_word(self.reg_bank.get_program_counter())
     }
 }
 

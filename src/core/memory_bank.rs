@@ -25,12 +25,23 @@ impl MemoryBank {
         self.data = data.to_owned();
     }
 
+    /// Returns a byte located at `address` position
+    pub fn get_byte(&self, address: u16) -> u8 {
+        let wrapped_address = address & self.address_mask;
+        u8::from(self.data[wrapped_address as usize])
+    }
+
+    /// Sets a byte at `address` position 
+    pub fn set_byte(&mut self, address: u16, data: u8) {
+        let wrapped_address = address & self.address_mask;
+        self.data[wrapped_address as usize] = data
+    }
+
     /// Returns a 2 byte word located at `address` 
     pub fn get_word(&self, address: u16) -> u16 {
         let wrapped_address = address & self.address_mask;
-        let mut instruction = u16::from(self.data[wrapped_address as usize]);
-        instruction += (u16::from(self.data[wrapped_address as usize + 1])) << 8;
-        instruction
+        let instruction = u16::from(self.data[wrapped_address as usize]);
+        instruction + ((u16::from(self.data[wrapped_address as usize + 1])) << 8)
     }
 
     /// Copies values at array `data` into memory bank. If memory bank
@@ -42,5 +53,9 @@ impl MemoryBank {
         } else {
             Err(Error::new(ErrorKind::Other, "Memory"))
         }
+    }
+
+    pub fn size(&self) -> usize {
+        self.data.len()
     }
 }

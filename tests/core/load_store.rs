@@ -21,3 +21,29 @@ fn test_ldi() {
     mcu.step();
     assert_eq!(mcu.get_register(17), 0x00);
 }
+
+/// Tests load immediate
+///
+/// PUSH opcode: 1001 001d dddd 1111
+/// push r0   -> 1001 0010 0000 1111 -> 920F
+///
+/// Remember AVR is little endian!
+#[test]
+fn test_push() {
+    let mut mcu = Mcu::new();
+    mcu.set_register(0, 0xDE);
+    mcu.set_register(1, 0xAD);
+    mcu.set_register(30, 0xBE);
+    mcu.set_register(31, 0xEF);
+    let mut memory_data = vec![0x0F, 0x92, 0x1F, 0x92, 0xEF, 0x93, 0xFF, 0x93];
+    memory_data.resize(1024, 0);
+    mcu.load_memory(&memory_data);
+    for _ in 0..4 {
+        mcu.step();
+    }
+    let mem_max = mcu.get_memory_size() as u16;
+    assert_eq!(mcu.get_memory_byte(mem_max - 4), 0xEF);
+    assert_eq!(mcu.get_memory_byte(mem_max - 3), 0xBE);
+    assert_eq!(mcu.get_memory_byte(mem_max - 2), 0xAD);
+    assert_eq!(mcu.get_memory_byte(mem_max - 1), 0xDE);
+}
