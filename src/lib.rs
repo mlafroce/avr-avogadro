@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate log;
 /// # Core
 /// Main functions and components of the simulator.
 pub mod core;

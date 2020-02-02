@@ -38,10 +38,12 @@ fn test_push() {
     let mut memory_data = vec![0x0F, 0x92, 0x1F, 0x92, 0xEF, 0x93, 0xFF, 0x93];
     memory_data.resize(1024, 0);
     mcu.load_memory(&memory_data);
+    assert_eq!(mcu.get_stack_pointer(), 0x00);
     for _ in 0..4 {
         mcu.step();
     }
     let mem_max = mcu.get_memory_size() as u16;
+    assert_eq!(mcu.get_stack_pointer(), mem_max - 0x04);
     assert_eq!(mcu.get_memory_byte(mem_max - 4), 0xEF);
     assert_eq!(mcu.get_memory_byte(mem_max - 3), 0xBE);
     assert_eq!(mcu.get_memory_byte(mem_max - 2), 0xAD);

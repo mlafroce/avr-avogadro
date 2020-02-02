@@ -8,6 +8,8 @@ pub struct Alu;
 mod arithmetic_logic;
 /// Transfer instructions (load, store and their variants)
 mod transfer;
+/// Call and jump Instruction
+mod call_jmp;
 
 type RawInstruction = u16;
 
@@ -15,11 +17,11 @@ const RAW_OPCODE_MASK: RawInstruction = 0xF000;
 
 #[derive(Debug)]
 pub enum Instruction {
+    OneRegOp,
     TwoRegOp {op: RawInstruction, rd: u8, rr: u8},
     RegConstOp {op: RawInstruction, rd: u8, constant: u8},
     Transfer {is_load: bool, reg: u8, opcode: u8},
-    OneRegOp,
-//    Branch,
+    CallJmp {is_call: bool, relative: bool, address: u16},
 //    Bitwise,
     Nop
 }
@@ -55,7 +57,15 @@ impl Alu {
                     _ => Instruction::OneRegOp
                 }
             },
-            _ => Instruction::Nop
+            0xC000 | 0xD000 => {
+                let is_call = opcode == 0xD000;
+                let offset = raw_instruction & 0xFFF;
+                Instruction::CallJmp{is_call, relative: true, address: offset}
+            },
+            _ => {
+                warn!("Decoding - Unknown opcode: {:x} in {:x}", opcode, raw_instruction);
+                Instruction::Nop
+            }
         }
     }
 
@@ -73,8 +83,9 @@ impl Alu {
             Instruction::Transfer{is_load, reg, opcode} =>
                 Alu::execute_transfer(*is_load, *reg, *opcode,
                 register_bank, memory_bank),
-            //Instruction::OneRegOp 
-            _ => unimplemented!()
+            Instruction::CallJmp{is_call, relative, address} =>
+                Alu::execute_calljmp(*is_call, *relative, *address, register_bank, memory_bank),
+            _ => warn!("Execute - Unknown Instruction: {:?}", instruction)
         }
     }
 
@@ -130,7 +141,7 @@ impl Alu {
             0x96 => {
                 Alu::adiw(rdu, constant, register_bank)
             },
-            _ => unimplemented!()
+            _ => warn!("Execute arith - Unknown arithmetic instruction opcode: {:x}", op)
         }
     }
 
@@ -140,7 +151,7 @@ impl Alu {
             0xF => {
                 Alu::push_pop(is_load, reg, register_bank, memory_bank);
             },
-            _ => unimplemented!()
+            _ => warn!("Execute transfer - Unknown transfer instruction opcode: {:x}", opcode)
         }
     }
 }

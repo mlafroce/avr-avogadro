@@ -1,5 +1,6 @@
 mod mcu;
 mod add;
+mod call_jmp;
 mod compare;
 mod sub;
 mod subi;
