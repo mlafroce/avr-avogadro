@@ -1,5 +1,8 @@
 use super::register_bank::RegisterBank;
 use super::memory_bank::MemoryBank;
+use super::Instruction;
+use super::RawInstruction;
+
 /// # ALU
 ///
 /// Decodes and executes instructions
@@ -11,64 +14,7 @@ mod transfer;
 /// Call and jump Instruction
 mod call_jmp;
 
-type RawInstruction = u16;
-
-const RAW_OPCODE_MASK: RawInstruction = 0xF000;
-
-#[derive(Debug)]
-pub enum Instruction {
-    OneRegOp,
-    TwoRegOp {op: RawInstruction, rd: u8, rr: u8},
-    RegConstOp {op: RawInstruction, rd: u8, constant: u8},
-    Transfer {is_load: bool, reg: u8, opcode: u8},
-    CallJmp {is_call: bool, relative: bool, address: u16},
-//    Bitwise,
-    Nop
-}
-
 impl Alu {
-    /// Decodes a 2-byte instruction into a struct with decoded operands
-    pub fn decode(raw_instruction: RawInstruction) -> Instruction {
-        // This one is pretty common
-        if raw_instruction == 0 {return Instruction::Nop};
-        let opcode = raw_instruction & RAW_OPCODE_MASK;  // 4 most sig. bits
-        match opcode {
-            0x0000 | 0x1000 | 0x2000 => {
-                let rd = ((raw_instruction & 0x01F0) >> 4) as u8;
-                let mut rr = (raw_instruction & 0x000F) as u8;
-                if raw_instruction & 0x0200 != 0 {rr += 16}
-                Instruction::TwoRegOp{op: raw_instruction >> 10, rd, rr}
-                },
-            0x4000 | 0x5000 | 0x6000 | 0x7000 | 0xE000 => {
-                let rd = ((raw_instruction & 0x00F0) >> 4) as u8;
-                let constant_upper = ((raw_instruction & 0x0F00) >> 4) as u8;
-                let constant_lower = (raw_instruction & 0x000F) as u8;
-                let constant = constant_upper + constant_lower;
-                Instruction::RegConstOp{op: raw_instruction >> 12, rd, constant}
-            },
-            0x9000 => { // One register operations
-                match raw_instruction & 0x0E00 {
-                    0 | 0x0200 => {
-                        let reg = ((raw_instruction & 0x01F0) >> 4) as u8;
-                        let opcode = (raw_instruction & 0x000F) as u8;
-                        let is_load = raw_instruction & 0x0200 == 0;
-                        Instruction::Transfer{is_load, reg, opcode}
-                    }
-                    _ => Instruction::OneRegOp
-                }
-            },
-            0xC000 | 0xD000 => {
-                let is_call = opcode == 0xD000;
-                let offset = raw_instruction & 0xFFF;
-                Instruction::CallJmp{is_call, relative: true, address: offset}
-            },
-            _ => {
-                warn!("Decoding - Unknown opcode: {:x} in {:x}", opcode, raw_instruction);
-                Instruction::Nop
-            }
-        }
-    }
-
     /// Executes decoded operation, using registers in register_bank and data
     /// in memory_bank
     pub fn execute(instruction: &Instruction,

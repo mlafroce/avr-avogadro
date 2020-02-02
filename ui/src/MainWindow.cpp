@@ -2,10 +2,12 @@
 #include "RegisterWidget.h"
 #include "ui_MainWindow.h"
 #include "McuWrapper.h"
+#include <cstddef>
 #include <QLineEdit>
 #include <QFileDialog>
 
-const int NUM_REGISTERS = 32;
+const std::size_t NUM_REGISTERS = 32;
+const std::size_t DECODED_INSTRUCTION_BUF = 64;
 
 MainWindow::MainWindow(QMainWindow *parent, void* rustMcu)
  : QMainWindow(parent), mcu(rustMcu) {
@@ -28,6 +30,7 @@ void MainWindow::mcuStep() {
 void MainWindow::updateMcuStatus() {
     updateProgramCounter();
     updateRegisters();
+    updateDecodedInstruction();
 }
 
 void MainWindow::updateRegisters() {
@@ -45,6 +48,12 @@ void MainWindow::updateProgramCounter() {
     unsigned short curInstruction = this->mcu.getCurrentInstruction();
     QString instructionText = QString("%1").arg(curInstruction, 4, 16, QChar('0'));
     instructionEdit->setText(instructionText);
+}
+
+void MainWindow::updateDecodedInstruction() {
+    char buf[DECODED_INSTRUCTION_BUF];
+    this->mcu.displayCurrentInstruction(buf, sizeof(buf));
+    findChild<QLabel*>("decodedInstructionLabel")->setText(buf);
 }
 
 void MainWindow::onProgramCounterChanged() {
@@ -67,8 +76,10 @@ void MainWindow::connectEvents() {
 
 void MainWindow::loadFile() {
     std::string filename = getSelectedFilename();
-    this->mcu.loadFile(filename.c_str());
-    this->updateMcuStatus();
+    if (filename.size() != 0) {
+        this->mcu.loadFile(filename.c_str());
+        this->updateMcuStatus();
+    }    
 }
 
 std::string MainWindow::getSelectedFilename() {

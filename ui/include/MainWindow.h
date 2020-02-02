@@ -16,6 +16,7 @@ private:
     void updateMcuStatus();
     void updateRegisters();
     void updateProgramCounter();
+    void updateDecodedInstruction();
     void onProgramCounterChanged();
     McuWrapper mcu;
 };

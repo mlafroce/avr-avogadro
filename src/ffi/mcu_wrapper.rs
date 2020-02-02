@@ -47,7 +47,7 @@ pub unsafe fn mcu_load_memory(p_mcu: &mut Mcu,
 
 /// Gets data stored in a single register
 #[no_mangle]
-pub fn mcu_get_register(p_mcu: &mut Mcu, reg_num: u8) -> u8 {
+pub fn mcu_get_register(p_mcu: &Mcu, reg_num: u8) -> u8 {
     p_mcu.get_register(reg_num)
 }
 
@@ -64,9 +64,9 @@ pub fn mcu_set_register(p_mcu: &mut Mcu, reg_num: u8, value: u8) {
 /// `buffer` must be a char array with at least 32 bytes
 ///
 #[no_mangle]
-pub unsafe fn mcu_get_register_array(p_mcu: &mut Mcu, buffer: *mut u8) {
-    let mut registers = p_mcu.get_register_array();
-    ptr::copy_nonoverlapping(registers.as_mut_ptr(), buffer, 32);
+pub unsafe fn mcu_get_register_array(p_mcu: &Mcu, buffer: *mut u8) {
+    let registers = p_mcu.get_register_array();
+    ptr::copy_nonoverlapping(registers.as_ptr(), buffer, 32);
 }
 
 #[no_mangle]
@@ -76,7 +76,7 @@ pub fn mcu_set_register_array(p_mcu: &mut Mcu, reg_array: [u8; 32]) {
 
 
 #[no_mangle]
-pub fn mcu_get_program_counter(p_mcu: &mut Mcu) -> u16 {
+pub fn mcu_get_program_counter(p_mcu: &Mcu) -> u16 {
     p_mcu.get_program_counter()
 }
 
@@ -86,12 +86,22 @@ pub fn mcu_set_program_counter(p_mcu: &mut Mcu, value: u16) {
 }
 
 #[no_mangle]
-pub fn mcu_get_current_instruction(p_mcu: &mut Mcu) {
+pub fn mcu_get_current_instruction(p_mcu: &Mcu) {
     p_mcu.get_current_instruction();
 }
 
 #[no_mangle]
-pub fn get_flags(p_mcu: &mut Mcu) {
+pub unsafe fn mcu_display_current_instruction(p_mcu: &Mcu,
+    c_buffer: *mut u8, buf_size: usize) {
+    let mut string_buf = String::new();
+    p_mcu.display_current_instruction(&mut string_buf);
+    let bytes_to_copy = std::cmp::min(buf_size - 1, string_buf.len());
+    ptr::copy_nonoverlapping(string_buf.as_ptr(), c_buffer, bytes_to_copy);
+    *(c_buffer.offset(bytes_to_copy as isize)) = 0;
+}
+
+#[no_mangle]
+pub fn get_flags(p_mcu: &Mcu) {
     p_mcu.get_flags();
 }
 

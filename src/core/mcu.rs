@@ -1,7 +1,9 @@
+use super::alu::Alu;
+use super::decoder::Decoder;
 use super::register_bank::{RegisterBank, Flags};
 use super::memory_bank::MemoryBank;
-use super::alu::Alu;
 
+use std::fmt::Write;
 use std::fs::File;
 use std::io;
 use std::io::Read;
@@ -80,6 +82,12 @@ impl Mcu {
         self.fetch()
     }
 
+    pub fn display_current_instruction(&self, buf: &mut String) {
+        let instruction = self.fetch();
+        let decoded = Decoder::decode(instruction);
+        write!(buf, "{}", decoded).unwrap();
+    }
+
     pub fn get_flags(&self) -> Flags {
         self.reg_bank.get_flags()
     }
@@ -90,7 +98,7 @@ impl Mcu {
 
     fn execute_step(&mut self) {
         let instruction = self.fetch();
-        let decoded = Alu::decode(instruction);
+        let decoded = Decoder::decode(instruction);
         Alu::execute(&decoded, &mut self.reg_bank, &mut self.memory_bank);
     }
 

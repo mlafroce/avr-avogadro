@@ -28,7 +28,7 @@ impl MemoryBank {
     /// Returns a byte located at `address` position
     pub fn get_byte(&self, address: u16) -> u8 {
         let wrapped_address = address & self.address_mask;
-        u8::from(self.data[wrapped_address as usize])
+        self.data[wrapped_address as usize]
     }
 
     /// Sets a byte at `address` position 

@@ -28,7 +28,7 @@ impl Alu {
             if register_bank.stack_pointer < 2 {
                 register_bank.stack_pointer = memory_bank.size() as u16
             }
-            register_bank.stack_pointer = register_bank.stack_pointer - 2;
+            register_bank.stack_pointer -= 2;
             memory_bank.set_byte(register_bank.stack_pointer, pc.to_le_bytes()[0]);
             memory_bank.set_byte(register_bank.stack_pointer + 1, pc.to_le_bytes()[1]);
         }

@@ -8,6 +8,7 @@ extern "C" {
     short mcu_get_program_counter(void* mcu);
     void mcu_set_program_counter(void* mcu, short value);
     short mcu_get_current_instruction(void* mcu);
+    void mcu_display_current_instruction(void* mcu, char* uffer, size_t size);
     void mcu_load_file(void* mcu, const char* filename);
 }
 
@@ -39,6 +40,10 @@ void McuWrapper::setProgramCounter(short value) {
 
 short McuWrapper::getCurrentInstruction() {
     return mcu_get_current_instruction(this->mcu);
+}
+
+void McuWrapper::displayCurrentInstruction(char* buffer, std::size_t size) {
+    mcu_display_current_instruction(this->mcu, buffer, size);
 }
 
 void McuWrapper::loadFile(const char* filename) {

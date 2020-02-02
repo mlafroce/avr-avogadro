@@ -1,5 +1,6 @@
 #ifndef MCU_WRAPPER_H
 #define MCU_WRAPPER_H
+#include <cstddef>
 
 class McuWrapper {
 public:
@@ -11,6 +12,7 @@ public:
     short getProgramCounter();
     void setProgramCounter(short value);
     short getCurrentInstruction();
+    void displayCurrentInstruction(char* buffer, std::size_t size);
     void loadFile(const char* filename);
 private:
     void* mcu;
