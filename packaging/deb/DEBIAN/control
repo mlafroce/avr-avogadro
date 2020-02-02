@@ -1,9 +1,9 @@
 Package: avr-avogadro
-Version: 0.0-1
+Version: ${VERSION}
 Section: devel
 Priority: optional
 Architecture: amd64
-Depends: libqt5gui5 (>= 5.0)
+Depends: libc6(>=2.11), libgcc1(>=1:7), libqt5gui5 (>= 5.0)
 Maintainer: Matías Lafroce <mlafroce+avr-avogadro@gmail.com>
 Description: AVR Avogadro simulator
  AVR simulator made in Rust and C++

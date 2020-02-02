@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=AVR Avogadro simulator
+Comment=An AVR simulator made in Rust and C++
+Exec=avr-avogadro
+Icon=avr-avogadro
+Categories=Development;Engineering;Electronics;
+Keywords=embedded electronics;electronics;avr;microcontroller;
