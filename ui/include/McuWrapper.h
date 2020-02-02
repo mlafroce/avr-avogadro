@@ -8,8 +8,9 @@ public:
     void getRegisterArray(char* buffer);
     void setRegisterArray(char* buffer);
     void setRegister(char registerId, char value);
-    void setProgramCounter(short value);
     short getProgramCounter();
+    void setProgramCounter(short value);
+    short getCurrentInstruction();
     void loadFile(const char* filename);
 private:
     void* mcu;

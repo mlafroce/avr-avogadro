@@ -7,6 +7,7 @@ extern "C" {
     void mcu_set_register(void* mcu, char registerId, char value);
     short mcu_get_program_counter(void* mcu);
     void mcu_set_program_counter(void* mcu, short value);
+    short mcu_get_current_instruction(void* mcu);
     void mcu_load_file(void* mcu, const char* filename);
 }
 
@@ -34,6 +35,10 @@ short McuWrapper::getProgramCounter() {
 
 void McuWrapper::setProgramCounter(short value) {
     mcu_set_program_counter(this->mcu, value);
+}
+
+short McuWrapper::getCurrentInstruction() {
+    return mcu_get_current_instruction(this->mcu);
 }
 
 void McuWrapper::loadFile(const char* filename) {

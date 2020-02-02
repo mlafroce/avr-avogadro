@@ -75,6 +75,11 @@ impl Mcu {
     pub fn set_stack_pointer(&mut self, value: u16) {
         self.reg_bank.set_stack_pointer(value);
     }
+
+    pub fn get_current_instruction(&self) -> u16 {
+        self.fetch()
+    }
+
     pub fn get_flags(&self) -> Flags {
         self.reg_bank.get_flags()
     }

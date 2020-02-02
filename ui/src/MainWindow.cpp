@@ -14,7 +14,7 @@ MainWindow::MainWindow(QMainWindow *parent, void* rustMcu)
     QGroupBox* registerGroupBox = findChild<QGroupBox*>("registerGroupBox");
     findChild<RegisterWidget*>("registerWidget")->setMcu(this->mcu);
     registerGroupBox->setVisible(false);
-    updateRegisters();
+    this->updateMcuStatus();
     connectEvents();
 }
 
@@ -22,8 +22,12 @@ MainWindow::~MainWindow() {}
 
 void MainWindow::mcuStep() {
     this->mcu.step();
-    updateRegisters();
+    this->updateMcuStatus();
+}
+
+void MainWindow::updateMcuStatus() {
     updateProgramCounter();
+    updateRegisters();
 }
 
 void MainWindow::updateRegisters() {
@@ -34,9 +38,13 @@ void MainWindow::updateRegisters() {
 
 void MainWindow::updateProgramCounter() {
     QLineEdit* pcEdit = findChild<QLineEdit*>("pcEdit");
-    short pcValue = this->mcu.getProgramCounter();
-    QString regText = QString("%1").arg(pcValue, 0, 16);
+    unsigned short pcValue = this->mcu.getProgramCounter();
+    QString regText = QString("%1").arg(pcValue, 4, 16, QChar('0'));
     pcEdit->setText(regText);
+    QLineEdit* instructionEdit = findChild<QLineEdit*>("instructionEdit");
+    unsigned short curInstruction = this->mcu.getCurrentInstruction();
+    QString instructionText = QString("%1").arg(curInstruction, 4, 16, QChar('0'));
+    instructionEdit->setText(instructionText);
 }
 
 void MainWindow::onProgramCounterChanged() {
@@ -60,6 +68,7 @@ void MainWindow::connectEvents() {
 void MainWindow::loadFile() {
     std::string filename = getSelectedFilename();
     this->mcu.loadFile(filename.c_str());
+    this->updateMcuStatus();
 }
 
 std::string MainWindow::getSelectedFilename() {

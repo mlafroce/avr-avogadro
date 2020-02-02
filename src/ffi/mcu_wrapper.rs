@@ -86,6 +86,11 @@ pub fn mcu_set_program_counter(p_mcu: &mut Mcu, value: u16) {
 }
 
 #[no_mangle]
+pub fn mcu_get_current_instruction(p_mcu: &mut Mcu) {
+    p_mcu.get_current_instruction();
+}
+
+#[no_mangle]
 pub fn get_flags(p_mcu: &mut Mcu) {
     p_mcu.get_flags();
 }
@@ -94,3 +99,4 @@ pub fn get_flags(p_mcu: &mut Mcu) {
 pub fn set_flags(p_mcu: &mut Mcu, flags: Flags) {
     p_mcu.set_flags(flags);
 }
+

@@ -27,6 +27,8 @@ include_directories(${PROJECT_BINARY_DIR})
 
 message("Generated headers: ${UIS_HEADERS}")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+
 add_library(avogadrogui
   api.cpp
   src/MainWindow.cpp

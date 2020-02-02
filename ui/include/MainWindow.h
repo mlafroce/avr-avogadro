@@ -13,6 +13,7 @@ private:
     std::string getSelectedFilename();    
     void loadFile();
     void connectEvents();
+    void updateMcuStatus();
     void updateRegisters();
     void updateProgramCounter();
     void onProgramCounterChanged();
