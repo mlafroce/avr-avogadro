@@ -24,6 +24,7 @@ pub enum Instruction {
     RegConstOp {op: RawInstruction, rd: u8, constant: u8},
     Transfer {is_load: bool, reg: u8, opcode: u8},
     CallJmp {is_call: bool, relative: bool, address: u16},
+    InOut {is_in: bool, reg: u8, address: u8},
 //    Bitwise,
     Nop,
     Unsupported {instruction: RawInstruction}

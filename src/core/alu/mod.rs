@@ -21,16 +21,18 @@ impl Alu {
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
         match instruction {
             Instruction::Nop => (),
-            Instruction::TwoRegOp{op, rd, rr} => Alu::execute_arithmetic(
+            Instruction::TwoRegOp {op, rd, rr} => Alu::execute_arithmetic(
                 *op, *rd, *rr, register_bank, memory_bank),
-            Instruction::RegConstOp{op, rd, constant} => 
+            Instruction::RegConstOp {op, rd, constant} =>
                 Alu::execute_arith_with_constant(
                 *op, *rd, *constant, register_bank),
-            Instruction::Transfer{is_load, reg, opcode} =>
+            Instruction::Transfer {is_load, reg, opcode} =>
                 Alu::execute_transfer(*is_load, *reg, *opcode,
                 register_bank, memory_bank),
-            Instruction::CallJmp{is_call, relative, address} =>
+            Instruction::CallJmp {is_call, relative, address} =>
                 Alu::execute_calljmp(*is_call, *relative, *address, register_bank, memory_bank),
+            Instruction::InOut {is_in, reg, address} =>
+                Alu::execute_inout(*is_in, *reg, *address, register_bank, memory_bank),
             _ => warn!("Execute - Unknown Instruction: {:?}", instruction)
         }
     }
@@ -89,6 +91,11 @@ impl Alu {
             },
             _ => warn!("Execute arith - Unknown arithmetic instruction opcode: {:x}", op)
         }
+    }
+
+    fn execute_inout(is_in: bool, reg: u8, address: u8,
+        register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
+        Alu::in_out(is_in, reg, address, register_bank, memory_bank);
     }
 
     fn execute_transfer(is_load: bool, reg: u8, opcode: u8,

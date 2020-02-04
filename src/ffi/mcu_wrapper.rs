@@ -109,4 +109,3 @@ pub fn get_flags(p_mcu: &Mcu) {
 pub fn set_flags(p_mcu: &mut Mcu, flags: Flags) {
     p_mcu.set_flags(flags);
 }
-

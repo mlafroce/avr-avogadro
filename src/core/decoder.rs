@@ -40,6 +40,14 @@ impl Decoder {
                     _ => Instruction::OneRegOp
                 }
             },
+            0xB000 => {
+                let is_in = raw_instruction & 0x0800 == 0;
+                let reg = ((raw_instruction & 0x01F0) >> 4) as u8;
+                let address_low = (raw_instruction & 0x000F) as u8;
+                let address_hi = ((raw_instruction & 0x0600) >> 5) as u8;
+                let address = address_hi + address_low;
+                Instruction::InOut{is_in, reg, address}
+            }
             0xC000 | 0xD000 => {
                 let is_call = opcode == 0xD000;
                 let offset = raw_instruction & 0xFFF;
@@ -71,6 +79,12 @@ impl fmt::Display for Instruction {
                    *is_call, *relative, *address),
             Instruction::Unsupported {instruction} => 
                 write!(f, "Unsupported instruction: {:x}", *instruction),
+            Instruction::InOut {is_in, reg, address} =>
+                if *is_in {
+                    write!(f, "In r{} ${:x}", *reg, *address)
+                } else {
+                    write!(f, "Out r{} ${:x}", *reg, *address)
+                },
             _ => write!(f, "Parsed but unsupported instruction")
         }
     }
