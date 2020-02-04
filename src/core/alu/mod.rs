@@ -26,13 +26,16 @@ impl Alu {
             Instruction::RegConstOp {op, rd, constant} =>
                 Alu::execute_arith_with_constant(
                 *op, *rd, *constant, register_bank),
-            Instruction::Transfer {is_load, reg, opcode} =>
-                Alu::execute_transfer(*is_load, *reg, *opcode,
+            Instruction::PushPop {is_pop, reg} =>
+                Alu::execute_push_pop(*is_pop, *reg,
                 register_bank, memory_bank),
             Instruction::CallJmp {is_call, relative, address} =>
                 Alu::execute_calljmp(*is_call, *relative, *address, register_bank, memory_bank),
             Instruction::InOut {is_in, reg, address} =>
                 Alu::execute_inout(*is_in, *reg, *address, register_bank, memory_bank),
+           Instruction::TransferIndirect{is_load, is_base_z, reg, offset} =>
+                Alu::execute_transfer_indirect(*is_load, *is_base_z, *reg,
+                 *offset, register_bank, memory_bank),
             _ => warn!("Execute - Unknown Instruction: {:?}", instruction)
         }
     }
@@ -98,13 +101,13 @@ impl Alu {
         Alu::in_out(is_in, reg, address, register_bank, memory_bank);
     }
 
-    fn execute_transfer(is_load: bool, reg: u8, opcode: u8,
+    fn execute_push_pop(is_pop: bool, reg: u8,
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
-        match opcode {
-            0xF => {
-                Alu::push_pop(is_load, reg, register_bank, memory_bank);
-            },
-            _ => warn!("Execute transfer - Unknown transfer instruction opcode: {:x}", opcode)
-        }
+        Alu::push_pop(is_pop, reg, register_bank, memory_bank);
+    }
+
+    fn execute_transfer_indirect(is_load: bool, is_base_z: bool, reg: u8, offset: u8,
+        register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
+        Alu::transfer_indirect(is_load, is_base_z, reg, offset, register_bank, memory_bank);
     }
 }

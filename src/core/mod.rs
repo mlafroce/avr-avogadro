@@ -22,9 +22,10 @@ pub enum Instruction {
     OneRegOp,
     TwoRegOp {op: RawInstruction, rd: u8, rr: u8},
     RegConstOp {op: RawInstruction, rd: u8, constant: u8},
-    Transfer {is_load: bool, reg: u8, opcode: u8},
+    PushPop {is_pop: bool, reg: u8},
     CallJmp {is_call: bool, relative: bool, address: u16},
     InOut {is_in: bool, reg: u8, address: u8},
+    TransferIndirect {is_load: bool, is_base_z: bool, reg: u8, offset: u8},
 //    Bitwise,
     Nop,
     Unsupported {instruction: RawInstruction}

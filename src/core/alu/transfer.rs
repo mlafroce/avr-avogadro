@@ -20,9 +20,9 @@ impl Alu {
         }
     }
 
-    pub fn push_pop(is_load: bool, reg: u8,
+    pub fn push_pop(is_pop: bool, reg: u8,
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
-        if is_load {
+        if is_pop {
             register_bank.stack_pointer += 1;
             let data = memory_bank.get_byte(register_bank.stack_pointer);
             register_bank.registers[reg as usize] = data;
@@ -34,5 +34,20 @@ impl Alu {
             let data = register_bank.registers[reg as usize];
             memory_bank.set_byte(register_bank.stack_pointer, data);
         }
+    }
+
+    pub fn transfer_indirect(is_load: bool, is_base_z: bool, reg: u8, offset: u8,
+        register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
+        let base_reg = if is_base_z { 30 } else {28};
+        let base_address_lo = register_bank.registers[base_reg as usize];
+        let base_address_hi = register_bank.registers[base_reg as usize + 1];
+        let address : u16 = ((base_address_hi as u16) << 8) + base_address_lo as u16 + offset as u16;
+        if is_load {
+            let data = memory_bank.get_byte(address);
+            register_bank.registers[reg as usize] = data;
+        } else {
+            let data = register_bank.registers[reg as usize];
+            memory_bank.set_byte(address, data);
+        } 
     }
 }
