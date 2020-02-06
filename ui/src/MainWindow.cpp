@@ -13,9 +13,7 @@ MainWindow::MainWindow(QMainWindow *parent, void* rustMcu)
  : QMainWindow(parent), mcu(rustMcu) {
     Ui::MainWindow window;
     window.setupUi(this);
-    QGroupBox* registerGroupBox = findChild<QGroupBox*>("registerGroupBox");
     findChild<RegisterWidget*>("registerWidget")->setMcu(this->mcu);
-    registerGroupBox->setVisible(false);
     this->updateMcuStatus();
     connectEvents();
 }
@@ -34,20 +32,21 @@ void MainWindow::updateMcuStatus() {
 }
 
 void MainWindow::updateRegisters() {
-    char registers[NUM_REGISTERS];
+    unsigned char registers[NUM_REGISTERS];
     this->mcu.getRegisterArray(registers);
     findChild<RegisterWidget*>("registerWidget")->updateRegisters(registers);
 }
 
 void MainWindow::updateProgramCounter() {
-    QLineEdit* pcEdit = findChild<QLineEdit*>("pcEdit");
+    NumericEdit* pcEdit = findChild<NumericEdit*>("pcEdit");
+    NumericEdit* instructionEdit = findChild<NumericEdit*>("instructionEdit");
+    NumericEdit* stackPointerEdit = findChild<NumericEdit*>("stackPointerEdit");
     unsigned short pcValue = this->mcu.getProgramCounter();
-    QString regText = QString("%1").arg(pcValue, 4, 16, QChar('0'));
-    pcEdit->setText(regText);
-    QLineEdit* instructionEdit = findChild<QLineEdit*>("instructionEdit");
+    pcEdit->setWord(pcValue);
     unsigned short curInstruction = this->mcu.getCurrentInstruction();
-    QString instructionText = QString("%1").arg(curInstruction, 4, 16, QChar('0'));
-    instructionEdit->setText(instructionText);
+    instructionEdit->setWord(curInstruction);
+    unsigned short stackPointer = this->mcu.getStackPointer();
+    stackPointerEdit->setWord(stackPointer);
 }
 
 void MainWindow::updateDecodedInstruction() {
@@ -57,8 +56,8 @@ void MainWindow::updateDecodedInstruction() {
 }
 
 void MainWindow::onProgramCounterChanged() {
-    QLineEdit* pcEdit = findChild<QLineEdit*>("pcEdit");
-    int value = pcEdit->text().toInt(0, 16);
+    NumericEdit* pcEdit = findChild<NumericEdit*>("pcEdit");
+    short value = pcEdit->getWord();
     this->mcu.setProgramCounter(value);
 }
 
@@ -70,7 +69,7 @@ void MainWindow::connectEvents() {
                      this, &MainWindow::mcuStep);
     QObject::connect(loadFileMenuAction, &QAction::triggered,
                      this, &MainWindow::loadFile);
-    QObject::connect(pcEdit, &QLineEdit::editingFinished,
+    QObject::connect(pcEdit, &NumericEdit::editingFinished,
                      this, &MainWindow::onProgramCounterChanged);
 }
 

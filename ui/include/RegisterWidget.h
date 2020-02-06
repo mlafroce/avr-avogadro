@@ -9,9 +9,9 @@ class RegisterWidget : public QWidget {
 public:
     explicit RegisterWidget(QWidget *parent);
     virtual ~RegisterWidget();
-    void updateRegisters(char* registers);
+    void updateRegisters(unsigned char* registers);
     void onRegisterChanged(int id, int value);
-    void setMcu(McuWrapper mcu);
+    void setMcu(const McuWrapper& mcu);
 private:
     void connectEvents();
     McuWrapper mcu;

@@ -1,6 +1,5 @@
 #include "RegisterLineEdit.h"
 #include "moc_RegisterLineEdit.cpp"
-#include <iostream>
 
 RegisterLineEdit::RegisterLineEdit(QWidget *parent) : 
     QLineEdit(parent) {

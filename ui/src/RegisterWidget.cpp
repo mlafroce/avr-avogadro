@@ -5,7 +5,7 @@
 #include <cstdio>
 
 const int NUM_REGISTERS = 32;
-const int NAME_BUF_SIZE = sizeof("rxxEdit");
+const int NAME_BUF_SIZE = sizeof("rxxEdit") + 1;
 
 RegisterWidget::RegisterWidget(QWidget *parent) : 
         QWidget(parent), mcu(0) {
@@ -20,7 +20,7 @@ void RegisterWidget::onRegisterChanged(int id, int value) {
     this->mcu.setRegister(id, value);
 }
 
-void RegisterWidget::setMcu(McuWrapper mcu) {
+void RegisterWidget::setMcu(const McuWrapper& mcu) {
     this->mcu = mcu;
 }
 
@@ -35,7 +35,7 @@ void RegisterWidget::connectEvents() {
     }
 }
 
-void RegisterWidget::updateRegisters(char* registers) {
+void RegisterWidget::updateRegisters(unsigned char* registers) {
     char nameBuf[NAME_BUF_SIZE];
     for (int regNum = 0; regNum < NUM_REGISTERS; ++regNum) {
         snprintf(nameBuf, sizeof(nameBuf), "r%dEdit", regNum);

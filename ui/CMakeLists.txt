@@ -33,6 +33,7 @@ add_library(avogadrogui
   api.cpp
   src/MainWindow.cpp
   src/McuWrapper.cpp
+  src/NumericEdit.cpp
   src/RegisterLineEdit.cpp
   src/RegisterWidget.cpp
   ${UIS_HEADERS})

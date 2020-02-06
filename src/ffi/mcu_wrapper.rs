@@ -74,10 +74,14 @@ pub fn mcu_set_register_array(p_mcu: &mut Mcu, reg_array: [u8; 32]) {
     p_mcu.set_register_array(reg_array);
 }
 
-
 #[no_mangle]
 pub fn mcu_get_program_counter(p_mcu: &Mcu) -> u16 {
     p_mcu.get_program_counter()
+}
+
+#[no_mangle]
+pub fn mcu_get_stack_pointer(p_mcu: &Mcu) -> u16 {
+    p_mcu.get_stack_pointer()
 }
 
 #[no_mangle]
