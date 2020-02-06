@@ -25,12 +25,24 @@ impl Alu {
             warn!("call jmp absolute not implemented");
         }
         if is_call {
+            let pc_to_store = (pc + 2).to_le_bytes(); 
+            memory_bank.set_byte(register_bank.stack_pointer, pc_to_store[0]);
+            memory_bank.set_byte(register_bank.stack_pointer + 1, pc_to_store[1]);
             if register_bank.stack_pointer < 2 {
-                register_bank.stack_pointer = memory_bank.size() as u16
+                register_bank.stack_pointer = memory_bank.size() as u16;
             }
             register_bank.stack_pointer -= 2;
-            memory_bank.set_byte(register_bank.stack_pointer, pc.to_le_bytes()[0]);
-            memory_bank.set_byte(register_bank.stack_pointer + 1, pc.to_le_bytes()[1]);
         }
+    }
+
+    pub fn execute_ret(is_interruption: bool, register_bank: &mut RegisterBank,
+        memory_bank: &mut MemoryBank) {
+        register_bank.stack_pointer += 2  as u16;
+        if register_bank.stack_pointer >= (memory_bank.size() - 1) as u16 {
+            register_bank.stack_pointer = 0;
+        }
+        let pc_lo = memory_bank.get_byte(register_bank.stack_pointer);
+        let pc_hi = memory_bank.get_byte(register_bank.stack_pointer + 1) as u16;
+        register_bank.set_program_counter((pc_hi << 8) + pc_lo as u16);
     }
 }

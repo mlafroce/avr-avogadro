@@ -33,9 +33,11 @@ impl Alu {
                 Alu::execute_calljmp(*is_call, *relative, *address, register_bank, memory_bank),
             Instruction::InOut {is_in, reg, address} =>
                 Alu::execute_inout(*is_in, *reg, *address, register_bank, memory_bank),
-           Instruction::TransferIndirect{is_load, is_base_z, reg, offset} =>
+            Instruction::TransferIndirect{is_load, is_base_z, reg, offset} =>
                 Alu::execute_transfer_indirect(*is_load, *is_base_z, *reg,
                  *offset, register_bank, memory_bank),
+            Instruction::Ret{is_interrupt} =>
+                Alu::execute_ret(*is_interrupt, register_bank, memory_bank),
             _ => warn!("Execute - Unknown Instruction: {:?}", instruction)
         }
     }

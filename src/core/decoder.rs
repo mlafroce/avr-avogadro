@@ -39,17 +39,23 @@ impl Decoder {
                 Instruction::TransferIndirect{is_load, is_base_z, reg, offset: offset as u8}
             },
             0x9000 => { // One register operations?
-                match raw_instruction & 0x0E00 {
-                    0 | 0x0200 => {
-                        let is_pop = raw_instruction & 0x0200 == 0;
-                        let reg = ((raw_instruction & 0x01F0) >> 4) as u8;
-                        if raw_instruction & 0x000F == 0xF {
-                            Instruction::PushPop {is_pop, reg}
-                        } else {
-                            Instruction::OneRegOp
+                match raw_instruction {
+                    0x9508 => Instruction::Ret{is_interrupt: false},
+                    0x9518 => Instruction::Ret{is_interrupt: true},
+                    _ => {
+                        match raw_instruction & 0x0E00 {
+                            0 | 0x0200 => {
+                                let is_pop = raw_instruction & 0x0200 == 0;
+                                let reg = ((raw_instruction & 0x01F0) >> 4) as u8;
+                                if raw_instruction & 0x000F == 0xF {
+                                    Instruction::PushPop {is_pop, reg}
+                                } else {
+                                    Instruction::OneRegOp
+                                }
+                            }
+                            _ => Instruction::OneRegOp
                         }
                     }
-                    _ => Instruction::OneRegOp
                 }
             },
             0xB000 => {
@@ -76,34 +82,55 @@ impl Decoder {
 impl fmt::Display for Instruction {
     fn fmt (&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Instruction::CallJmp { is_call, relative, address } => {
+                let r_str = if *relative { "r" } else { "" };
+                let op_str = if *is_call { "call" } else { "jmp" };
+                write!(f, "{}{}, 0x{}", r_str, op_str, *address)
+            },
+            Instruction::InOut {is_in, reg, address } => {
+                let op_str = if *is_in { "in" } else { "out" };
+                write!(f, "{} r{} 0x{:x}", op_str, *reg, *address)
+            },
             Instruction::Nop => write!(f, "nop"),
-            Instruction::TwoRegOp { op, rd, rr } => 
-                write!(f, "Two register operation -> op: {} rd: {}, rr:{}",
-                   *op, *rd, *rr),
-            Instruction::RegConstOp {op, rd, constant } => 
-                write!(f, "Operation against constant -> op: {} rd: {}, constant:{}",
-                   *op, *rd, *constant),
+            Instruction::OneRegOp => write!(f, "Parsed but unsupported instruction"),
             Instruction::PushPop { is_pop, reg } => {
                 let op_str = if *is_pop { "pop" } else { "push" };
                 write!(f, "{} r{}", op_str, *reg)
             },
+            Instruction::RegConstOp {op, rd, constant } => 
+                write!(f, "Operation against constant -> op: {} rd: {}, constant:{}",
+                   *op, *rd, *constant),
+            Instruction::Ret {is_interrupt} => {
+                let op_str = if *is_interrupt { "reti" } else { "ret" };
+                write!(f, "{}", op_str)
+            }
             Instruction::TransferIndirect { is_load, is_base_z, reg, offset } =>  {
                 let op_str = if *is_load { "ldd" } else { "std" };
                 let base_reg = if *is_base_z { "Z" } else { "Y" };
                 write!(f, "{} {}+{}, r{}", op_str, base_reg, offset, reg)
             },
-            Instruction::CallJmp { is_call, relative, address } => {
-                let r_str = if *relative { "r" } else { "" };
-                let op_str = if *is_call { "call" } else { "jmp" };
-                write!(f, "{}{}, ${}", r_str, op_str, *address)
-            },
-            Instruction::InOut {is_in, reg, address } => {
-                let op_str = if *is_in { "in" } else { "out" };
-                write!(f, "{} r{} ${:x}", op_str, *reg, *address)
-            },
-            Instruction::OneRegOp => write!(f, "Parsed but unsupported instruction"),
+            Instruction::TwoRegOp { op, rd, rr } => 
+                display_two_reg_op(f, *op, *rd, *rr),
             Instruction::Unsupported { instruction } => 
                 write!(f, "Unsupported instruction: {:x}", *instruction)
         }
+    }
+}
+
+fn display_two_reg_op(f: &mut fmt::Formatter<'_>,
+    op: RawInstruction, rd: u8, rr: u8) -> fmt::Result {
+    match op {
+        0x1 => write!(f, "cpc r{}, r{}", rd, rr),
+        0x2 => write!(f, "sbc r{}, r{}", rd, rr),
+        0x3 => write!(f, "add r{}, r{}", rd, rr),
+        0x4 => write!(f, "cpse r{}, r{}", rd, rr),
+        0x5 => write!(f, "cp  r{}, r{}", rd, rr),
+        0x6 => write!(f, "sub r{}, r{}", rd, rr),
+        0x7 => write!(f, "adc r{}, r{}", rd, rr),
+        0x8 => write!(f, "and r{}, r{}", rd, rr),
+        0x9 => write!(f, "eor r{}, r{}", rd, rr),
+        0xA => write!(f, "or  r{}, r{}", rd, rr),
+        0xB => write!(f, "mov r{}, r{}", rd, rr),
+        _ => unreachable!()
     }
 }

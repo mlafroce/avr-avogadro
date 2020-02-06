@@ -19,14 +19,14 @@ type RawInstruction = u16;
 #[derive(Debug)]
 /// Decoded instructions
 pub enum Instruction {
-    OneRegOp,
-    TwoRegOp {op: RawInstruction, rd: u8, rr: u8},
-    RegConstOp {op: RawInstruction, rd: u8, constant: u8},
-    PushPop {is_pop: bool, reg: u8},
     CallJmp {is_call: bool, relative: bool, address: u16},
     InOut {is_in: bool, reg: u8, address: u8},
-    TransferIndirect {is_load: bool, is_base_z: bool, reg: u8, offset: u8},
-//    Bitwise,
     Nop,
+    OneRegOp,
+    PushPop {is_pop: bool, reg: u8},
+    RegConstOp {op: RawInstruction, rd: u8, constant: u8},
+    Ret {is_interrupt: bool},
+    TransferIndirect {is_load: bool, is_base_z: bool, reg: u8, offset: u8},
+    TwoRegOp {op: RawInstruction, rd: u8, rr: u8},
     Unsupported {instruction: RawInstruction}
 }
