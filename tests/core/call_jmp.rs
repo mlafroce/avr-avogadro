@@ -16,20 +16,20 @@ fn test_rcall() {
     let mut memory_data = vec![0; 1024];
     memory_data[0] = 0x20;
     memory_data[1] = 0xD0;
-    memory_data[0x22] = 0x20;
-    memory_data[0x23] = 0xD0;
+    memory_data[0x42] = 0x20;
+    memory_data[0x43] = 0xD0;
     mcu.load_memory(&memory_data);
     assert_eq!(mcu.get_memory_size() as u16, 1024);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
-    assert_eq!(mcu.get_program_counter(), 0x22);
+    assert_eq!(mcu.get_program_counter(), 0x42);
     assert_eq!(mcu.get_stack_pointer(), mcu.get_memory_size() as u16 - 2);
     assert_eq!(mcu.get_memory_byte(0), 2); // program counter (low) + 2
     assert_eq!(mcu.get_memory_byte(1), 0); // program counter hi
     mcu.step();
-    assert_eq!(mcu.get_program_counter(), 0x44);
+    assert_eq!(mcu.get_program_counter(), 0x84);
     assert_eq!(mcu.get_stack_pointer(), mcu.get_memory_size() as u16 - 4);
-    assert_eq!(mcu.get_memory_byte(mcu.get_memory_size() as u16 - 2), 0x24);
+    assert_eq!(mcu.get_memory_byte(mcu.get_memory_size() as u16 - 2), 0x44);
     assert_eq!(mcu.get_memory_byte(mcu.get_memory_size() as u16 - 1), 0);
 }
 
@@ -40,16 +40,16 @@ fn test_rcall_neg() {
     let mut memory_data = vec![0; mem_max];
     memory_data[0] = 0x20;
     memory_data[1] = 0xD0;
-    memory_data[0x22] = 0xF0;
-    memory_data[0x23] = 0xDF;
+    memory_data[0x42] = 0xF0;
+    memory_data[0x43] = 0xDF;
     mcu.load_memory(&memory_data);
     assert_eq!(mcu.get_program_counter(), 0x0);
     assert_eq!(mcu.get_stack_pointer(), 0);
     mcu.step();
-    assert_eq!(mcu.get_program_counter(), 0x22);
+    assert_eq!(mcu.get_program_counter(), 0x42);
     assert_eq!(mcu.get_stack_pointer(), mem_max as u16 - 0x02);
     mcu.step();
-    assert_eq!(mcu.get_program_counter(), 0x14);
+    assert_eq!(mcu.get_program_counter(), 0x24);
     assert_eq!(mcu.get_stack_pointer(), mem_max as u16 - 0x04);
 }
 

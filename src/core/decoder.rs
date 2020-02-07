@@ -22,7 +22,7 @@ impl Decoder {
                 if raw_instruction & 0x0200 != 0 {rr += 16}
                 Instruction::TwoRegOp{op: raw_instruction >> 10, rd, rr}
                 },
-            0x4000 | 0x5000 | 0x6000 | 0x7000 | 0xE000 => {
+            0x3000 | 0x4000 | 0x5000 | 0x6000 | 0x7000 | 0xE000 => {
                 let rd = ((raw_instruction & 0x00F0) >> 4) as u8;
                 let constant_upper = ((raw_instruction & 0x0F00) >> 4) as u8;
                 let constant_lower = (raw_instruction & 0x000F) as u8;
@@ -64,16 +64,27 @@ impl Decoder {
                 let address_low = (raw_instruction & 0x000F) as u8;
                 let address_hi = ((raw_instruction & 0x0600) >> 5) as u8;
                 let address = address_hi + address_low;
-                Instruction::InOut{is_in, reg, address}
+                Instruction::InOut { is_in, reg, address }
             },
             0xC000 | 0xD000 => {
                 let is_call = opcode == 0xD000;
                 let offset = raw_instruction & 0xFFF;
-                Instruction::CallJmp{is_call, relative: true, address: offset}
+                Instruction::CallJmp { is_call, relative: true, address: offset }
+            },
+            0xF000 => {
+                if raw_instruction & 0x0800 == 0 {
+                    let op = (raw_instruction & 0x0007) as u8;
+                    let u_offset = ((raw_instruction & 0x03F8) >> 3) as u8;
+                    let offset = if u_offset < 64 { u_offset as i8 }
+                        else { u_offset.wrapping_sub(128) as i8 };
+                    let test_set = raw_instruction & 0x0400 == 0;
+                    Instruction::Branch { op, test_set, offset }
+                } else {
+                    Instruction::Unsupported { instruction: raw_instruction }
+                }
             },
             _ => {
-                warn!("Decoding - Unknown opcode: {:x} in {:x}", opcode, raw_instruction);
-                Instruction::Unsupported {instruction: raw_instruction}
+                unreachable!()
             }
         }
     }
@@ -82,6 +93,8 @@ impl Decoder {
 impl fmt::Display for Instruction {
     fn fmt (&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Instruction::Branch { op, test_set, offset }
+                => write!(f, "{:x}{}, 0x{:x}", *op, *test_set, *offset),
             Instruction::CallJmp { is_call, relative, address } => {
                 let r_str = if *relative { "r" } else { "" };
                 let op_str = if *is_call { "call" } else { "jmp" };
@@ -98,8 +111,7 @@ impl fmt::Display for Instruction {
                 write!(f, "{} r{}", op_str, *reg)
             },
             Instruction::RegConstOp {op, rd, constant } => 
-                write!(f, "Operation against constant -> op: {} rd: {}, constant:{}",
-                   *op, *rd, *constant),
+                display_arith_costant(f, *op, *rd, *constant),
             Instruction::Ret {is_interrupt} => {
                 let op_str = if *is_interrupt { "reti" } else { "ret" };
                 write!(f, "{}", op_str)
@@ -120,17 +132,31 @@ impl fmt::Display for Instruction {
 fn display_two_reg_op(f: &mut fmt::Formatter<'_>,
     op: RawInstruction, rd: u8, rr: u8) -> fmt::Result {
     match op {
-        0x1 => write!(f, "cpc r{}, r{}", rd, rr),
-        0x2 => write!(f, "sbc r{}, r{}", rd, rr),
-        0x3 => write!(f, "add r{}, r{}", rd, rr),
+        0x1 => write!(f, "cpc  r{}, r{}", rd, rr),
+        0x2 => write!(f, "sbc  r{}, r{}", rd, rr),
+        0x3 => write!(f, "add  r{}, r{}", rd, rr),
         0x4 => write!(f, "cpse r{}, r{}", rd, rr),
-        0x5 => write!(f, "cp  r{}, r{}", rd, rr),
-        0x6 => write!(f, "sub r{}, r{}", rd, rr),
-        0x7 => write!(f, "adc r{}, r{}", rd, rr),
-        0x8 => write!(f, "and r{}, r{}", rd, rr),
-        0x9 => write!(f, "eor r{}, r{}", rd, rr),
-        0xA => write!(f, "or  r{}, r{}", rd, rr),
-        0xB => write!(f, "mov r{}, r{}", rd, rr),
+        0x5 => write!(f, "cp   r{}, r{}", rd, rr),
+        0x6 => write!(f, "sub  r{}, r{}", rd, rr),
+        0x7 => write!(f, "adc  r{}, r{}", rd, rr),
+        0x8 => write!(f, "and  r{}, r{}", rd, rr),
+        0x9 => write!(f, "eor  r{}, r{}", rd, rr),
+        0xA => write!(f, "or   r{}, r{}", rd, rr),
+        0xB => write!(f, "mov  r{}, r{}", rd, rr),
+        _ => unreachable!()
+    }
+}
+
+fn display_arith_costant(f: &mut fmt::Formatter<'_>,
+    op: RawInstruction, rd: u8, constant: u8) -> fmt::Result {
+    match op {
+        0x3 => write!(f, "cpi r{}, 0x{:x}", rd, constant),
+        0x4 => write!(f, "sbci r{}, 0x{:x}", rd, constant),
+        0x5 => write!(f, "subi r{}, 0x{:x}", rd, constant),
+        0x6 => write!(f, "ori  r{}, 0x{:x}", rd, constant),
+        0x7 => write!(f, "andi r{}, 0x{:x}", rd, constant),
+        // ldi is technically a transfer instruction
+        0xE => write!(f, "ldi  r{}, 0x{:x}", rd, constant),
         _ => unreachable!()
     }
 }

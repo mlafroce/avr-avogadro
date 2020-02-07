@@ -27,7 +27,7 @@ fn test_basic_stack() {
         0xe0, 0x90, 0xe0, 0xdf, 0x91, 0xcf, 0x91, 0x08, 0x95];
     memory_data.resize(1024, 0);
     mcu.load_memory(&memory_data);
-    for i in (0..9) {
+    for _ in 0..9 {
         mcu.step()
     }
     assert_eq!(mcu.get_program_counter(), 0x93d1);

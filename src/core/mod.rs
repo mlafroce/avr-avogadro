@@ -19,6 +19,7 @@ type RawInstruction = u16;
 #[derive(Debug)]
 /// Decoded instructions
 pub enum Instruction {
+    Branch {op: u8, test_set: bool, offset: i8},
     CallJmp {is_call: bool, relative: bool, address: u16},
     InOut {is_in: bool, reg: u8, address: u8},
     Nop,
