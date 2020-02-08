@@ -20,7 +20,7 @@ avr-objcopy -j .text -j .data -O binary file.o file.bin
 * Disassembly
 
 ~~~
-avr-objdump -m avr2 -D sum-recuperado.hex
+avr-objdump -m avr2 -D file-to-dissasemble.hex
 ~~~
 
 * Convert from binary to ihex
