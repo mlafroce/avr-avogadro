@@ -1,9 +1,6 @@
 use crate::core::register_bank::RegisterBank;
 use crate::core::memory_bank::MemoryBank;
 use super::Alu;
-use super::RawInstruction;
-
-const LDS_STS_MASK: RawInstruction = 0xFC0F;
 
 impl Alu {
     pub fn execute_calljmp(is_call: bool, relative: bool, address_bits: u16,
@@ -35,7 +32,7 @@ impl Alu {
         }
     }
 
-    pub fn execute_ret(is_interruption: bool, register_bank: &mut RegisterBank,
+    pub fn execute_ret(_is_interruption: bool, register_bank: &mut RegisterBank,
         memory_bank: &mut MemoryBank) {
         register_bank.stack_pointer += 2  as u16;
         if register_bank.stack_pointer >= (memory_bank.size() - 1) as u16 {

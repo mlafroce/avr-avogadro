@@ -8,12 +8,19 @@ const LDS_STS_MASK: RawInstruction = 0xFC0F;
 impl Alu {
     // Two Registers instructions
     pub fn add(rdu: usize, rru: usize, register_bank: &mut RegisterBank, carry: u8) {
-        let sum: u16 = register_bank.registers[rdu] as u16 +
-            register_bank.registers[rru] as u16 + carry as u16;
-        register_bank.registers[rdu] = sum as u8;
+        let rd = register_bank.registers[rdu];
+        let rr = register_bank.registers[rru];
+        let sum = rd.wrapping_add(rr).wrapping_add(carry as u8);
+        let hc_flags = (rd & rr) | (rr & !sum) | (rd & !sum);
+        register_bank.registers[rdu] = sum;
         let mut flags = register_bank.get_flags();
-        flags.carry = sum > 0xFF;
-        flags.zero = (sum & 0xFF) == 0;
+        flags.carry = hc_flags & 0x80 != 0;
+        flags.half = hc_flags & 0x08 != 0;
+        flags.neg = sum & 0x80 != 0;
+        let tmp_overflow = (rd & rr & !sum) | (!rd & !rr & sum);
+        flags.over = tmp_overflow & 0x80 != 0; 
+        flags.zero = sum == 0;
+        flags.sign = flags.neg ^ flags.over;
         register_bank.set_flags(flags);
     }
 

@@ -94,6 +94,12 @@ pub fn mcu_get_current_instruction(p_mcu: &Mcu) {
     p_mcu.get_current_instruction();
 }
 
+/// Puts registers data into a buffer
+/// # Safety
+///
+/// `p_mcu` must be a pointer to a valid Mcu
+/// `buffer` must be a char array with `buf_size` size
+///
 #[no_mangle]
 pub unsafe fn mcu_display_current_instruction(p_mcu: &Mcu,
     c_buffer: *mut u8, buf_size: usize) {
@@ -101,7 +107,7 @@ pub unsafe fn mcu_display_current_instruction(p_mcu: &Mcu,
     p_mcu.display_current_instruction(&mut string_buf);
     let bytes_to_copy = std::cmp::min(buf_size - 1, string_buf.len());
     ptr::copy_nonoverlapping(string_buf.as_ptr(), c_buffer, bytes_to_copy);
-    *(c_buffer.offset(bytes_to_copy as isize)) = 0;
+    *(c_buffer.add(bytes_to_copy)) = 0;
 }
 
 #[no_mangle]

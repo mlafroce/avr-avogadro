@@ -5,6 +5,12 @@
 pub struct Flags {
     pub carry: bool,
     pub zero: bool,
+    pub neg: bool,
+    pub over: bool,
+    pub sign: bool,
+    pub half: bool,
+    pub trans: bool,
+    pub int: bool
 }
 
 pub struct RegisterBank {
@@ -21,7 +27,8 @@ impl RegisterBank {
     pub fn new() -> RegisterBank {
         let registers = [0; 32];
         let program_counter = 0;
-        let flags = Flags{carry: false, zero: false};
+        let flags = Flags{carry: false, zero: false, neg: false, over: false,
+                         sign: false, half: false, trans: false, int: false};
         let stack_pointer = 0;
         RegisterBank {registers, program_counter, stack_pointer, flags}
     }
@@ -70,5 +77,20 @@ impl RegisterBank {
 impl Default for RegisterBank {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl From<Flags> for u8 {
+    fn from(flags: Flags) -> u8 {
+        let mut result = 0;
+        if flags.carry { result += 1 };
+        if flags.zero { result += 1 << 1 };
+        if flags.neg { result += 1 << 2 };
+        if flags.over { result += 1 << 3 };
+        if flags.sign { result += 1 << 4 };
+        if flags.half { result += 1 << 5 };
+        if flags.trans { result += 1 << 6 };
+        if flags.int { result += 1 << 7 };
+        result
     }
 }

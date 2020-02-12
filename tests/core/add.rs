@@ -13,6 +13,7 @@ fn test_sum() {
     let mut mcu = Mcu::new();
     mcu.set_register(1, 4);
     mcu.set_register(2, 5);
+    // 0x04 + 0x05 = 0x9
     let memory_data = vec![0x12, 0x0C];
     mcu.load_memory(&memory_data);
     assert_eq!(mcu.get_program_counter(), 0x0);
@@ -23,7 +24,7 @@ fn test_sum() {
 
 #[test]
 /// Tests simple add instruction which results in zero and carry flag on
-fn test_sum_flags() {
+fn test_add_flags() {
     let mut mcu = Mcu::new();
     mcu.set_register(1, 0x78);
     mcu.set_register(2, 0x88);
@@ -37,21 +38,61 @@ fn test_sum_flags() {
     let flags = mcu.get_flags();
     assert!(flags.carry);
     assert!(flags.zero);
+    assert!(!flags.neg);
+    assert!(!flags.over);
+    assert!(!flags.sign);
+    assert!(flags.half);
+}
+
+#[test]
+/// General test cases based on RISC-V test set
+///
+fn test_sum_general() {
+    let mut mcu = Mcu::new();
+    // add r1, r2 -> 0000 1100 0001 0010 -> 0C12
+    let memory_data = vec![0x12, 0x0C];
+    mcu.load_memory(&memory_data);
+
+    // rd, rr, result, flags (ithsvnzc)
+    let test_set = vec![
+    (0x00, 0x00, 0x00, 0b00000010),
+    (0x01, 0x01, 0x02, 0b00000000),
+    (0x03, 0x07, 0x0a, 0b00000000),
+    (0xf8, 0x00, 0xf8, 0b00010100),
+    (0xff, 0x01, 0x00, 0b00100011),
+    (0x01, 0x7f, 0x80, 0b00101100),
+    (0x40, 0x40, 0x80, 0b00001100),
+    (0xA0, 0xA0, 0x40, 0b00011001),
+    (0xC0, 0xC0, 0x80, 0b00010101),
+    ];
+    for (i, test_case) in test_set.iter().enumerate() {
+        mcu.set_program_counter(0);
+        mcu.set_register(1, test_case.0);
+        mcu.set_register(2, test_case.1);
+        mcu.step();
+
+        let result = mcu.get_register(1);
+        let flag_as_byte : u8 = mcu.get_flags().into();
+        assert_eq!(result, test_case.2,
+            "Test case {} - Add assertion failed: {:x} != {:x}", i, result, test_case.2);
+        assert_eq!(flag_as_byte, test_case.3,
+            "Test case {} - Flags assertion failed: {:08b} != {:08b}",
+             i, flag_as_byte, test_case.3);
+    }
 }
 
 #[test]
 /// Tests add with carry instruction
 ///
-/// ADD opcode: 0001 11rd dddd rrrr
-/// add r16, r20 -> 0001 1111 0000 0100 -> 1F04
-fn test_sum_with_carry() {
+/// ADC opcode: 0001 11rd dddd rrrr
+/// adc r16, r20 -> 0001 1111 0000 0100 -> 1F04
+fn test_adc_with_carry() {
     let mut mcu = Mcu::new();
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
     mcu.set_register(16, 0x04);
     mcu.set_register(20, 0x05);
-    // 0x78 + 0x88 = 0x100
     let memory_data = vec![0x04, 0x1F];
     mcu.load_memory(&memory_data);
     mcu.step();
@@ -59,4 +100,9 @@ fn test_sum_with_carry() {
     assert_eq!(mcu.get_register(16), 0x0A);
     flags = mcu.get_flags();
     assert!(!flags.carry);
+    assert!(!flags.zero);
+    assert!(!flags.neg);
+    assert!(!flags.over);
+    assert!(!flags.sign);
+    assert!(!flags.half);
 }
