@@ -1,5 +1,6 @@
 use std::io;
 use std::io::{Error, ErrorKind};
+use std::ptr;
 
 /// Microcontroller main memory
 pub struct MemoryBank {
@@ -53,6 +54,12 @@ impl MemoryBank {
         } else {
             Err(Error::new(ErrorKind::Other, "Memory"))
         }
+    }
+
+    pub unsafe fn copy_into_buffer(&self, buf: *mut u8, buf_size: usize) {
+        info!("Calling copy_into_buffer, {} bytes to be copied", buf_size);
+        ptr::copy_nonoverlapping(self.data.as_ptr(), buf, buf_size);
+        info!("Copy finished");
     }
 
     pub fn size(&self) -> usize {

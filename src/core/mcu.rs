@@ -46,6 +46,10 @@ impl Mcu {
         self.memory_bank.get_byte(address)
     }
 
+    pub unsafe fn get_memory_data(&self, buffer: *mut u8, buf_size: usize) {
+        self.memory_bank.copy_into_buffer(buffer, buf_size);
+    }
+
     pub fn get_register(&self, reg_num: u8) -> u8 {
         self.reg_bank.registers[reg_num as usize]
     }

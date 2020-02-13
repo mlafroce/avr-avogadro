@@ -2,7 +2,9 @@
 #include "RegisterWidget.h"
 #include "ui_MainWindow.h"
 #include "McuWrapper.h"
+#include "qhexedit.h"
 #include <cstddef>
+#include <QByteArray>
 #include <QLineEdit>
 #include <QFileDialog>
 
@@ -29,6 +31,13 @@ void MainWindow::updateMcuStatus() {
     updateProgramCounter();
     updateRegisters();
     updateDecodedInstruction();
+}
+
+void MainWindow::updateMemoryBank() {
+    std::vector<char> buf;
+    this->mcu.getMemoryBank(buf);
+    QByteArray bytes(buf.data(), buf.size());
+    findChild<QHexEdit*>("hexEdit")->setData(bytes);
 }
 
 void MainWindow::updateRegisters() {
@@ -78,7 +87,8 @@ void MainWindow::loadFile() {
     if (filename.size() != 0) {
         this->mcu.loadFile(filename.c_str());
         this->updateMcuStatus();
-    }    
+    }
+    this->updateMemoryBank();
 }
 
 std::string MainWindow::getSelectedFilename() {

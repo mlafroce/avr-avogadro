@@ -9,14 +9,33 @@ public:
     explicit MainWindow(QMainWindow *parent, void* mcu);
     virtual ~MainWindow();
 private:
+    /**
+     * Executes a single isntruction
+     */
     void mcuStep();
-    std::string getSelectedFilename();    
+    /**
+     * Opens a QFileDialog and gets selected file name
+     */
+    std::string getSelectedFilename();
+    /**
+     * Loads raw content of a binary file
+     */
     void loadFile();
+    /**
+     * Connects UI events
+     */
     void connectEvents();
+    /**
+     * Refreshes GUI contents
+     */
     void updateMcuStatus();
     void updateRegisters();
     void updateProgramCounter();
     void updateDecodedInstruction();
+    void updateMemoryBank();
+    /**
+     * Fired when program counter line input changes
+     */
     void onProgramCounterChanged();
     McuWrapper mcu;
 };

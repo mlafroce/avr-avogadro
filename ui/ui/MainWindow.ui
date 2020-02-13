@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>384</width>
-    <height>401</height>
+    <width>376</width>
+    <height>435</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -67,205 +67,228 @@
      </layout>
     </item>
     <item>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="title">
-       <string>StatusRegister (SREG)</string>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
-      <layout class="QHBoxLayout" name="checkboxLayout">
-       <item>
-        <widget class="QCheckBox" name="iCheckbox">
-         <property name="text">
-          <string>I</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="tCheckBox">
-         <property name="text">
-          <string>T</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="hCheckbox">
-         <property name="text">
-          <string>H</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="sCheckBox">
-         <property name="text">
-          <string>S</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="vCheckbox">
-         <property name="text">
-          <string>V</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="nCheckBox">
-         <property name="text">
-          <string>N</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="zCheckbox">
-         <property name="text">
-          <string>Z</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="cCheckBox">
-         <property name="text">
-          <string>C</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="registerGroupBox">
-      <property name="title">
-       <string>Registers</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0">
-          <widget class="QLabel" name="pcLabel">
-           <property name="text">
-            <string>Program counter</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="NumericEdit" name="pcEdit">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>40</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="instructionLabel">
-           <property name="text">
-            <string>Instruction</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="NumericEdit" name="instructionEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>40</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <layout class="QHBoxLayout" name="decodedInstHorizontalLayout">
+      <widget class="QWidget" name="registerTab">
+       <attribute name="title">
+        <string>Registers</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="registerLayout">
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>StatusRegister (SREG)</string>
+          </property>
+          <layout class="QHBoxLayout" name="checkboxLayout">
            <item>
-            <widget class="QLabel" name="decodedInstructionLabel">
+            <widget class="QCheckBox" name="iCheckbox">
+             <property name="text">
+              <string>I</string>
+             </property>
             </widget>
            </item>
            <item>
-            <spacer name="horizontalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+            <widget class="QCheckBox" name="tCheckBox">
+             <property name="text">
+              <string>T</string>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="hCheckbox">
+             <property name="text">
+              <string>H</string>
              </property>
-            </spacer>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="sCheckBox">
+             <property name="text">
+              <string>S</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="vCheckbox">
+             <property name="text">
+              <string>V</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="nCheckBox">
+             <property name="text">
+              <string>N</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="zCheckbox">
+             <property name="text">
+              <string>Z</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cCheckBox">
+             <property name="text">
+              <string>C</string>
+             </property>
+            </widget>
            </item>
           </layout>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="stackPointerLabel">
-           <property name="text">
-            <string>Stack pointer</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="NumericEdit" name="stackPointerEdit">
-           <property name="maximumSize">
-            <size>
-             <width>40</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <spacer name="horizontalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="RegisterWidget" name="registerWidget" native="true"/>
-       </item>
-      </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="registerGroupBox">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="title">
+           <string>Registers</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
+              <widget class="QLabel" name="pcLabel">
+               <property name="text">
+                <string>Program counter</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="NumericEdit" name="pcEdit">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="instructionLabel">
+               <property name="text">
+                <string>Instruction</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="NumericEdit" name="instructionEdit">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <layout class="QHBoxLayout" name="decodedInstHorizontalLayout">
+               <item>
+                <widget class="QLabel" name="decodedInstructionLabel"/>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="stackPointerLabel">
+               <property name="text">
+                <string>Stack pointer</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="NumericEdit" name="stackPointerEdit">
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <spacer name="horizontalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="RegisterWidget" name="registerWidget" native="true"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="memoryTab">
+       <attribute name="title">
+        <string>Memory</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QHexEdit" name="hexEdit">
+          <property name="toolTip">
+           <string>QHexEditWidget</string>
+          </property>
+          <property name="whatsThis">
+           <string>QHexEdit widget allow to edit the data in hex view.</string>
+          </property>
+          <property name="asciiArea">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-     </spacer>
     </item>
    </layout>
   </widget>
@@ -274,8 +297,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>384</width>
-     <height>19</height>
+     <width>376</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="fileMenu">
@@ -307,6 +330,12 @@
    <class>NumericEdit</class>
    <extends>QLineEdit</extends>
    <header>NumericEdit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QHexEdit</class>
+   <extends>QWidget</extends>
+   <header>qhexedit.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

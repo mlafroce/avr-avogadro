@@ -12,6 +12,7 @@ use std::ffi::CString;
 
 #[link(name = "avogadrogui")]
 #[link(name = "Qt5Widgets")]
+#[link(name = "Qt5Gui")]
 #[link(name = "Qt5Core")]
 #[link(name = "stdc++")]
 extern "C" { 
