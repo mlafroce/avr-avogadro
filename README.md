@@ -6,35 +6,70 @@ Core library is in Rust and will expose an API for GUI in C++ (QT).
 
 This simulator aims to be suited for performance analysis.
 
-## Requeriments
+# Building from sources
 
-* Rust compiler
+## Dependencies
 
-* Gcc
+Currently only linux target is supported.  To build from sources you need
 
-* CMake (>= 3.9)
+* Rust toolchain (includes *rustc* and *cargo*)
 
-## Instructions
+* GCC toolchain  (*g++* needed for GUI)
 
-### Ubuntu
+* CMake (>= 3.9) (Cargo build instructions use cmake to build GUI)
 
-Download Rust compiler following instructions on their site.
-
-Install gcc and Qt with the following commands
+From a terminal, you can clone the repo with 
 
 ~~~
-apt install build-essential cmake qt5-default
+git clone --recurse-submodules https://github.com/mlafroce/avr-avogadro.git
 ~~~
 
-Just run `cargo build` and rust's package manager will download and build dependencies.
+This will download [QHexEdit2](https://github.com/Simsys/qhexedit2/) as a dependency.
+
+If you choose "Download as a zip", copy QHexEdit2 sources into `ui/3rd-party/qhexedit2`
+
+To get their last version, download Rust compiler following instructions on their [site](https://www.rust-lang.org/tools/install).
+
+Install *GCC* and *Qt5* with the following commands
+
+~~~
+sudo apt install build-essential cmake qt5-default
+~~~
+
+## Build
+
+Compile with `cargo build` Rust's package manager will download and build dependencies.
 
 Run `cargo run` to run the application.
 
-## Linter
+## Tests and linter
 
-Clippy is used as Rust linter.
+Run `cargo test` to build and run unit tests.
+
+*Clippy* is used as Rust linter. Install and run with
 
 ~~~
 rustup component add clippy
 cargo clippy
 ~~~
+
+## Examples
+
+Small avr examples are in `examples` folder.
+
+You can compile them running `make` or manually using `avr-gcc`.
+
+
+# Documentation
+
+For further information go to the [project site](https://mlafroce.github.io/avr-avogadro/)
+
+
+# License
+
+This project is licensed under the MIT License, see the LICENSE.md file for details
+
+
+# Acknowledgements
+
+Thanks to @Simsys for his awesome HexEditor Widget!
