@@ -114,7 +114,8 @@ fn test_cpc_rr_overflow() {
     
     mcu.step();
     flags = mcu.get_flags();
-    assert!(!flags.carry);
+    // Set if the absolute value of rr plus carry is larger than absolute value of rd
+    assert!(flags.carry);
     assert!(flags.zero);
 }
 

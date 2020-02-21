@@ -50,16 +50,22 @@ impl Alu {
     pub fn _substract_base(rdu: usize, rru: usize, register_bank: &mut RegisterBank,
         carry: u8, store_result: bool) {
         // wrapping sub as it could overflow
-        let rr_plus_c = (register_bank.registers[rru] as u8)
-            .wrapping_add(carry as u8) as u16;
-        let result: u16 = (register_bank.registers[rdu] as u16)
-            .wrapping_sub(rr_plus_c);
+        let rd = register_bank.registers[rdu] as u8;
+        let rr = register_bank.registers[rru];
+        let rr_plus_c = rr.wrapping_add(carry as u8);
+        let result = rd.wrapping_sub(rr_plus_c);
+        let hc_flags = (!rd & rr) | (rr & result) | (!rd & result);
         let mut flags = register_bank.get_flags();
-        flags.carry = result > 0xFF;
-        flags.zero = (result & 0xFF) == 0;
+        flags.carry = hc_flags & 0x80 != 0;
+        flags.half = hc_flags & 0x08 != 0;
+        flags.neg = result & 0x80 != 0;
+        let tmp_overflow = (rd & !rr & !result) | (!rd & rr & result);
+        flags.over = tmp_overflow & 0x80 != 0; 
+        flags.zero = result == 0;
+        flags.sign = flags.neg ^ flags.over;
         register_bank.set_flags(flags);
         if store_result {
-            register_bank.registers[rdu] = result as u8;
+            register_bank.registers[rdu] = result;
         }
     }
 
@@ -73,6 +79,9 @@ impl Alu {
         register_bank.registers[rdu] = result;
         let mut flags = register_bank.get_flags();
         flags.zero = result == 0;
+        flags.neg = result & 0x80 != 0;
+        flags.over = false;
+        flags.sign = flags.neg;
         register_bank.set_flags(flags);
     }
 
@@ -82,6 +91,9 @@ impl Alu {
         register_bank.registers[rdu] = result;
         let mut flags = register_bank.get_flags();
         flags.zero = result == 0;
+        flags.neg = result & 0x80 != 0;
+        flags.over = false;
+        flags.sign = flags.neg;
         register_bank.set_flags(flags);
     }
 
@@ -95,6 +107,9 @@ impl Alu {
         register_bank.registers[rdu] = result;
         let mut flags = register_bank.get_flags();
         flags.zero = result == 0;
+        flags.neg = result & 0x80 != 0;
+        flags.over = false;
+        flags.sign = flags.neg;
         register_bank.set_flags(flags);
     }
 
@@ -103,7 +118,6 @@ impl Alu {
     }
 
     // One register - One constant operations
-
     /// Substracts immediate to register
     pub fn subi(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
         Alu::_substract_imm_base(rdu, constant, register_bank, 0);
@@ -117,12 +131,20 @@ impl Alu {
 
     pub fn _substract_imm_base(rdu: usize, constant: u8,
         register_bank: &mut RegisterBank, carry: u8) {
-        let const_with_carry = constant.wrapping_add(carry) as u16;
-        let result: u16 = (register_bank.registers[rdu] as u16)
-            .wrapping_sub(const_with_carry);
-        register_bank.registers[rdu] = result as u8;
+        let rd = register_bank.registers[rdu] as u8;
+        let const_with_carry = constant.wrapping_add(carry);
+        let result = rd.wrapping_sub(const_with_carry);
+        let hc_flags = (!rd & const_with_carry) | (const_with_carry & result) | (!rd & result);
         let mut flags = register_bank.get_flags();
-        flags.zero = register_bank.registers[rdu] == 0;
+        flags.carry = hc_flags & 0x80 != 0;
+        flags.half = hc_flags & 0x08 != 0;
+        flags.neg = result & 0x80 != 0;
+        let tmp_overflow = (rd & !const_with_carry & !result) | (!rd & const_with_carry & result);
+        flags.over = tmp_overflow & 0x80 != 0; 
+        flags.zero = result == 0;
+        flags.sign = flags.neg ^ flags.over;
+        register_bank.registers[rdu] = result;
+        let mut flags = register_bank.get_flags();
         register_bank.set_flags(flags);
     }
 
