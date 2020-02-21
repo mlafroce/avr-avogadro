@@ -83,7 +83,7 @@
           </property>
           <layout class="QHBoxLayout" name="checkboxLayout">
            <item>
-            <widget class="QCheckBox" name="iCheckbox">
+            <widget class="QCheckBox" name="iCheckBox">
              <property name="text">
               <string>I</string>
              </property>
@@ -97,7 +97,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="hCheckbox">
+            <widget class="QCheckBox" name="hCheckBox">
              <property name="text">
               <string>H</string>
              </property>
@@ -111,7 +111,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="vCheckbox">
+            <widget class="QCheckBox" name="vCheckBox">
              <property name="text">
               <string>V</string>
              </property>
@@ -125,7 +125,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="zCheckbox">
+            <widget class="QCheckBox" name="zCheckBox">
              <property name="text">
               <string>Z</string>
              </property>

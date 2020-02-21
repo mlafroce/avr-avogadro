@@ -33,6 +33,7 @@ private:
     void updateProgramCounter();
     void updateDecodedInstruction();
     void updateMemoryBank();
+    void updateFlags();
     /**
      * Fired when program counter line input changes
      */

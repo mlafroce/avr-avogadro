@@ -132,11 +132,11 @@ pub unsafe fn mcu_get_memory_data(p_mcu: &Mcu, c_buffer: *mut u8, buf_size: usiz
 }
 
 #[no_mangle]
-pub fn get_flags(p_mcu: &Mcu) {
-    p_mcu.get_flags();
+pub fn mcu_get_flags(p_mcu: &Mcu) -> u8{
+    p_mcu.get_flags().into()
 }
 
 #[no_mangle]
-pub fn set_flags(p_mcu: &mut Mcu, flags: Flags) {
+pub fn mcu_set_flags(p_mcu: &mut Mcu, flags: Flags) {
     p_mcu.set_flags(flags);
 }

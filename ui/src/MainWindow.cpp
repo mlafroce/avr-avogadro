@@ -31,6 +31,7 @@ void MainWindow::updateMcuStatus() {
     updateProgramCounter();
     updateRegisters();
     updateDecodedInstruction();
+    updateFlags();
 }
 
 void MainWindow::updateMemoryBank() {
@@ -62,6 +63,18 @@ void MainWindow::updateDecodedInstruction() {
     char buf[DECODED_INSTRUCTION_BUF];
     this->mcu.displayCurrentInstruction(buf, sizeof(buf));
     findChild<QLabel*>("decodedInstructionLabel")->setText(buf);
+}
+
+void MainWindow::updateFlags() {
+    unsigned char flags = this->mcu.getFlags();
+    findChild<QCheckBox*>("iCheckBox")->setChecked((flags & 0x80) != 0);
+    findChild<QCheckBox*>("tCheckBox")->setChecked((flags & 0x40) != 0);
+    findChild<QCheckBox*>("hCheckBox")->setChecked((flags & 0x20) != 0);
+    findChild<QCheckBox*>("sCheckBox")->setChecked((flags & 0x10) != 0);
+    findChild<QCheckBox*>("vCheckBox")->setChecked((flags & 0x08) != 0);
+    findChild<QCheckBox*>("nCheckBox")->setChecked((flags & 0x04) != 0);
+    findChild<QCheckBox*>("zCheckBox")->setChecked((flags & 0x02) != 0);
+    findChild<QCheckBox*>("cCheckBox")->setChecked((flags & 0x01) != 0);
 }
 
 void MainWindow::onProgramCounterChanged() {
