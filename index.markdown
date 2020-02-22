@@ -48,9 +48,14 @@ Run `cargo run` to run the application.
 
 ## Tests and linter
 
-Run `cargo test` to build and run unit tests.
+Run `cargo test` to build and run *unit tests*.
 
 *Clippy* is used as Rust linter. Install and run with
+
+~~~
+rustup component add clippy
+cargo clippy
+~~~
 
 ## Examples
 
@@ -58,7 +63,18 @@ Small avr examples are in `examples` folder.
 
 You can compile them running `make` or manually using `avr-gcc`.
 
+Install with
+
 ~~~
-rustup component add clippy
-cargo clippy
+sudo apt install gcc-avr
 ~~~
+
+# License
+
+This project is licensed under the MIT License, see the [LICENSE.md](https://github.com/mlafroce/avr-avogadro/blob/development/LICENSE.md) in the repository for details
+
+# Acknowledgements
+
+Thanks to [Luciano Rabassa](https://www.facebook.com/profile.php?id=100015059700810) for his contributions as a Beta tester.
+
+Thanks to @Simsys for his awesome HexEditor Widget!
