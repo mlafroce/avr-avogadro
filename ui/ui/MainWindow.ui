@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>376</width>
+    <width>375</width>
     <height>435</height>
    </rect>
   </property>
@@ -40,33 +40,6 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="toggleRegisterButton">
-        <property name="text">
-         <string>Registers</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>0</number>
@@ -76,71 +49,6 @@
         <string>Registers</string>
        </attribute>
        <layout class="QVBoxLayout" name="registerLayout">
-        <item>
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>StatusRegister (SREG)</string>
-          </property>
-          <layout class="QHBoxLayout" name="checkboxLayout">
-           <item>
-            <widget class="QCheckBox" name="iCheckBox">
-             <property name="text">
-              <string>I</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="tCheckBox">
-             <property name="text">
-              <string>T</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="hCheckBox">
-             <property name="text">
-              <string>H</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="sCheckBox">
-             <property name="text">
-              <string>S</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="vCheckBox">
-             <property name="text">
-              <string>V</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="nCheckBox">
-             <property name="text">
-              <string>N</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="zCheckBox">
-             <property name="text">
-              <string>Z</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="cCheckBox">
-             <property name="text">
-              <string>C</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
         <item>
          <widget class="QGroupBox" name="registerGroupBox">
           <property name="enabled">
@@ -261,6 +169,71 @@
             </layout>
            </item>
            <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>StatusRegister (SREG)</string>
+             </property>
+             <layout class="QHBoxLayout" name="checkboxLayout">
+              <item>
+               <widget class="QCheckBox" name="iCheckBox">
+                <property name="text">
+                 <string>I</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="tCheckBox">
+                <property name="text">
+                 <string>T</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="hCheckBox">
+                <property name="text">
+                 <string>H</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="sCheckBox">
+                <property name="text">
+                 <string>S</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="vCheckBox">
+                <property name="text">
+                 <string>V</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="nCheckBox">
+                <property name="text">
+                 <string>N</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="zCheckBox">
+                <property name="text">
+                 <string>Z</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cCheckBox">
+                <property name="text">
+                 <string>C</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
             <widget class="RegisterWidget" name="registerWidget" native="true"/>
            </item>
           </layout>
@@ -274,14 +247,14 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QHexEdit" name="hexEdit">
+         <widget class="QHexEdit" name="hexEdit" native="true">
           <property name="toolTip">
            <string>QHexEditWidget</string>
           </property>
           <property name="whatsThis">
            <string>QHexEdit widget allow to edit the data in hex view.</string>
           </property>
-          <property name="asciiArea">
+          <property name="asciiArea" stdset="0">
            <bool>true</bool>
           </property>
          </widget>
@@ -297,8 +270,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>376</width>
-     <height>30</height>
+     <width>390</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="fileMenu">
@@ -307,7 +280,14 @@
     </property>
     <addaction name="loadFileMenuAction"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>He&amp;lp</string>
+    </property>
+    <addaction name="gettingStartedMenuAction"/>
+   </widget>
    <addaction name="fileMenu"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="loadFileMenuAction">
@@ -316,6 +296,16 @@
    </property>
    <property name="iconText">
     <string>Load memory</string>
+   </property>
+  </action>
+  <action name="actionGetting_started">
+   <property name="text">
+    <string>Getting started</string>
+   </property>
+  </action>
+  <action name="gettingStartedMenuAction">
+   <property name="text">
+    <string>Getting started</string>
    </property>
   </action>
  </widget>
@@ -339,22 +329,5 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>toggleRegisterButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>registerGroupBox</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>373</x>
-     <y>80</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>168</x>
-     <y>146</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

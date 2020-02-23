@@ -22,6 +22,10 @@ private:
      */
     void loadFile();
     /**
+     * Opens online help
+     */
+    void goToHelpUrl();
+    /**
      * Connects UI events
      */
     void connectEvents();

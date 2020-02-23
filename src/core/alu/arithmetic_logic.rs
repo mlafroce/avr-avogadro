@@ -144,7 +144,6 @@ impl Alu {
         flags.zero = result == 0;
         flags.sign = flags.neg ^ flags.over;
         register_bank.registers[rdu] = result;
-        let mut flags = register_bank.get_flags();
         register_bank.set_flags(flags);
     }
 

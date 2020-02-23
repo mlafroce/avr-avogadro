@@ -7,6 +7,7 @@
 #include <QByteArray>
 #include <QLineEdit>
 #include <QFileDialog>
+#include <QDesktopServices>
 
 const std::size_t NUM_REGISTERS = 32;
 const std::size_t DECODED_INSTRUCTION_BUF = 64;
@@ -86,11 +87,14 @@ void MainWindow::onProgramCounterChanged() {
 void MainWindow::connectEvents() {
     QPushButton* buttonGreet = findChild<QPushButton*>("stepButton");
     QAction* loadFileMenuAction = findChild<QAction*>("loadFileMenuAction");
+    QAction* gettingStartedMenuAction = findChild<QAction*>("gettingStartedMenuAction");
     QLineEdit* pcEdit = findChild<QLineEdit*>("pcEdit");
     QObject::connect(buttonGreet, &QPushButton::clicked,
                      this, &MainWindow::mcuStep);
     QObject::connect(loadFileMenuAction, &QAction::triggered,
                      this, &MainWindow::loadFile);
+    QObject::connect(gettingStartedMenuAction, &QAction::triggered,
+                     this, &MainWindow::goToHelpUrl);
     QObject::connect(pcEdit, &NumericEdit::editingFinished,
                      this, &MainWindow::onProgramCounterChanged);
 }
@@ -102,6 +106,11 @@ void MainWindow::loadFile() {
         this->updateMcuStatus();
     }
     this->updateMemoryBank();
+}
+
+void MainWindow::goToHelpUrl() {
+    QUrl helpUrl("https://mlafroce.github.io/avr-avogadro/getting-started");
+    QDesktopServices::openUrl(helpUrl);
 }
 
 std::string MainWindow::getSelectedFilename() {
