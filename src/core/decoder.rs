@@ -94,7 +94,7 @@ impl fmt::Display for Instruction {
     fn fmt (&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Instruction::Branch { op, test_set, offset }
-                => write!(f, "{:x}{}, 0x{:x}", *op, *test_set, *offset),
+                => display_branch(f, *op, *test_set, *offset),
             Instruction::CallJmp { is_call, relative, address } => {
                 let r_str = if *relative { "r" } else { "" };
                 let op_str = if *is_call { "call" } else { "jmp" };
@@ -158,5 +158,35 @@ fn display_arith_costant(f: &mut fmt::Formatter<'_>,
         // ldi is technically a transfer instruction
         0xE => write!(f, "ldi  r{}, 0x{:x}", rd, constant),
         _ => unreachable!()
+    }
+}
+
+fn display_branch(f: &mut fmt::Formatter<'_>,
+    op: u8, test_set: bool, offset: i8) -> fmt::Result {
+    let display_offset = offset * 2;
+    if test_set {
+        match op {
+            0x0 => write!(f, "brcs .{:#}", display_offset),
+            0x1 => write!(f, "breq .{:#}", display_offset),
+            0x2 => write!(f, "brmi .{:#}", display_offset),
+            0x3 => write!(f, "brvs .{:#}", display_offset),
+            0x4 => write!(f, "brlt .{:#}", display_offset),
+            0x5 => write!(f, "brhs .{:#}", display_offset),
+            0x6 => write!(f, "brts .{:#}", display_offset),
+            0x7 => write!(f, "brie .{:#}", display_offset),
+            _ => unreachable!()
+        }
+    } else {
+        match op {
+            0x0 => write!(f, "brcc .{:#}", display_offset),
+            0x1 => write!(f, "brne .{:#}", display_offset),
+            0x2 => write!(f, "brpl .{:#}", display_offset),
+            0x3 => write!(f, "brvc .{:#}", display_offset),
+            0x4 => write!(f, "brge .{:#}", display_offset),
+            0x5 => write!(f, "brhc .{:#}", display_offset),
+            0x6 => write!(f, "brtc .{:#}", display_offset),
+            0x7 => write!(f, "brid .{:#}", display_offset),
+            _ => unreachable!()
+        }
     }
 }

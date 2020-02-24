@@ -13,6 +13,8 @@ mod arithmetic_logic;
 mod transfer;
 /// Call and jump Instruction
 mod call_jmp;
+/// Branch Instruction
+mod branch;
 
 impl Alu {
     /// Executes decoded operation, using registers in register_bank and data
@@ -21,23 +23,25 @@ impl Alu {
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
         match instruction {
             Instruction::Nop => (),
-            Instruction::TwoRegOp {op, rd, rr} => Alu::execute_arithmetic(
-                *op, *rd, *rr, register_bank, memory_bank),
-            Instruction::RegConstOp {op, rd, constant} =>
-                Alu::execute_arith_with_constant(
-                *op, *rd, *constant, register_bank),
-            Instruction::PushPop {is_pop, reg} =>
-                Alu::execute_push_pop(*is_pop, *reg,
-                register_bank, memory_bank),
+            Instruction::Branch { op, test_set, offset } =>
+                Alu::execute_branch(*op, *test_set, *offset, register_bank),
             Instruction::CallJmp {is_call, relative, address} =>
                 Alu::execute_calljmp(*is_call, *relative, *address, register_bank, memory_bank),
             Instruction::InOut {is_in, reg, address} =>
                 Alu::execute_inout(*is_in, *reg, *address, register_bank, memory_bank),
+            Instruction::PushPop {is_pop, reg} =>
+                Alu::execute_push_pop(*is_pop, *reg,
+                register_bank, memory_bank),
+            Instruction::RegConstOp {op, rd, constant} =>
+                Alu::execute_arith_with_constant(
+                *op, *rd, *constant, register_bank),
+            Instruction::Ret{is_interrupt} =>
+                Alu::execute_ret(*is_interrupt, register_bank, memory_bank),
             Instruction::TransferIndirect{is_load, is_base_z, reg, offset} =>
                 Alu::execute_transfer_indirect(*is_load, *is_base_z, *reg,
                  *offset, register_bank, memory_bank),
-            Instruction::Ret{is_interrupt} =>
-                Alu::execute_ret(*is_interrupt, register_bank, memory_bank),
+            Instruction::TwoRegOp {op, rd, rr} => Alu::execute_arithmetic(
+                *op, *rd, *rr, register_bank, memory_bank),
             _ => warn!("Execute - Unknown Instruction: {:?}", instruction)
         }
     }

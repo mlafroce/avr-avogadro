@@ -61,8 +61,12 @@ fn test_subi_zero_one() {
     mcu.step();
     assert_eq!(mcu.get_register(18), 0xFF);
     let flags = mcu.get_flags();
-    assert!(!flags.carry);
+    assert!(flags.carry);
     assert!(!flags.zero);
+    assert!(flags.neg);
+    assert!(!flags.over);
+    assert!(flags.sign);
+    assert!(flags.half);
 }
 
 /// Tests simple substract instruction 3 minus -4

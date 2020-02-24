@@ -1,5 +1,5 @@
 CC=avr-gcc
-MMCU=attiny13
+MMCU=attiny85
 ARCH=avr2
 OBJCOPY=avr-objcopy
 
@@ -14,11 +14,14 @@ bin: $(BIN_FILES)
 
 hex: $(HEX_FILES)
 
-%.o: %.c
-	$(CC) -Wall -mmcu=$(MMCU) -nostartfiles $< -o $@
-
 %.o: %.s
 	$(CC) -Wall -mmcu=$(MMCU) -nostartfiles $< -o $@
+
+01-sum.o: 01-sum.c
+	$(CC) -Wall -mmcu=$(MMCU) -nostartfiles $< -o $@
+
+%.o: %.c
+	$(CC) -Wall -mmcu=$(MMCU) $< -o $@
 
 %.bin: %.o
 	$(OBJCOPY) -j .text -j .data -O binary $< $@
