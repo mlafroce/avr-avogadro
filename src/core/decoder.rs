@@ -131,6 +131,7 @@ impl fmt::Display for Instruction {
 
 fn display_two_reg_op(f: &mut fmt::Formatter<'_>,
     op: RawInstruction, rd: u8, rr: u8) -> fmt::Result {
+    info!("Display {:?}, r{} r{}", op, rd, rr);
     match op {
         0x1 => write!(f, "cpc  r{}, r{}", rd, rr),
         0x2 => write!(f, "sbc  r{}, r{}", rd, rr),
@@ -142,7 +143,8 @@ fn display_two_reg_op(f: &mut fmt::Formatter<'_>,
         0x8 => write!(f, "and  r{}, r{}", rd, rr),
         0x9 => write!(f, "eor  r{}, r{}", rd, rr),
         0xA => write!(f, "or   r{}, r{}", rd, rr),
-        0xB => write!(f, "mov  r{}, r{}", rd, rr),
+        0xB ..=
+        0xF => write!(f, "mov  r{}, r{}", rd, rr),
         _ => unreachable!()
     }
 }

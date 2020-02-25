@@ -71,8 +71,9 @@ impl Alu {
             0x8 => Alu::and(rdu, rru, register_bank),
             0x9 => Alu::eor(rdu, rru, register_bank),
             0xA => Alu::or(rdu, rru, register_bank),
-            0xB => Alu::mov(rdu, rru, register_bank), 
-            _ => unreachable!()
+            0xB ..= 0xF
+                => Alu::mov(rdu, rru, register_bank), 
+            _   => unreachable!()
         }
     }
 
