@@ -1,7 +1,3 @@
-use std::io;
-use std::io::{Error, ErrorKind};
-use std::ptr;
-
 /// Microcontroller main memory
 pub struct MemoryBank {
     data: Vec<u8>,
@@ -45,21 +41,16 @@ impl MemoryBank {
         instruction + ((u16::from(self.data[wrapped_address as usize + 1])) << 8)
     }
 
-    /// Copies values at array `data` into memory bank. If memory bank
-    /// is smaller, throws error.
-    pub fn copy_memory(&mut self, data: &[u8]) -> io::Result<()> {
-        if self.data.len() >= data.len() {
-            self.data[..data.len()].copy_from_slice(&data);
-            Ok(())
-        } else {
-            Err(Error::new(ErrorKind::Other, "Memory"))
-        }
+    /// Copies values at array `data` into memory bank.
+    pub fn copy_into_memory(&mut self, data: &[u8]) {
+        let n_bytes = std::cmp::min(data.len(), self.data.len());
+        self.data[..n_bytes].copy_from_slice(&data);
     }
 
-    pub unsafe fn copy_into_buffer(&self, buf: *mut u8, buf_size: usize) {
-        info!("Calling copy_into_buffer, {} bytes to be copied", buf_size);
-        ptr::copy_nonoverlapping(self.data.as_ptr(), buf, buf_size);
-        info!("Copy finished");
+    /// Copies values from memory bank into array `data`.
+    pub fn copy_from_memory(&self, data: &mut [u8]) {
+        let n_bytes = std::cmp::min(data.len(), self.data.len());
+        data[..n_bytes].copy_from_slice(&self.data);
     }
 
     pub fn size(&self) -> usize {

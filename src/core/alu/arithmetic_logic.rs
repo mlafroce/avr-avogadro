@@ -43,32 +43,6 @@ impl Alu {
         }
     }
 
-    pub fn substract(rdu: usize, rru: usize, register_bank: &mut RegisterBank, carry: u8) {
-        Alu::_substract_base(rdu, rru, register_bank, carry, true);
-    }
-
-    pub fn _substract_base(rdu: usize, rru: usize, register_bank: &mut RegisterBank,
-        carry: u8, store_result: bool) {
-        // wrapping sub as it could overflow
-        let rd = register_bank.registers[rdu] as u8;
-        let rr = register_bank.registers[rru];
-        let rr_plus_c = rr.wrapping_add(carry as u8);
-        let result = rd.wrapping_sub(rr_plus_c);
-        let hc_flags = (!rd & rr) | (rr & result) | (!rd & result);
-        let mut flags = register_bank.get_flags();
-        flags.carry = hc_flags & 0x80 != 0;
-        flags.half = hc_flags & 0x08 != 0;
-        flags.neg = result & 0x80 != 0;
-        let tmp_overflow = (rd & !rr & !result) | (!rd & rr & result);
-        flags.over = tmp_overflow & 0x80 != 0; 
-        flags.zero = result == 0;
-        flags.sign = flags.neg ^ flags.over;
-        register_bank.set_flags(flags);
-        if store_result {
-            register_bank.registers[rdu] = result;
-        }
-    }
-
     pub fn and(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
         let rr_value = register_bank.registers[rru];
         Alu::andi(rdu, rr_value, register_bank);
@@ -120,17 +94,49 @@ impl Alu {
     // One register - One constant operations
     /// Substracts immediate to register
     pub fn subi(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
-        Alu::_substract_imm_base(rdu, constant, register_bank, 0);
+        Alu::_substract_imm_base(rdu, constant, register_bank, 0, true);
     }
 
     /// Substracts immediate to register with carry
     pub fn sbci(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
         let carry = register_bank.get_carry_as_u8();
-        Alu::_substract_imm_base(rdu, constant, register_bank, carry);
+        Alu::_substract_imm_base(rdu, constant, register_bank, carry, true);
+    }
+
+    /// Substracts immediate to register with carry
+    pub fn cpi(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
+        let carry = register_bank.get_carry_as_u8();
+        Alu::_substract_imm_base(rdu, constant, register_bank, carry, false);
+    }
+
+    pub fn substract(rdu: usize, rru: usize, register_bank: &mut RegisterBank, carry: u8) {
+        Alu::_substract_base(rdu, rru, register_bank, carry, true);
+    }
+
+    pub fn _substract_base(rdu: usize, rru: usize, register_bank: &mut RegisterBank,
+        carry: u8, store_result: bool) {
+        // wrapping sub as it could overflow
+        let rd = register_bank.registers[rdu] as u8;
+        let rr = register_bank.registers[rru];
+        let rr_plus_c = rr.wrapping_add(carry as u8);
+        let result = rd.wrapping_sub(rr_plus_c);
+        let hc_flags = (!rd & rr) | (rr & result) | (!rd & result);
+        let mut flags = register_bank.get_flags();
+        flags.carry = hc_flags & 0x80 != 0;
+        flags.half = hc_flags & 0x08 != 0;
+        flags.neg = result & 0x80 != 0;
+        let tmp_overflow = (rd & !rr & !result) | (!rd & rr & result);
+        flags.over = tmp_overflow & 0x80 != 0; 
+        flags.zero = result == 0;
+        flags.sign = flags.neg ^ flags.over;
+        register_bank.set_flags(flags);
+        if store_result {
+            register_bank.registers[rdu] = result;
+        }
     }
 
     pub fn _substract_imm_base(rdu: usize, constant: u8,
-        register_bank: &mut RegisterBank, carry: u8) {
+        register_bank: &mut RegisterBank, carry: u8, store_result: bool) {
         let rd = register_bank.registers[rdu] as u8;
         let const_with_carry = constant.wrapping_add(carry);
         let result = rd.wrapping_sub(const_with_carry);
@@ -143,8 +149,10 @@ impl Alu {
         flags.over = tmp_overflow & 0x80 != 0; 
         flags.zero = result == 0;
         flags.sign = flags.neg ^ flags.over;
-        register_bank.registers[rdu] = result;
         register_bank.set_flags(flags);
+        if store_result {
+            register_bank.registers[rdu] = result;
+        }
     }
 
     /// Adds immediate to word

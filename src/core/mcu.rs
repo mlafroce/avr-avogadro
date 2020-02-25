@@ -7,6 +7,7 @@ use std::fmt::Write;
 use std::fs::File;
 use std::io;
 use std::io::Read;
+use std::slice::from_raw_parts_mut;
 
 const MEMORY_INITIAL_SIZE: u16 = 1024;
 
@@ -35,9 +36,11 @@ impl Mcu {
         let mut file = File::open(filename)?;
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)?;
-        self.memory_bank.copy_memory(&buffer)
+        self.memory_bank.copy_into_memory(&buffer);
+        Ok(())
     }
 
+    /// Returns size of main memory bank, in bytes
     pub fn get_memory_size(&self) -> usize {
         self.memory_bank.size()
     }
@@ -46,8 +49,14 @@ impl Mcu {
         self.memory_bank.get_byte(address)
     }
 
+    /// Copies memory data into buffer array. If buffer is smaller than memory
+    /// copies at most *buf_size* elements.
+    /// # Safety
+    ///
+    /// `buffer` must be an array with size in bytes equals or larger than buf_size 
     pub unsafe fn get_memory_data(&self, buffer: *mut u8, buf_size: usize) {
-        self.memory_bank.copy_into_buffer(buffer, buf_size);
+        let slice = from_raw_parts_mut(buffer, buf_size);
+        self.memory_bank.copy_from_memory(slice);
     }
 
     pub fn get_register(&self, reg_num: u8) -> u8 {

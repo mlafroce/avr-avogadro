@@ -80,6 +80,9 @@ impl Alu {
         register_bank: &mut RegisterBank) {
         let rdu = rd as usize;
         match op {
+            0x3 => {
+                Alu::cpi(rdu + 16, constant, register_bank)
+            },
             0x4 => {
                 Alu::sbci(rdu + 16, constant, register_bank)
             },

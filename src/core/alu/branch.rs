@@ -1,5 +1,4 @@
 use crate::core::register_bank::RegisterBank;
-use crate::core::memory_bank::MemoryBank;
 use super::Alu;
 
 
