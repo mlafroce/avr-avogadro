@@ -1,6 +1,6 @@
 extern crate avr_avogadro;
 
-use avr_avogadro::core::mcu::Mcu;
+use avr_avogadro::core::mcu_factory::McuFactory;
 
 #[test]
 /// Tests simple add instruction
@@ -10,12 +10,12 @@ use avr_avogadro::core::mcu::Mcu;
 ///
 /// Remember AVR is little endian!
 fn test_sum() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(1, 4);
     mcu.set_register(2, 5);
     // 0x04 + 0x05 = 0x9
     let memory_data = vec![0x12, 0x0C];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
     assert_eq!(mcu.get_program_counter(), 0x2);
@@ -25,12 +25,12 @@ fn test_sum() {
 #[test]
 /// Tests simple add instruction which results in zero and carry flag on
 fn test_add_flags() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(1, 0x78);
     mcu.set_register(2, 0x88);
     // 0x78 + 0x88 = 0x100
     let memory_data = vec![0x12, 0x0C];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
     assert_eq!(mcu.get_program_counter(), 0x2);
@@ -48,10 +48,10 @@ fn test_add_flags() {
 /// ADD General test cases based on RISC-V test set
 ///
 fn test_sum_general() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     // add r1, r2 -> 0000 1100 0001 0010 -> 0C12
     let memory_data = vec![0x12, 0x0C];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
 
     // rd, rr, result, flags (ithsvnzc)
     let test_set = vec![
@@ -87,14 +87,14 @@ fn test_sum_general() {
 /// ADC opcode: 0001 11rd dddd rrrr
 /// adc r16, r20 -> 0001 1111 0000 0100 -> 1F04
 fn test_adc_with_carry() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
     mcu.set_register(16, 0x04);
     mcu.set_register(20, 0x05);
     let memory_data = vec![0x04, 0x1F];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     mcu.step();
     assert_eq!(mcu.get_program_counter(), 0x2);
     assert_eq!(mcu.get_register(16), 0x0A);
@@ -111,10 +111,10 @@ fn test_adc_with_carry() {
 /// ADC General test cases based on RISC-V test set
 ///
 fn test_adc_with_carry_general() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     // adc r1, r2 -> 0001 1100 0001 0010 -> 1C12
     let memory_data = vec![0x12, 0x1C];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
 
     // rd, rr, result, flags (ithsvnzc)
     let add_test_set = vec![

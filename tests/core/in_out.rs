@@ -1,6 +1,6 @@
 extern crate avr_avogadro;
 
-use avr_avogadro::core::mcu::Mcu;
+use avr_avogadro::core::mcu_factory::McuFactory;
 
 /// Tests load from I/O Location
 /// IO Address have a 0x20 byte offset
@@ -11,12 +11,12 @@ use avr_avogadro::core::mcu::Mcu;
 /// Remember AVR is little endian!
 #[test]
 fn test_in() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     let memory_data = vec![0; 1024];
     memory_data[0] = 0x95;
     memory_data[1] = 0xB3;
     memory_data[0x36] = 0x66;
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
     assert_eq!(mcu.get_register(25), 0x66);
@@ -31,12 +31,12 @@ fn test_in() {
 /// Remember AVR is little endian!
 #[test]
 fn test_in() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     let memory_data = vec![0; 1024];
     memory_data[0] = 0x95;
     memory_data[1] = 0xBB;
     mcu.set_register(25, 0x42);
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
     assert_eq!(mcu.get_memory_byte(0x36), 0x42);

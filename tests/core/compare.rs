@@ -1,6 +1,6 @@
 extern crate avr_avogadro;
 
-use avr_avogadro::core::mcu::Mcu;
+use avr_avogadro::core::mcu_factory::McuFactory;
 
 #[test]
 /// Tests simple compare instruction
@@ -10,11 +10,11 @@ use avr_avogadro::core::mcu::Mcu;
 ///
 /// Remember AVR is little endian!
 fn test_cp_equals() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(1, 5);
     mcu.set_register(2, 5);
     let memory_data = vec![0x12, 0x14];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     
     mcu.step();
     assert_eq!(mcu.get_register(1), 0x05);
@@ -26,11 +26,11 @@ fn test_cp_equals() {
 #[test]
 /// Tests simple compare instruction, carry should be ignored
 fn test_cp_with_carry_equals() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(1, 5);
     mcu.set_register(2, 5);
     let memory_data = vec![0x12, 0x14];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
@@ -46,11 +46,11 @@ fn test_cp_with_carry_equals() {
 /// Tests simple compare instruction. Rd is greater than rr,
 /// so carry and zero flags should be zero
 fn test_cp_rd_greater() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(1, 200);
     mcu.set_register(2, 127);
     let memory_data = vec![0x12, 0x14];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     
     mcu.step();
     assert_eq!(mcu.get_register(1), 200);
@@ -63,11 +63,11 @@ fn test_cp_rd_greater() {
 /// Tests simple compare instruction. Rd is less than rr,
 /// so carry should be set and zero should be zero
 fn test_cp_rd_less() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(1, 150);
     mcu.set_register(2, 200);
     let memory_data = vec![0x12, 0x14];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     
     mcu.step();
     assert_eq!(mcu.get_register(1), 150);
@@ -82,11 +82,11 @@ fn test_cp_rd_less() {
 /// CP opcode: 0000 01rd dddd rrrr
 /// cp r1, r2 -> 0000 0100 0001 0002 -> 0412
 fn test_cpc_equals() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(1, 5);
     mcu.set_register(2, 4);
     let memory_data = vec![0x12, 0x04];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
@@ -103,11 +103,11 @@ fn test_cpc_equals() {
 /// Tests compare with carry instruction. Rd is 0x00, rr+C should overflow
 /// and have the same result
 fn test_cpc_rr_overflow() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(1, 0);
     mcu.set_register(2, 255);
     let memory_data = vec![0x12, 0x04];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
@@ -123,11 +123,11 @@ fn test_cpc_rr_overflow() {
 /// so carry should be set and zero should be zero
 #[test]
 fn test_cpc_rd_less() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(1, 128);
     mcu.set_register(2, 128);
     let memory_data = vec![0x12, 0x04];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
@@ -142,11 +142,11 @@ fn test_cpc_rd_less() {
 /// No skip should happen
 #[test]
 fn test_cpse_no_skip() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(6, 5);
     mcu.set_register(20, 255);
     let memory_data = vec![0x46, 0x11, 0x12, 0x0C];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
@@ -164,11 +164,11 @@ fn test_cpse_no_skip() {
 /// Next instruction is 1 word, should skip only one
 #[test]
 fn test_cpse_skip_simple() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(6, 255);
     mcu.set_register(20, 255);
     let memory_data = vec![0x46, 0x11, 0x12, 0x0C];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
@@ -186,11 +186,11 @@ fn test_cpse_skip_simple() {
 /// LDS r5, 0x1234 -> 1001 0000 0101 0000 -> 90 50
 #[test]
 fn test_cpse_skip_double() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(6, 255);
     mcu.set_register(20, 255);
     let memory_data = vec![0x46, 0x11, 0x50, 0x90];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);

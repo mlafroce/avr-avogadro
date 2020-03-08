@@ -28,7 +28,7 @@ impl Alu {
             register_bank.registers[reg as usize] = data;
         } else {
             if register_bank.stack_pointer == 0 {
-                register_bank.stack_pointer = memory_bank.size() as u16
+                register_bank.stack_pointer = memory_bank.data_size() as u16
             }
             register_bank.stack_pointer -= 1;
             let data = register_bank.registers[reg as usize];

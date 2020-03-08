@@ -37,7 +37,7 @@ impl Alu {
         }
         // If next instruction is `LDS` or `STS`, should skip again
         let pc = register_bank.get_program_counter();
-        let next_instruction = memory_bank.get_word(pc);
+        let next_instruction = memory_bank.get_program_word(pc);
         if next_instruction & LDS_STS_MASK == 0x9000 {
             register_bank.increment_pc();
         }

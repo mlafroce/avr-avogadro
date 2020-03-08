@@ -2,6 +2,8 @@
 /// Controller module, which contains a memory bank, registers and an
 /// ALU for instruction execution.
 pub mod mcu;
+/// MCU Factory, creates MCUs by name
+pub mod mcu_factory;
 /// Memory bank, the main memory of the microcontroller
 pub mod memory_bank;
 /// Register bank, holds general purpose registers, program counter, and flags

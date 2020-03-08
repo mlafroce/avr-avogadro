@@ -1,6 +1,6 @@
 extern crate avr_avogadro;
 
-use avr_avogadro::core::mcu::Mcu;
+use avr_avogadro::core::mcu_factory::McuFactory;
 
 #[test]
 /// Tests stack roll / unroll
@@ -22,13 +22,12 @@ use avr_avogadro::core::mcu::Mcu;
 ///
 /// Since stack is not configured, ret will jump to 93CF + 2 => 93D1
 fn test_basic_stack() {
-    let mut mcu = Mcu::new();
-    let mut memory_data = vec![0xcf, 0x93, 0xdf, 0x93, 0xcd, 0xb7, 0xdd, 0x27, 0x80,
+    let mut mcu = McuFactory::create("attiny85");
+    let program_memory = vec![0xcf, 0x93, 0xdf, 0x93, 0xcd, 0xb7, 0xdd, 0x27, 0x80,
         0xe0, 0x90, 0xe0, 0xdf, 0x91, 0xcf, 0x91, 0x08, 0x95];
-    memory_data.resize(1024, 0);
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&program_memory);
     for _ in 0..9 {
         mcu.step()
     }
-    assert_eq!(mcu.get_program_counter(), 0x93d1);
+    assert_eq!(mcu.get_program_counter(), 2);
 }

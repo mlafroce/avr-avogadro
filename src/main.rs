@@ -6,6 +6,7 @@ mod core;
 mod ffi;
 
 use crate::core::mcu::Mcu;
+use crate::core::mcu_factory::McuFactory;
 
 use libc::{c_char, c_void};
 use std::ffi::CString;
@@ -20,7 +21,7 @@ extern "C" {
 }
 
 fn main() {
-    let mcu = Mcu::new();
+    let mcu = McuFactory::create("attiny85");
     // create a vector of zero terminated strings
     let args = std::env::args().map(|arg| CString::new(arg).unwrap() ).collect::<Vec<CString>>();
     // convert the strings to raw pointers

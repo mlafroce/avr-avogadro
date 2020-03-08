@@ -22,7 +22,7 @@ pub extern fn mcu_step(p_mcu: &mut Mcu) {
 pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char) -> u8 {
     let filename;
     filename = CStr::from_ptr(p_filename).to_str();
-    if p_mcu.load_memory_from_file(filename.unwrap()).is_ok() {
+    if p_mcu.load_program_from_file(filename.unwrap()).is_ok() {
         0
     } else {
         println!("Error");
@@ -31,18 +31,33 @@ pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char) -> u8 {
 }
 
 /// Creates a Rust vector with size `memory_size` and contents of `p_memory`
-/// and calls `Mcu::load_memory`
+/// and calls `Mcu::load_data_memory`
 /// # Safety
 ///
 /// `p_mcu` must be a pointer to a valid Mcu
 /// `p_memory` should be a char array with  size equals or larger than memory_size
 #[no_mangle]
-pub unsafe fn mcu_load_memory(p_mcu: &mut Mcu,
+pub unsafe fn mcu_load_data_memory(p_mcu: &mut Mcu,
         p_memory: *const u8, memory_size: usize) {
     let mut rust_mem = Vec::with_capacity(memory_size);
     rust_mem.set_len(memory_size);
     ptr::copy_nonoverlapping(p_memory, rust_mem.as_mut_ptr(), memory_size);
-    p_mcu.load_memory(&rust_mem);
+    p_mcu.load_data_memory(&rust_mem);
+}
+
+/// Creates a Rust vector with size `memory_size` and contents of `p_memory`
+/// and calls `Mcu::load_program_memory`
+/// # Safety
+///
+/// `p_mcu` must be a pointer to a valid Mcu
+/// `p_memory` should be a char array with  size equals or larger than memory_size
+#[no_mangle]
+pub unsafe fn mcu_load_program_memory(p_mcu: &mut Mcu,
+        p_memory: *const u8, memory_size: usize) {
+    let mut rust_mem = Vec::with_capacity(memory_size);
+    rust_mem.set_len(memory_size);
+    ptr::copy_nonoverlapping(p_memory, rust_mem.as_mut_ptr(), memory_size);
+    p_mcu.load_program_memory(&rust_mem);
 }
 
 /// Gets data stored in a single register
@@ -116,8 +131,8 @@ pub unsafe fn mcu_display_current_instruction(p_mcu: &Mcu,
 /// `p_mcu` must be a pointer to a valid Mcu
 ///
 #[no_mangle]
-pub unsafe fn mcu_get_memory_size(p_mcu: &Mcu) -> usize {
-    p_mcu.get_memory_size()
+pub unsafe fn mcu_get_data_size(p_mcu: &Mcu) -> usize {
+    p_mcu.get_data_size()
 }    
 
 /// Gets memory bank contents
@@ -127,8 +142,8 @@ pub unsafe fn mcu_get_memory_size(p_mcu: &Mcu) -> usize {
 /// `buffer` must be a char array with `buf_size` size
 ///
 #[no_mangle]
-pub unsafe fn mcu_get_memory_data(p_mcu: &Mcu, c_buffer: *mut u8, buf_size: usize) {
-    p_mcu.get_memory_data(c_buffer, buf_size);
+pub unsafe fn mcu_get_data_memory(p_mcu: &Mcu, c_buffer: *mut u8, buf_size: usize) {
+    p_mcu.get_data_memory(c_buffer, buf_size);
 }
 
 #[no_mangle]

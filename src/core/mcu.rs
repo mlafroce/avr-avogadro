@@ -9,16 +9,14 @@ use std::io;
 use std::io::Read;
 use std::slice::from_raw_parts_mut;
 
-const MEMORY_INITIAL_SIZE: u16 = 1024;
-
 pub struct Mcu {
     memory_bank: MemoryBank,
     reg_bank: RegisterBank,
 }
 
 impl Mcu {
-    pub fn new() -> Mcu {
-        let memory_bank = MemoryBank::new(MEMORY_INITIAL_SIZE).unwrap();
+    pub fn new(data_size: usize, program_size: usize) -> Mcu {
+        let memory_bank = MemoryBank::new(data_size, program_size).unwrap();
         let reg_bank = RegisterBank::new();
         Mcu {reg_bank, memory_bank}
     }
@@ -28,35 +26,54 @@ impl Mcu {
         self.reg_bank.increment_pc();
     }
 
-    pub fn load_memory(&mut self, memory: &[u8]) {
-        self.memory_bank.set_memory_data(memory)
+    pub fn load_data_memory(&mut self, memory: &[u8]) {
+        self.memory_bank.set_data_memory(memory)
     }
 
-    pub fn load_memory_from_file(&mut self, filename: &str) -> io::Result<()> {
+    pub fn load_program_memory(&mut self, memory: &[u8]) {
+        self.memory_bank.set_program_memory(memory)
+    }
+
+    pub fn load_program_from_file(&mut self, filename: &str) -> io::Result<()> {
         let mut file = File::open(filename)?;
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)?;
-        self.memory_bank.copy_into_memory(&buffer);
+        self.memory_bank.copy_into_program_memory(&buffer);
         Ok(())
     }
 
     /// Returns size of main memory bank, in bytes
-    pub fn get_memory_size(&self) -> usize {
-        self.memory_bank.size()
+    pub fn get_data_size(&self) -> usize {
+        self.memory_bank.data_size()
+    }
+
+    /// Returns size of main memory bank, in bytes
+    pub fn get_program_size(&self) -> usize {
+        self.memory_bank.program_size()
     }
 
     pub fn get_memory_byte(&self, address: u16) -> u8 {
         self.memory_bank.get_byte(address)
     }
 
-    /// Copies memory data into buffer array. If buffer is smaller than memory
-    /// copies at most *buf_size* elements.
+    /// Copies content from data memory into buffer array.
+    /// If buffer is smaller than memory copies at most *buf_size* elements.
     /// # Safety
     ///
     /// `buffer` must be an array with size in bytes equals or larger than buf_size 
-    pub unsafe fn get_memory_data(&self, buffer: *mut u8, buf_size: usize) {
+    pub unsafe fn get_data_memory(&self, buffer: *mut u8, buf_size: usize) {
         let slice = from_raw_parts_mut(buffer, buf_size);
-        self.memory_bank.copy_from_memory(slice);
+        self.memory_bank.copy_from_data_memory(slice);
+    }
+
+    /// Copies content from data memory into buffer array.
+    /// If buffer is smaller than memory copies at most *buf_size* elements.
+    /// # Safety
+    ///
+    /// `buffer` must be an array with size in bytes equals or larger than buf_size 
+    pub unsafe fn get_program_memory(&self, buffer: *mut u8, buf_size: usize) {
+        let slice = from_raw_parts_mut(buffer, buf_size);
+        self.memory_bank.copy_from_program_memory(slice);
     }
 
     pub fn get_register(&self, reg_num: u8) -> u8 {
@@ -83,16 +100,12 @@ impl Mcu {
         self.reg_bank.set_program_counter(value);
     }
 
-    pub fn get_stack_pointer(&self) -> u16 {
-        self.reg_bank.get_stack_pointer()
-    }
-
-    pub fn set_stack_pointer(&mut self, value: u16) {
-        self.reg_bank.set_stack_pointer(value);
-    }
-
     pub fn get_current_instruction(&self) -> u16 {
         self.fetch()
+    }
+
+    pub fn get_stack_pointer(&self) -> u16 {
+        self.reg_bank.get_stack_pointer()
     }
 
     pub fn display_current_instruction(&self, buf: &mut String) {
@@ -116,12 +129,6 @@ impl Mcu {
     }
 
     fn fetch(&self) -> u16 {
-        self.memory_bank.get_word(self.reg_bank.get_program_counter())
-    }
-}
-
-impl Default for Mcu {
-    fn default() -> Self {
-        Self::new()
+        self.memory_bank.get_program_word(self.reg_bank.get_program_counter())
     }
 }

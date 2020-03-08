@@ -1,6 +1,6 @@
 extern crate avr_avogadro;
 
-use avr_avogadro::core::mcu::Mcu;
+use avr_avogadro::core::mcu_factory::McuFactory;
 
 /// Tests load immediate
 ///
@@ -10,9 +10,9 @@ use avr_avogadro::core::mcu::Mcu;
 /// Remember AVR is little endian!
 #[test]
 fn test_ldi() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     let memory_data = vec![0x0A, 0xE1, 0x1F, 0xEF, 0x10, 0xE0];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
     assert_eq!(mcu.get_register(16), 0x1A);
@@ -30,19 +30,19 @@ fn test_ldi() {
 /// Remember AVR is little endian!
 #[test]
 fn test_push() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     mcu.set_register(0, 0xDE);
     mcu.set_register(1, 0xAD);
     mcu.set_register(30, 0xBE);
     mcu.set_register(31, 0xEF);
     let mut memory_data = vec![0x0F, 0x92, 0x1F, 0x92, 0xEF, 0x93, 0xFF, 0x93];
     memory_data.resize(1024, 0);
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     assert_eq!(mcu.get_stack_pointer(), 0x00);
     for _ in 0..4 {
         mcu.step();
     }
-    let mem_max = mcu.get_memory_size() as u16;
+    let mem_max = mcu.get_data_size() as u16;
     assert_eq!(mcu.get_stack_pointer(), mem_max - 0x04);
     assert_eq!(mcu.get_memory_byte(mem_max - 4), 0xEF);
     assert_eq!(mcu.get_memory_byte(mem_max - 3), 0xBE);

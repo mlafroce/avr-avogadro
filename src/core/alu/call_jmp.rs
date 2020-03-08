@@ -14,7 +14,8 @@ impl Alu {
             };
             let new_pc = pc as i16 + address_offset * 2;
             if new_pc < 0 {
-                register_bank.set_program_counter((memory_bank.size() as i16 + new_pc) as u16);
+                register_bank.set_program_counter((
+                    memory_bank.program_size() as i16 + new_pc) as u16);
             } else {
                 register_bank.set_program_counter(new_pc as u16);
             }
@@ -26,7 +27,7 @@ impl Alu {
             memory_bank.set_byte(register_bank.stack_pointer, pc_to_store[0]);
             memory_bank.set_byte(register_bank.stack_pointer + 1, pc_to_store[1]);
             if register_bank.stack_pointer < 2 {
-                register_bank.stack_pointer = memory_bank.size() as u16;
+                register_bank.stack_pointer = memory_bank.data_size() as u16;
             }
             register_bank.stack_pointer -= 2;
         }
@@ -35,7 +36,7 @@ impl Alu {
     pub fn execute_ret(_is_interruption: bool, register_bank: &mut RegisterBank,
         memory_bank: &mut MemoryBank) {
         register_bank.stack_pointer += 2  as u16;
-        if register_bank.stack_pointer >= (memory_bank.size() - 1) as u16 {
+        if register_bank.stack_pointer >= (memory_bank.data_size() - 1) as u16 {
             register_bank.stack_pointer = 0;
         }
         let pc_lo = memory_bank.get_byte(register_bank.stack_pointer);

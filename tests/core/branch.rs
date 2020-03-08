@@ -1,6 +1,6 @@
 extern crate avr_avogadro;
 
-use avr_avogadro::core::mcu::Mcu;
+use avr_avogadro::core::mcu_factory::McuFactory;
 
 #[test]
 /// Tests branch on carry set instruction
@@ -10,9 +10,9 @@ use avr_avogadro::core::mcu::Mcu;
 ///
 /// Remember AVR is little endian!
 fn test_branch_carry() {
-    let mut mcu = Mcu::new();
+    let mut mcu = McuFactory::create("attiny85");
     let memory_data = vec![0x50, 0xF0, 0x50, 0xF0];
-    mcu.load_memory(&memory_data);
+    mcu.load_program_memory(&memory_data);
     // Should not branch
     mcu.step();
 
