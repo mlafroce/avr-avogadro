@@ -12,7 +12,7 @@ use avr_avogadro::core::mcu_factory::McuFactory;
 #[test]
 fn test_in() {
     let mut mcu = McuFactory::create("attiny85");
-    let memory_data = vec![0; 1024];
+    let memory_data = vec![0; mcu.get_data_size];
     memory_data[0] = 0x95;
     memory_data[1] = 0xB3;
     memory_data[0x36] = 0x66;
@@ -30,9 +30,9 @@ fn test_in() {
 ///
 /// Remember AVR is little endian!
 #[test]
-fn test_in() {
+fn test_out() {
     let mut mcu = McuFactory::create("attiny85");
-    let memory_data = vec![0; 1024];
+    let memory_data = vec![0; mcu.get_data_size];
     memory_data[0] = 0x95;
     memory_data[1] = 0xBB;
     mcu.set_register(25, 0x42);

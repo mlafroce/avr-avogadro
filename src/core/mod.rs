@@ -18,6 +18,11 @@ mod alu;
 
 type RawInstruction = u16;
 
+#[derive(Debug,Clone,Copy)]
+pub enum PointerRegister{
+    X, Y, Z
+}
+
 #[derive(Debug)]
 /// Decoded instructions
 pub enum Instruction {
@@ -29,7 +34,7 @@ pub enum Instruction {
     PushPop {is_pop: bool, reg: u8},
     RegConstOp {op: RawInstruction, rd: u8, constant: u8},
     Ret {is_interrupt: bool},
-    TransferIndirect {is_load: bool, is_base_z: bool, reg: u8, offset: u8},
+    TransferIndirect {is_load: bool, base_reg: PointerRegister, dest: u8, offset: u8},
     TwoRegOp {op: RawInstruction, rd: u8, rr: u8},
     Unsupported {instruction: RawInstruction}
 }

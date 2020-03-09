@@ -1,4 +1,5 @@
 use super::Instruction;
+use super::PointerRegister;
 use super::RawInstruction;
 use std::fmt;
 
@@ -31,12 +32,12 @@ impl Decoder {
             },
             0x8000 | 0xA000 => { // LDD / STD
                 let is_load = raw_instruction & 0x0200 == 0;
-                let is_base_z = raw_instruction & 0x0008 == 0;
-                let reg = ((raw_instruction & 0x01F0) >> 4) as u8;
+                let base_reg = if raw_instruction & 0x0008 == 0 {PointerRegister::Z} else {PointerRegister::Y};
+                let dest = ((raw_instruction & 0x01F0) >> 4) as u8;
                 let (offset_lo, offset_mid, offset_hi) = (raw_instruction & 0x7,
                     (raw_instruction & 0x0C00) >> 7, (raw_instruction & 0x2000) >> 8);
                 let offset =  offset_lo + offset_mid + offset_hi;
-                Instruction::TransferIndirect{is_load, is_base_z, reg, offset: offset as u8}
+                Instruction::TransferIndirect{is_load, base_reg, dest, offset: offset as u8}
             },
             0x9000 => { // One register operations?
                 match raw_instruction {
@@ -116,10 +117,14 @@ impl fmt::Display for Instruction {
                 let op_str = if *is_interrupt { "reti" } else { "ret" };
                 write!(f, "{}", op_str)
             }
-            Instruction::TransferIndirect { is_load, is_base_z, reg, offset } =>  {
+            Instruction::TransferIndirect { is_load, base_reg, dest, offset } =>  {
                 let op_str = if *is_load { "ldd" } else { "std" };
-                let base_reg = if *is_base_z { "Z" } else { "Y" };
-                write!(f, "{} {}+{}, r{}", op_str, base_reg, offset, reg)
+                let base_reg_str = match *base_reg {
+                    PointerRegister::X => "X",
+                    PointerRegister::Y => "Y",
+                    PointerRegister::Z => "Z"
+                };
+                write!(f, "{} {}+{}, r{}", op_str, base_reg_str, offset, dest)
             },
             Instruction::TwoRegOp { op, rd, rr } => 
                 display_two_reg_op(f, *op, *rd, *rr),

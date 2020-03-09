@@ -2,6 +2,7 @@ use super::register_bank::RegisterBank;
 use super::memory_bank::MemoryBank;
 use super::Instruction;
 use super::RawInstruction;
+use super::PointerRegister;
 
 /// # ALU
 ///
@@ -37,8 +38,8 @@ impl Alu {
                 *op, *rd, *constant, register_bank),
             Instruction::Ret{is_interrupt} =>
                 Alu::execute_ret(*is_interrupt, register_bank, memory_bank),
-            Instruction::TransferIndirect{is_load, is_base_z, reg, offset} =>
-                Alu::execute_transfer_indirect(*is_load, *is_base_z, *reg,
+            Instruction::TransferIndirect{is_load, base_reg, dest, offset} =>
+                Alu::execute_transfer_indirect(*is_load, *base_reg, *dest,
                  *offset, register_bank, memory_bank),
             Instruction::TwoRegOp {op, rd, rr} => Alu::execute_arithmetic(
                 *op, *rd, *rr, register_bank, memory_bank),
@@ -116,8 +117,8 @@ impl Alu {
         Alu::push_pop(is_pop, reg, register_bank, memory_bank);
     }
 
-    fn execute_transfer_indirect(is_load: bool, is_base_z: bool, reg: u8, offset: u8,
+    fn execute_transfer_indirect(is_load: bool, base_reg: PointerRegister, reg: u8, offset: u8,
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
-        Alu::transfer_indirect(is_load, is_base_z, reg, offset, register_bank, memory_bank);
+        Alu::transfer_indirect(is_load, base_reg, reg, offset, register_bank, memory_bank);
     }
 }
