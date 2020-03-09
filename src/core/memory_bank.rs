@@ -62,8 +62,8 @@ impl MemoryBank {
 
     /// Copies values at array `data` into memory bank.
     pub fn copy_into_program_memory(&mut self, data: &[u8]) {
-        let n_bytes = std::cmp::min(data.len(), self.data_memory.len());
-        self.data_memory[..n_bytes].copy_from_slice(&data);
+        let n_bytes = std::cmp::min(data.len(), self.program_memory.len());
+        self.program_memory[..n_bytes].copy_from_slice(&data);
     }
 
     /// Copies values from memory bank into array `data`.
