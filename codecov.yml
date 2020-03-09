@@ -1,2 +1,5 @@
 ignore:
   - "ui"
+  - "tests"
+  - "src/ffi"
+  - "**/mod.rs"

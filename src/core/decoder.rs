@@ -157,7 +157,7 @@ fn display_two_reg_op(f: &mut fmt::Formatter<'_>,
 fn display_arith_costant(f: &mut fmt::Formatter<'_>,
     op: RawInstruction, rd: u8, constant: u8) -> fmt::Result {
     match op {
-        0x3 => write!(f, "cpi r{}, 0x{:x}", rd, constant),
+        0x3 => write!(f, "cpi  r{}, 0x{:x}", rd, constant),
         0x4 => write!(f, "sbci r{}, 0x{:x}", rd, constant),
         0x5 => write!(f, "subi r{}, 0x{:x}", rd, constant),
         0x6 => write!(f, "ori  r{}, 0x{:x}", rd, constant),
