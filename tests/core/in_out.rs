@@ -41,5 +41,5 @@ fn test_out() {
     mcu.load_program_memory(&memory_program);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
-    assert_eq!(mcu.get_memory_byte(0x35), 0x42);
+    assert_eq!(mcu.get_data_byte(0x35), 0x42);
 }

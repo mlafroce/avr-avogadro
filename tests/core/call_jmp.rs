@@ -23,13 +23,13 @@ fn test_rcall() {
     mcu.step();
     assert_eq!(mcu.get_program_counter(), 0x42);
     assert_eq!(mcu.get_stack_pointer(), mcu.get_data_size() as u16 - 2);
-    assert_eq!(mcu.get_memory_byte(0), 2); // program counter (low) + 2
-    assert_eq!(mcu.get_memory_byte(1), 0); // program counter hi
+    assert_eq!(mcu.get_data_byte(0), 2); // program counter (low) + 2
+    assert_eq!(mcu.get_data_byte(1), 0); // program counter hi
     mcu.step();
     assert_eq!(mcu.get_program_counter(), 0x84);
     assert_eq!(mcu.get_stack_pointer(), mcu.get_data_size() as u16 - 4);
-    assert_eq!(mcu.get_memory_byte(mcu.get_data_size() as u16 - 2), 0x44);
-    assert_eq!(mcu.get_memory_byte(mcu.get_data_size() as u16 - 1), 0);
+    assert_eq!(mcu.get_data_byte(mcu.get_data_size() as u16 - 2), 0x44);
+    assert_eq!(mcu.get_data_byte(mcu.get_data_size() as u16 - 1), 0);
 }
 
 /// Tests call to relative negative address
@@ -84,7 +84,7 @@ fn test_ret() {
     mcu.step(); // pc -> 6, exec rcall +0
     assert_eq!(mcu.get_program_counter(), 0x6);
     assert_eq!(mcu.get_stack_pointer(), mcu.get_data_size() as u16 - 2);
-    assert_eq!(mcu.get_memory_byte(0), 0x6);
+    assert_eq!(mcu.get_data_byte(0), 0x6);
     mcu.step(); // pc -> 8
     mcu.step(); // pc -> A
     mcu.step(); // pc -> C

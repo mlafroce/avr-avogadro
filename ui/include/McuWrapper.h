@@ -17,6 +17,7 @@ public:
     void displayCurrentInstruction(const char* buffer, std::size_t size) const;
     void loadFile(const char* filename) const;
     void getMemoryBank(std::vector<char>& buffer) const;
+    unsigned char getDataByte(short int);
     unsigned char getFlags() const;
 private:
     void* mcu;

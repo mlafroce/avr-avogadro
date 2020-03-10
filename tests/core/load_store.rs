@@ -44,8 +44,8 @@ fn test_push() {
     }
     let mem_max = mcu.get_data_size() as u16;
     assert_eq!(mcu.get_stack_pointer(), mem_max - 0x04);
-    assert_eq!(mcu.get_memory_byte(mem_max - 4), 0xEF);
-    assert_eq!(mcu.get_memory_byte(mem_max - 3), 0xBE);
-    assert_eq!(mcu.get_memory_byte(mem_max - 2), 0xAD);
-    assert_eq!(mcu.get_memory_byte(mem_max - 1), 0xDE);
+    assert_eq!(mcu.get_data_byte(mem_max - 4), 0xEF);
+    assert_eq!(mcu.get_data_byte(mem_max - 3), 0xBE);
+    assert_eq!(mcu.get_data_byte(mem_max - 2), 0xAD);
+    assert_eq!(mcu.get_data_byte(mem_max - 1), 0xDE);
 }

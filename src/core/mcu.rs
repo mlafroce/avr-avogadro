@@ -52,7 +52,7 @@ impl Mcu {
         self.memory_bank.program_size()
     }
 
-    pub fn get_memory_byte(&self, address: u16) -> u8 {
+    pub fn get_data_byte(&self, address: u16) -> u8 {
         self.memory_bank.get_data_byte(address)
     }
 

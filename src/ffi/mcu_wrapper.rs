@@ -109,6 +109,11 @@ pub fn mcu_get_current_instruction(p_mcu: &Mcu) {
     p_mcu.get_current_instruction();
 }
 
+#[no_mangle]
+pub fn mcu_get_data_byte(p_mcu: &Mcu, address: u16) -> u8 {
+    p_mcu.get_data_byte(address)
+}
+
 /// Puts registers data into a buffer
 /// # Safety
 ///

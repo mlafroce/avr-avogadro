@@ -80,7 +80,7 @@ fn test_std() {
     mcu.set_register(0, 42);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
-    assert_eq!(mcu.get_memory_byte(0x40), 42); 
+    assert_eq!(mcu.get_data_byte(0x40), 42); 
 }
 
 /// Tests store indirect with Z
@@ -100,5 +100,5 @@ fn test_std_z() {
     mcu.set_register(15, 42);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
-    assert_eq!(mcu.get_memory_byte(0x3FF), 42); 
+    assert_eq!(mcu.get_data_byte(0x3FF), 42);
 }

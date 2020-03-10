@@ -14,6 +14,7 @@ extern "C" {
     void mcu_load_file(void* mcu, const char* filename);
     size_t mcu_get_data_size(void* mcu);
     void mcu_get_data_memory(void* mcu, const char* buffer, size_t size);
+    unsigned char mcu_get_data_byte(void* mcu, short address);
     unsigned char mcu_get_flags(void* mcu);
     void mcu_set_flags(void* mcu, unsigned char flags);
 }
@@ -54,6 +55,10 @@ short McuWrapper::getCurrentInstruction() const {
 
 void McuWrapper::displayCurrentInstruction(const char* buffer, std::size_t size) const {
     mcu_display_current_instruction(this->mcu, buffer, size);
+}
+
+unsigned char McuWrapper::getDataByte(short address) {
+    return mcu_get_data_byte(this->mcu, address);
 }
 
 void McuWrapper::getMemoryBank(std::vector<char>& buffer) const {
