@@ -29,13 +29,13 @@ impl MemoryBank {
     }
 
     /// Returns a byte located at `address` position
-    pub fn get_byte(&self, address: u16) -> u8 {
+    pub fn get_data_byte(&self, address: u16) -> u8 {
         let wrapped_address = address & self.address_mask;
         self.data_memory[wrapped_address as usize]
     }
 
     /// Sets a byte at `address` position 
-    pub fn set_byte(&mut self, address: u16, data: u8) {
+    pub fn set_data_byte(&mut self, address: u16, data: u8) {
         let wrapped_address = address & self.address_mask;
         self.data_memory[wrapped_address as usize] = data
     }

@@ -22,6 +22,7 @@ impl Alu {
     /// in memory_bank
     pub fn execute(instruction: &Instruction,
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
+        println!("instr: {:?}", instruction);
         match instruction {
             Instruction::Nop => (),
             Instruction::Branch { op, test_set, offset } =>

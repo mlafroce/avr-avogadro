@@ -24,8 +24,8 @@ impl Alu {
         }
         if is_call {
             let pc_to_store = (pc + 2).to_le_bytes(); 
-            memory_bank.set_byte(register_bank.stack_pointer, pc_to_store[0]);
-            memory_bank.set_byte(register_bank.stack_pointer + 1, pc_to_store[1]);
+            memory_bank.set_data_byte(register_bank.stack_pointer, pc_to_store[0]);
+            memory_bank.set_data_byte(register_bank.stack_pointer + 1, pc_to_store[1]);
             if register_bank.stack_pointer < 2 {
                 register_bank.stack_pointer = memory_bank.data_size() as u16;
             }
@@ -39,8 +39,8 @@ impl Alu {
         if register_bank.stack_pointer >= (memory_bank.data_size() - 1) as u16 {
             register_bank.stack_pointer = 0;
         }
-        let pc_lo = memory_bank.get_byte(register_bank.stack_pointer);
-        let pc_hi = memory_bank.get_byte(register_bank.stack_pointer + 1) as u16;
+        let pc_lo = memory_bank.get_data_byte(register_bank.stack_pointer);
+        let pc_hi = memory_bank.get_data_byte(register_bank.stack_pointer + 1) as u16;
         register_bank.set_program_counter((pc_hi << 8) + pc_lo as u16);
     }
 }

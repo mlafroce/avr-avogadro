@@ -44,15 +44,17 @@ impl Decoder {
                     0x9508 => Instruction::Ret{is_interrupt: false},
                     0x9518 => Instruction::Ret{is_interrupt: true},
                     _ => {
-                        match raw_instruction & 0x0E00 {
-                            0 | 0x0200 => {
+                        match raw_instruction & 0x0E0F {
+                            0x00F | 0x020F => {
                                 let is_pop = raw_instruction & 0x0200 == 0;
                                 let reg = ((raw_instruction & 0x01F0) >> 4) as u8;
-                                if raw_instruction & 0x000F == 0xF {
-                                    Instruction::PushPop {is_pop, reg}
-                                } else {
-                                    Instruction::OneRegOp
-                                }
+                                Instruction::PushPop{is_pop, reg}
+                            },
+                            0x00D | 0x020D => {
+                                let is_load = raw_instruction & 0x0200 == 0;
+                                let dest = ((raw_instruction & 0x01F0) >> 4) as u8;
+                                let base_reg = PointerRegister::X;
+                                Instruction::TransferIndirect{is_load, base_reg, dest, offset: 0}
                             }
                             _ => Instruction::OneRegOp
                         }

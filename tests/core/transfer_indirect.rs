@@ -4,13 +4,35 @@ use avr_avogadro::core::mcu_factory::McuFactory;
 
 /// Tests load indirect
 ///
+/// LD (X) opcode:     1001 000d dddd 1101
+/// if y == 1, base reg is Y, else Z
+/// ld X, r24 -> 1001 0000 1001 1101 -> 909D
+///
+/// Remember AVR is little endian!
+#[test]
+fn test_ldd_x() {
+    let mut mcu = McuFactory::create("attiny85");
+    let program_memory = vec![0x9D, 0x90];
+    let mut data_memory = vec![0; mcu.get_data_size()];
+    data_memory[0x104] = 42;
+    mcu.set_register(26, 0x4);
+    mcu.set_register(27, 0x1);
+    mcu.load_program_memory(&program_memory);
+    mcu.load_data_memory(data_memory.as_ref());
+    assert_eq!(mcu.get_program_counter(), 0x0);
+    mcu.step();
+    assert_eq!(mcu.get_register(9), 42); 
+}
+
+/// Tests load indirect
+///
 /// LDD opcode:     10q0 qq0d dddd yqqq
 /// if y == 1, base reg is Y, else Z
 /// ldd Y+2, r24 -> 1000 0001 1000 1010 -> 818A
 ///
 /// Remember AVR is little endian!
 #[test]
-fn test_ldd() {
+fn test_ldd_y() {
     let mut mcu = McuFactory::create("attiny85");
     let program_memory = vec![0x8A, 0x81];
     let mut data_memory = vec![0; 0x20];
@@ -19,7 +41,7 @@ fn test_ldd() {
     mcu.load_program_memory(&program_memory);
     mcu.load_data_memory(&data_memory);
     assert_eq!(mcu.get_program_counter(), 0x0);
-    mcu.step(); // Y + 2 = 40 + 2
+    mcu.step(); // Y + 2 = 0xE + 2 = 0x10
     assert_eq!(mcu.get_register(24), 42); 
 }
 
@@ -38,7 +60,7 @@ fn test_ldd_z() {
     mcu.set_register(30, 0xC1);
     mcu.set_register(31, 0x0);
     assert_eq!(mcu.get_program_counter(), 0x0);
-    mcu.step(); // Y + 2 = 40 + 2
+    mcu.step(); // Z + 2 = 40 + 2
     assert_eq!(mcu.get_register(24), 42); 
 }
 

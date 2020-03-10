@@ -53,7 +53,7 @@ impl Mcu {
     }
 
     pub fn get_memory_byte(&self, address: u16) -> u8 {
-        self.memory_bank.get_byte(address)
+        self.memory_bank.get_data_byte(address)
     }
 
     /// Copies content from data memory into buffer array.
