@@ -12,18 +12,27 @@ use std::slice::from_raw_parts_mut;
 pub struct Mcu {
     memory_bank: MemoryBank,
     reg_bank: RegisterBank,
+    cycle_count: usize
 }
 
 impl Mcu {
     pub fn new(data_size: usize, program_size: usize) -> Mcu {
         let memory_bank = MemoryBank::new(data_size, program_size).unwrap();
         let reg_bank = RegisterBank::new();
-        Mcu {reg_bank, memory_bank}
+        let cycle_count = 0;
+        Mcu {reg_bank, memory_bank, cycle_count}
     }
 
     pub fn step(&mut self) {
         self.execute_step();
         self.reg_bank.increment_pc();
+    }
+
+    pub fn step_n(&mut self, n: usize) {
+        for _ in 0..n {
+            self.execute_step();
+            self.reg_bank.increment_pc();
+        }
     }
 
     pub fn load_data_memory(&mut self, memory: &[u8]) {

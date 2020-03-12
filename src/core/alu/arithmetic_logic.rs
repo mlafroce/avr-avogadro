@@ -159,18 +159,42 @@ impl Alu {
     /// Available on families >= AVR2
     pub fn adiw(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
         let rd = 24 + rdu * 2;
-        let rdl = register_bank.registers[rd] as u16;
+        let rdl = register_bank.registers[rd];
         let rdh = register_bank.registers[rd+1];
-        let sum: u16 = rdl + constant as u16;
-        register_bank.registers[rdu] = sum as u8;
-        if sum > 0xFF {
-            register_bank.registers[rd+1] = rdh + 1
+        let resl = rdl.wrapping_add(constant);
+        register_bank.registers[rd] = resl;
+        if resl < rdl && resl < constant {
+            register_bank.registers[rd+1] = rdh.wrapping_add(1);
         }
+        let resh = register_bank.registers[rd+1];
         let mut flags = register_bank.get_flags();
-        flags.zero = register_bank.registers[rd+1] == 0 &&
-                      register_bank.registers[rd] == 0;
+        flags.carry = (rdh & !resh) & 0x80 != 0;
+        flags.over = (!rdh & resh) & 0x80 != 0;
+        flags.neg = resh & 0x80 != 0;
+        flags.zero = resh == 0 && resl == 0;
+        flags.sign = flags.neg ^ flags.over;
         register_bank.set_flags(flags);
-        // TODO: TEST!
-        unimplemented!();
+    }
+
+    /// Substract immediate to word
+    /// Available on families >= AVR2
+    pub fn sbiw(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
+        let rd = 24 + rdu * 2;
+        let rdl = register_bank.registers[rd];
+        let rdh = register_bank.registers[rd+1];
+        let resl = rdl.wrapping_sub(constant);
+        register_bank.registers[rd] = resl;
+        if constant > rdl {
+            register_bank.registers[rd+1] = rdh.wrapping_sub(1);
+        }
+        let resh = register_bank.registers[rd+1];
+        println!("rd({}), rd+1: {:x}{:x}", rd, resh, resl);
+        let mut flags = register_bank.get_flags();
+        flags.carry = (!rdh & resh) & 0x80 != 0;
+        flags.over = (rdh & !resh) & 0x80 != 0;
+        flags.neg = resh & 0x80 != 0;
+        flags.zero = resh == 0 && resl == 0;
+        flags.sign = flags.neg ^ flags.over;
+        register_bank.set_flags(flags);
     }
 }

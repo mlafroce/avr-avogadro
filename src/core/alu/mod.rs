@@ -103,6 +103,9 @@ impl Alu {
             0x96 => {
                 Alu::adiw(rdu, constant, register_bank)
             },
+            0x97 => {
+                Alu::sbiw(rdu, constant, register_bank)
+            },
             _ => warn!("Execute arith - Unknown arithmetic instruction opcode: {:x}", op)
         }
     }

@@ -1,5 +1,6 @@
 mod mcu;
 mod add;
+mod arith_word;
 mod branch;
 mod call_jmp;
 mod compare;

@@ -20,6 +20,9 @@ hex: $(HEX_FILES)
 01-sum.o: 01-sum.c
 	$(CC) -Wall -mmcu=$(MMCU) -nostartfiles $< -o $@
 
+03-blink.o: 03-blink.c
+	$(CC) -Wall -mmcu=$(MMCU) -O2 $< -o $@
+
 %.o: %.c
 	$(CC) -Wall -mmcu=$(MMCU) $< -o $@
 

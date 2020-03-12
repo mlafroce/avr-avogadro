@@ -39,25 +39,36 @@ impl Decoder {
                 let offset =  offset_lo + offset_mid + offset_hi;
                 Instruction::TransferIndirect{is_load, base_reg, dest, offset: offset as u8}
             },
-            0x9000 => { // One register operations?
+            0x9000 => { // Misc operations
                 match raw_instruction {
                     0x9508 => Instruction::Ret{is_interrupt: false},
                     0x9518 => Instruction::Ret{is_interrupt: true},
                     _ => {
-                        match raw_instruction & 0x0E0F {
-                            0x00F | 0x020F => {
-                                let is_pop = raw_instruction & 0x0200 == 0;
-                                let reg = ((raw_instruction & 0x01F0) >> 4) as u8;
-                                Instruction::PushPop{is_pop, reg}
+                        match raw_instruction & 0x0F00 {
+                            0 | 0x0100 | 0x0200 | 0x0300 => {
+                                match raw_instruction & 0xF {
+                                    0xF => {
+                                        let is_pop = raw_instruction & 0x0200 == 0;
+                                        let reg = ((raw_instruction & 0x01F0) >> 4) as u8;
+                                        Instruction::PushPop{is_pop, reg}
+                                    },
+                                    0xD => {
+                                        let is_load = raw_instruction & 0x0200 == 0;
+                                        let dest = ((raw_instruction & 0x01F0) >> 4) as u8;
+                                        let base_reg = PointerRegister::X;
+                                        Instruction::TransferIndirect{is_load, base_reg, dest, offset: 0}
+                                    }
+                                    _ => Instruction::Unsupported { instruction: raw_instruction }
+                                }
                             },
-                            0x00D | 0x020D => {
-                                let is_load = raw_instruction & 0x0200 == 0;
-                                let dest = ((raw_instruction & 0x01F0) >> 4) as u8;
-                                let base_reg = PointerRegister::X;
-                                Instruction::TransferIndirect{is_load, base_reg, dest, offset: 0}
-                            }
-                            _ => Instruction::OneRegOp
-                        }
+                            0x0600 | 0x0700 => {
+                                let op = (raw_instruction & 0xFF00) >> 8;
+                                let rd = ((raw_instruction & 0x30) >> 4) as u8;
+                                let constant = (((raw_instruction & 0xC0) >> 2) + raw_instruction & 0xF) as u8;
+                                Instruction::RegConstOp{op, rd, constant}
+                            },
+                            _ => Instruction::Unsupported { instruction: raw_instruction }
+                        } // end match raw_instruction & 0x0F00
                     }
                 }
             },
@@ -158,14 +169,15 @@ fn display_two_reg_op(f: &mut fmt::Formatter<'_>,
 
 fn display_arith_costant(f: &mut fmt::Formatter<'_>,
     op: RawInstruction, rd: u8, constant: u8) -> fmt::Result {
+    let real_rd = rd + 16;
     match op {
-        0x3 => write!(f, "cpi  r{}, 0x{:x}", rd, constant),
-        0x4 => write!(f, "sbci r{}, 0x{:x}", rd, constant),
-        0x5 => write!(f, "subi r{}, 0x{:x}", rd, constant),
-        0x6 => write!(f, "ori  r{}, 0x{:x}", rd, constant),
-        0x7 => write!(f, "andi r{}, 0x{:x}", rd, constant),
+        0x3 => write!(f, "cpi  r{}, 0x{:x}", real_rd, constant),
+        0x4 => write!(f, "sbci r{}, 0x{:x}", real_rd, constant),
+        0x5 => write!(f, "subi r{}, 0x{:x}", real_rd, constant),
+        0x6 => write!(f, "ori  r{}, 0x{:x}", real_rd, constant),
+        0x7 => write!(f, "andi r{}, 0x{:x}", real_rd, constant),
         // ldi is technically a transfer instruction
-        0xE => write!(f, "ldi  r{}, 0x{:x}", rd, constant),
+        0xE => write!(f, "ldi  r{}, 0x{:x}", real_rd, constant),
         _ => unreachable!()
     }
 }
