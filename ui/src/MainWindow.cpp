@@ -86,23 +86,23 @@ void MainWindow::onProgramCounterChanged() {
 
 void MainWindow::connectEvents() {
     QPushButton* buttonGreet = findChild<QPushButton*>("stepButton");
-    QAction* loadFileMenuAction = findChild<QAction*>("loadFileMenuAction");
+    QAction* loadProgamFileMenuAction = findChild<QAction*>("loadProgamFileMenuAction");
     QAction* gettingStartedMenuAction = findChild<QAction*>("gettingStartedMenuAction");
     QLineEdit* pcEdit = findChild<QLineEdit*>("pcEdit");
     QObject::connect(buttonGreet, &QPushButton::clicked,
                      this, &MainWindow::mcuStep);
-    QObject::connect(loadFileMenuAction, &QAction::triggered,
-                     this, &MainWindow::loadFile);
+    QObject::connect(loadProgamFileMenuAction, &QAction::triggered,
+                     this, &MainWindow::loadProgramFile);
     QObject::connect(gettingStartedMenuAction, &QAction::triggered,
                      this, &MainWindow::goToHelpUrl);
     QObject::connect(pcEdit, &NumericEdit::editingFinished,
                      this, &MainWindow::onProgramCounterChanged);
 }
 
-void MainWindow::loadFile() {
+void MainWindow::loadProgramFile() {
     std::string filename = getSelectedFilename();
     if (filename.size() != 0) {
-        this->mcu.loadFile(filename.c_str());
+        this->mcu.loadFile(filename.c_str(), true);
         this->updateMcuStatus();
     }
     this->updateMemoryBank();

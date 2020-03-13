@@ -19,13 +19,14 @@ pub extern fn mcu_step(p_mcu: &mut Mcu) {
 /// `p_mcu` must be a pointer to a valid Mcu
 /// `p_filename` must be a valid C string
 #[no_mangle]
-pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char) -> u8 {
+pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char,
+    is_program: bool) -> u8 {
     let filename;
     filename = CStr::from_ptr(p_filename).to_str();
-    if p_mcu.load_program_from_file(filename.unwrap()).is_ok() {
+    if p_mcu.load_from_file(filename.unwrap(), is_program).is_ok() {
         0
     } else {
-        println!("Error");
+        warn!("Error");
         1
     }
 }
@@ -105,8 +106,8 @@ pub fn mcu_set_program_counter(p_mcu: &mut Mcu, value: u16) {
 }
 
 #[no_mangle]
-pub fn mcu_get_current_instruction(p_mcu: &Mcu) {
-    p_mcu.get_current_instruction();
+pub fn mcu_get_current_instruction(p_mcu: &Mcu) -> u16 {
+    p_mcu.get_current_instruction()
 }
 
 #[no_mangle]

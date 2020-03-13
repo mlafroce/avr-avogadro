@@ -1,10 +1,10 @@
 # Development status
 
-**Version**: Minimal AVR1 Core
+## Instruction set
+
+### Minimal AVR1 Core
 
 **Supported by**: AT90S1200, ATtiny11, ATtiny12, ATtiny15, ATtiny28
-
-**Instructions**:
 
 * **Arithmetic**:
 
@@ -127,7 +127,18 @@
 * [ ] `WDR`: Watchdog reset
 
 
-**Extra**: Instructions from AVR2 family
+### Minimal AVR2 Core
 
+**Supported by**: AT90S2313, AT90S2323, ATtiny22, AT90S2333, AT90S2343, AT90S4414, AT90S4433, AT90S4434, AT90S8515, AT90C8534, AT90S8535, ATtiny26
+
+* **Arithmetic**:
+
+* [x] `ADIW`: Add immediate to word
+* [x] `SBIW`: Substract immediate from word
+
+* **Transfers**:
+
+* [-] `LD`: LD X, LD Y + k, LD Z + k
+* [-] `ST`: ST X, ST Y + k, ST Z + k
 * [x] `PUSH`: Push register on stack
 * [x] `POP`: Pop register from stack

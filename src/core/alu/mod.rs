@@ -43,7 +43,7 @@ impl Alu {
                  *offset, register_bank, memory_bank),
             Instruction::TwoRegOp {op, rd, rr} => Alu::execute_arithmetic(
                 *op, *rd, *rr, register_bank, memory_bank),
-            _ => warn!("Execute - Unknown Instruction: {:?}", instruction)
+            _ => warn!("Execute - Unknown Instruction: {}", instruction)
         }
     }
 

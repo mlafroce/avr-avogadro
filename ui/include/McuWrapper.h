@@ -15,7 +15,7 @@ public:
     short getStackPointer() const;
     short getCurrentInstruction() const;
     void displayCurrentInstruction(const char* buffer, std::size_t size) const;
-    void loadFile(const char* filename) const;
+    void loadFile(const char* filename, bool isProgram) const;
     void getMemoryBank(std::vector<char>& buffer) const;
     unsigned char getDataByte(short int);
     unsigned char getFlags() const;

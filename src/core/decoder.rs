@@ -112,17 +112,17 @@ impl fmt::Display for Instruction {
             Instruction::CallJmp { is_call, relative, address } => {
                 let r_str = if *relative { "r" } else { "" };
                 let op_str = if *is_call { "call" } else { "jmp" };
-                write!(f, "{}{}, 0x{}", r_str, op_str, *address)
+                write!(f, "{}{}\t0x{}", r_str, op_str, *address)
             },
             Instruction::InOut {is_in, reg, address } => {
                 let op_str = if *is_in { "in" } else { "out" };
-                write!(f, "{} r{} 0x{:x}", op_str, *reg, *address)
+                write!(f, "{}\tr{} 0x{:x}", op_str, *reg, *address)
             },
             Instruction::Nop => write!(f, "nop"),
             Instruction::OneRegOp => write!(f, "Parsed but unsupported instruction"),
             Instruction::PushPop { is_pop, reg } => {
                 let op_str = if *is_pop { "pop" } else { "push" };
-                write!(f, "{} r{}", op_str, *reg)
+                write!(f, "{}\tr{}", op_str, *reg)
             },
             Instruction::RegConstOp {op, rd, constant } => 
                 display_arith_costant(f, *op, *rd, *constant),
@@ -137,7 +137,7 @@ impl fmt::Display for Instruction {
                     PointerRegister::Y => "Y",
                     PointerRegister::Z => "Z"
                 };
-                write!(f, "{} {}+{}, r{}", op_str, base_reg_str, offset, dest)
+                write!(f, "{}\t{}+{}, r{}", op_str, base_reg_str, offset, dest)
             },
             Instruction::TwoRegOp { op, rd, rr } => 
                 display_two_reg_op(f, *op, *rd, *rr),
@@ -149,20 +149,19 @@ impl fmt::Display for Instruction {
 
 fn display_two_reg_op(f: &mut fmt::Formatter<'_>,
     op: RawInstruction, rd: u8, rr: u8) -> fmt::Result {
-    info!("Display {:?}, r{} r{}", op, rd, rr);
     match op {
-        0x1 => write!(f, "cpc  r{}, r{}", rd, rr),
-        0x2 => write!(f, "sbc  r{}, r{}", rd, rr),
-        0x3 => write!(f, "add  r{}, r{}", rd, rr),
-        0x4 => write!(f, "cpse r{}, r{}", rd, rr),
-        0x5 => write!(f, "cp   r{}, r{}", rd, rr),
-        0x6 => write!(f, "sub  r{}, r{}", rd, rr),
-        0x7 => write!(f, "adc  r{}, r{}", rd, rr),
-        0x8 => write!(f, "and  r{}, r{}", rd, rr),
-        0x9 => write!(f, "eor  r{}, r{}", rd, rr),
-        0xA => write!(f, "or   r{}, r{}", rd, rr),
+        0x1 => write!(f, "cpc\tr{}, r{}", rd, rr),
+        0x2 => write!(f, "sbc\tr{}, r{}", rd, rr),
+        0x3 => write!(f, "add\tr{}, r{}", rd, rr),
+        0x4 => write!(f, "cpse\tr{}, r{}", rd, rr),
+        0x5 => write!(f, "cp\tr{}, r{}", rd, rr),
+        0x6 => write!(f, "sub\tr{}, r{}", rd, rr),
+        0x7 => write!(f, "adc\tr{}, r{}", rd, rr),
+        0x8 => write!(f, "and\tr{}, r{}", rd, rr),
+        0x9 => write!(f, "eor\tr{}, r{}", rd, rr),
+        0xA => write!(f, "or\tr{}, r{}", rd, rr),
         0xB ..=
-        0xF => write!(f, "mov  r{}, r{}", rd, rr),
+        0xF => write!(f, "mov\tr{}, r{}", rd, rr),
         _ => unreachable!()
     }
 }
@@ -171,13 +170,15 @@ fn display_arith_costant(f: &mut fmt::Formatter<'_>,
     op: RawInstruction, rd: u8, constant: u8) -> fmt::Result {
     let real_rd = rd + 16;
     match op {
-        0x3 => write!(f, "cpi  r{}, 0x{:x}", real_rd, constant),
-        0x4 => write!(f, "sbci r{}, 0x{:x}", real_rd, constant),
-        0x5 => write!(f, "subi r{}, 0x{:x}", real_rd, constant),
-        0x6 => write!(f, "ori  r{}, 0x{:x}", real_rd, constant),
-        0x7 => write!(f, "andi r{}, 0x{:x}", real_rd, constant),
+        0x3 => write!(f, "cpi\tr{}, 0x{:x}", real_rd, constant),
+        0x4 => write!(f, "sbci\tr{}, 0x{:x}", real_rd, constant),
+        0x5 => write!(f, "subi\tr{}, 0x{:x}", real_rd, constant),
+        0x6 => write!(f, "ori\tr{}, 0x{:x}", real_rd, constant),
+        0x7 => write!(f, "andi\tr{}, 0x{:x}", real_rd, constant),
         // ldi is technically a transfer instruction
-        0xE => write!(f, "ldi  r{}, 0x{:x}", real_rd, constant),
+        0xE => write!(f, "ldi\tr{}, 0x{:x}", real_rd, constant),
+        0x96 =>write!(f, "adiw\tr{}, 0x{:x}", real_rd, constant),
+        0x97 =>write!(f, "sbiw\tr{}, 0x{:x}", real_rd, constant),
         _ => unreachable!()
     }
 }
@@ -187,26 +188,26 @@ fn display_branch(f: &mut fmt::Formatter<'_>,
     let display_offset = offset * 2;
     if test_set {
         match op {
-            0x0 => write!(f, "brcs .{:#}", display_offset),
-            0x1 => write!(f, "breq .{:#}", display_offset),
-            0x2 => write!(f, "brmi .{:#}", display_offset),
-            0x3 => write!(f, "brvs .{:#}", display_offset),
-            0x4 => write!(f, "brlt .{:#}", display_offset),
-            0x5 => write!(f, "brhs .{:#}", display_offset),
-            0x6 => write!(f, "brts .{:#}", display_offset),
-            0x7 => write!(f, "brie .{:#}", display_offset),
+            0x0 => write!(f, "brcs\t.{:#}", display_offset),
+            0x1 => write!(f, "breq\t.{:#}", display_offset),
+            0x2 => write!(f, "brmi\t.{:#}", display_offset),
+            0x3 => write!(f, "brvs\t.{:#}", display_offset),
+            0x4 => write!(f, "brlt\t.{:#}", display_offset),
+            0x5 => write!(f, "brhs\t.{:#}", display_offset),
+            0x6 => write!(f, "brts\t.{:#}", display_offset),
+            0x7 => write!(f, "brie\t.{:#}", display_offset),
             _ => unreachable!()
         }
     } else {
         match op {
-            0x0 => write!(f, "brcc .{:#}", display_offset),
-            0x1 => write!(f, "brne .{:#}", display_offset),
-            0x2 => write!(f, "brpl .{:#}", display_offset),
-            0x3 => write!(f, "brvc .{:#}", display_offset),
-            0x4 => write!(f, "brge .{:#}", display_offset),
-            0x5 => write!(f, "brhc .{:#}", display_offset),
-            0x6 => write!(f, "brtc .{:#}", display_offset),
-            0x7 => write!(f, "brid .{:#}", display_offset),
+            0x0 => write!(f, "brcc\t.{:#}", display_offset),
+            0x1 => write!(f, "brne\t.{:#}", display_offset),
+            0x2 => write!(f, "brpl\t.{:#}", display_offset),
+            0x3 => write!(f, "brvc\t.{:#}", display_offset),
+            0x4 => write!(f, "brge\t.{:#}", display_offset),
+            0x5 => write!(f, "brhc\t.{:#}", display_offset),
+            0x6 => write!(f, "brtc\t.{:#}", display_offset),
+            0x7 => write!(f, "brid\t.{:#}", display_offset),
             _ => unreachable!()
         }
     }

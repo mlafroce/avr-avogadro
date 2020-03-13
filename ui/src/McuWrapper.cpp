@@ -11,7 +11,7 @@ extern "C" {
     short mcu_get_stack_pointer(void* mcu);
     short mcu_get_current_instruction(void* mcu);
     void mcu_display_current_instruction(void* mcu, const char* buffer, size_t size);
-    void mcu_load_file(void* mcu, const char* filename);
+    void mcu_load_file(void* mcu, const char* filename, bool isProgram);
     size_t mcu_get_data_size(void* mcu);
     void mcu_get_data_memory(void* mcu, const char* buffer, size_t size);
     unsigned char mcu_get_data_byte(void* mcu, short address);
@@ -71,6 +71,6 @@ unsigned char McuWrapper::getFlags() const {
     return mcu_get_flags(this->mcu);
 }
 
-void McuWrapper::loadFile(const char* filename) const {
-    mcu_load_file(this->mcu, filename);
+void McuWrapper::loadFile(const char* filename, bool isProgram) const {
+    mcu_load_file(this->mcu, filename, isProgram);
 }

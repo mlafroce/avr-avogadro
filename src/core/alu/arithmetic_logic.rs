@@ -188,7 +188,6 @@ impl Alu {
             register_bank.registers[rd+1] = rdh.wrapping_sub(1);
         }
         let resh = register_bank.registers[rd+1];
-        println!("rd({}), rd+1: {:x}{:x}", rd, resh, resl);
         let mut flags = register_bank.get_flags();
         flags.carry = (!rdh & resh) & 0x80 != 0;
         flags.over = (rdh & !resh) & 0x80 != 0;

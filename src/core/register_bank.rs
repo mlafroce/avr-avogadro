@@ -53,11 +53,6 @@ impl RegisterBank {
         self.stack_pointer
     }
 
-    /// Stack pointer setter
-    pub fn set_stack_pointer(&mut self, sp: u16) {
-        self.stack_pointer = sp;
-    }
-
     /// Flags getter
     pub fn get_flags(&self) -> Flags {
         self.flags

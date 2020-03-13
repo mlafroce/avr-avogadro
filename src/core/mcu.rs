@@ -43,11 +43,15 @@ impl Mcu {
         self.memory_bank.set_program_memory(memory)
     }
 
-    pub fn load_program_from_file(&mut self, filename: &str) -> io::Result<()> {
+    pub fn load_from_file(&mut self, filename: &str, is_program: bool) -> io::Result<()> {
         let mut file = File::open(filename)?;
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)?;
-        self.memory_bank.copy_into_program_memory(&buffer);
+        if is_program {
+            self.memory_bank.copy_into_program_memory(&buffer);
+        } else {
+            self.memory_bank.copy_into_data_memory(&buffer);
+        }
         Ok(())
     }
 

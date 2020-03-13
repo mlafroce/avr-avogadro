@@ -18,9 +18,9 @@ private:
      */
     std::string getSelectedFilename();
     /**
-     * Loads raw content of a binary file
+     * Loads raw content of a binary file into program memory
      */
-    void loadFile();
+    void loadProgramFile();
     /**
      * Opens online help
      */
