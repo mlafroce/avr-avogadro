@@ -1,5 +1,7 @@
 # AVR-Avogadro
 
+[![Build Status](https://travis-ci.org/mlafroce/avr-avogadro.svg?branch=development)](https://travis-ci.org/mlafroce/avr-avogadro)
+
 AVR simulator made in Rust and C++
 
 Core library is in Rust and will expose an API for GUI in C++ (QT).
