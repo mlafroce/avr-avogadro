@@ -30,7 +30,7 @@ fn test_adiw_one() {
     mcu.step();
     assert_eq!(mcu.get_register(24), 1);
     assert_eq!(mcu.get_register(25), 0);
-    let flag_as_byte : u8 = mcu.get_flags().into();
+    let mut flag_as_byte : u8 = mcu.get_flags().into();
     assert_eq!(0, flag_as_byte,
             "Flags assertion failed: {:08b} != {:08b}",
             0, flag_as_byte);
@@ -39,6 +39,7 @@ fn test_adiw_one() {
     mcu.step();
     assert_eq!(mcu.get_register(26), 0);
     assert_eq!(mcu.get_register(27), 1);
+    flag_as_byte = mcu.get_flags().into();
     assert_eq!(0, flag_as_byte,
             "Flags assertion failed: {:08b} != {:08b}",
             0, flag_as_byte);
@@ -47,7 +48,7 @@ fn test_adiw_one() {
     mcu.step();
     assert_eq!(mcu.get_register(28), 0);
     assert_eq!(mcu.get_register(29), 0x80);
-    let mut flag_as_byte : u8 = mcu.get_flags().into();
+    flag_as_byte = mcu.get_flags().into();
     // flags (ithsvnzc)
     assert_eq!(0x0C, flag_as_byte,
             "Flags assertion failed: {:08b} != {:08b}",

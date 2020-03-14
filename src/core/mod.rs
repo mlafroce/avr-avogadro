@@ -30,7 +30,7 @@ pub enum Instruction {
     CallJmp {is_call: bool, relative: bool, address: u16},
     InOut {is_in: bool, reg: u8, address: u8},
     Nop,
-    OneRegOp,
+    OneRegOp {rd: u8, op: u8},
     PushPop {is_pop: bool, reg: u8},
     RegConstOp {op: RawInstruction, rd: u8, constant: u8},
     Ret {is_interrupt: bool},

@@ -21,11 +21,11 @@
 * [x] `OR`: Logical *OR*
 * [x] `ORI`: Logical *OR* with immediate
 * [x] `EOR`: Logical *XOR* (exclusive or)
-* [ ] `COM`: One's complement
-* [ ] `NEG`: Two's complement
+* [x] `COM`: One's complement
+* [x] `NEG`: Two's complement
 * [ ] `SBR`: Set bits in register
 * [ ] `CBR`: Clear bits in register
-* [ ] `INC`: Increment
+* [x] `INC`: Increment
 * [ ] `DEC`: Decrement
 * [ ] `TST`: Test for zero or minus
 * [ ] `CLR`: Clear register
@@ -91,11 +91,11 @@
 * [ ] `SBI`: Set bit in I/O register
 * [ ] `CBI`: Clear bit in I/O register
 * [ ] `LSL`: Logical shift left
-* [ ] `LSR`: Logical shift right
+* [x] `LSR`: Logical shift right
 * [ ] `ROL`: Rotate left through carry
-* [ ] `ROR`: Rotate right through carry
-* [ ] `ASR`: Arithmetic shift right:
-* [ ] `SWAP`: Swap nibbles
+* [x] `ROR`: Rotate right through carry
+* [x] `ASR`: Arithmetic shift right:
+* [x] `SWAP`: Swap nibbles
 
 * **Status register**
 
@@ -138,7 +138,7 @@
 
 * **Transfers**:
 
-* [-] `LD`: LD X, LD Y + k, LD Z + k
-* [-] `ST`: ST X, ST Y + k, ST Z + k
+* [x] `LD`: LD X, LD Y + k, LD Z + k
+* [x] `ST`: ST X, ST Y + k, ST Z + k
 * [x] `PUSH`: Push register on stack
 * [x] `POP`: Pop register from stack

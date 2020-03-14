@@ -61,6 +61,11 @@ impl Decoder {
                                     _ => Instruction::Unsupported { instruction: raw_instruction }
                                 }
                             },
+                            0x0400 | 0x0500 => {
+                                let rd = ((raw_instruction & 0x01F0) >> 4) as u8;
+                                let op = (raw_instruction & 0xF) as u8;
+                                Instruction::OneRegOp { rd, op }
+                            }
                             0x0600 | 0x0700 => {
                                 let op = (raw_instruction & 0xFF00) >> 8;
                                 let rd = ((raw_instruction & 0x30) >> 4) as u8;
@@ -112,14 +117,14 @@ impl fmt::Display for Instruction {
             Instruction::CallJmp { is_call, relative, address } => {
                 let r_str = if *relative { "r" } else { "" };
                 let op_str = if *is_call { "call" } else { "jmp" };
-                write!(f, "{}{}\t0x{}", r_str, op_str, *address)
+                write!(f, "{}{}\t0x{:x}", r_str, op_str, *address)
             },
             Instruction::InOut {is_in, reg, address } => {
                 let op_str = if *is_in { "in" } else { "out" };
                 write!(f, "{}\tr{} 0x{:x}", op_str, *reg, *address)
             },
             Instruction::Nop => write!(f, "nop"),
-            Instruction::OneRegOp => write!(f, "Parsed but unsupported instruction"),
+            Instruction::OneRegOp {op, rd} => write!(f, "Parsed but unsupported instruction"),
             Instruction::PushPop { is_pop, reg } => {
                 let op_str = if *is_pop { "pop" } else { "push" };
                 write!(f, "{}\tr{}", op_str, *reg)

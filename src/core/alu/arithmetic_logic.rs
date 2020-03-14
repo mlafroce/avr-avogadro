@@ -25,7 +25,7 @@ impl Alu {
     }
 
     pub fn compare(rdu: usize, rru: usize, register_bank: &mut RegisterBank, carry: u8) {
-        Alu::_substract_base(rdu, rru, register_bank, carry, false);
+        Alu::substract_base(rdu, rru, register_bank, carry, false);
     }
 
     pub fn comp_skip(rdu: usize, rru: usize, register_bank: &mut RegisterBank,
@@ -94,26 +94,119 @@ impl Alu {
     // One register - One constant operations
     /// Substracts immediate to register
     pub fn subi(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
-        Alu::_substract_imm_base(rdu, constant, register_bank, 0, true);
+        Alu::substract_imm_base(rdu, constant, register_bank, 0, true);
     }
 
     /// Substracts immediate to register with carry
     pub fn sbci(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
         let carry = register_bank.get_carry_as_u8();
-        Alu::_substract_imm_base(rdu, constant, register_bank, carry, true);
+        Alu::substract_imm_base(rdu, constant, register_bank, carry, true);
     }
 
     /// Substracts immediate to register with carry
     pub fn cpi(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
         let carry = register_bank.get_carry_as_u8();
-        Alu::_substract_imm_base(rdu, constant, register_bank, carry, false);
+        Alu::substract_imm_base(rdu, constant, register_bank, carry, false);
+    }
+
+    /// One's complement
+    pub fn com(rdu: usize, register_bank: &mut RegisterBank) {
+        let res = 0xFF - register_bank.registers[rdu];
+        let mut flags = register_bank.get_flags();
+        flags.carry = true;
+        flags.zero = res == 0;
+        flags.neg = res & 0x80 != 0;
+        flags.over = false;
+        flags.sign = flags.neg;
+        register_bank.registers[rdu] = res;
+        register_bank.set_flags(flags);
+    }
+
+    /// Two's complement
+    pub fn neg(rdu: usize, register_bank: &mut RegisterBank) {
+        let res = 0_u8.wrapping_sub(register_bank.registers[rdu]);
+        let mut flags = register_bank.get_flags();
+        flags.carry = res != 0;
+        flags.zero = res == 0;
+        flags.neg = res & 0x80 != 0;
+        flags.over = res == 0x80;
+        flags.sign = flags.neg ^ flags.over;
+        flags.half = (res & 0x8) | (!register_bank.registers[rdu] & 0x8) != 0;
+        register_bank.registers[rdu] = res;
+        register_bank.set_flags(flags);
+    }
+
+    /// Swap nibbles
+    pub fn swap(rdu: usize, register_bank: &mut RegisterBank) {
+        let value = register_bank.registers[rdu];
+        register_bank.registers[rdu] = (value & 0x0F) << 4 | (value & 0xF0) >> 4;
+    }
+
+    /// Increment by 1 register, without affecting carry flag
+    pub fn inc(rdu: usize, register_bank: &mut RegisterBank) {
+        let res = register_bank.registers[rdu].wrapping_add(1);
+        register_bank.registers[rdu] = res;
+        let mut flags = register_bank.get_flags();
+        flags.zero = res == 0;
+        flags.neg = res & 0x80 != 0;
+        flags.over = res == 0x80;
+        flags.sign = flags.neg ^ flags.over;
+        register_bank.set_flags(flags);
+    }
+
+    /// Arithmetic shift right
+    pub fn asr(rdu: usize, register_bank: &mut RegisterBank) {
+        let value = register_bank.registers[rdu] as i8;
+        let res = (value >> 1) as u8;
+        register_bank.registers[rdu] = res;
+        let mut flags = register_bank.get_flags();
+        flags.carry = value % 2 != 0;
+        flags.zero = res == 0;
+        flags.neg = res & 0x80 != 0;
+        flags.over = flags.neg ^ flags.carry;
+        flags.sign = flags.carry;
+        register_bank.set_flags(flags);
+    }
+
+    /// Logic shift right
+    pub fn lsr(rdu: usize, register_bank: &mut RegisterBank) {
+        let value = register_bank.registers[rdu];
+        let res = value >> 1;
+        register_bank.registers[rdu] = res;
+        let mut flags = register_bank.get_flags();
+        flags.carry = value % 2 != 0;
+        flags.zero = res == 0;
+        flags.neg = false;
+        flags.over = flags.carry;
+        flags.sign = flags.carry;
+        register_bank.set_flags(flags);
+    }
+
+    /// Arithmetic shift right
+    pub fn ror(rdu: usize, register_bank: &mut RegisterBank) {
+        let mut flags = register_bank.get_flags();
+        let old_carry = flags.carry;
+        let value = register_bank.registers[rdu];
+        let res = value >> 1;
+        println!("Value: {:x}, res {:x}", value, res);
+        if old_carry {
+            register_bank.registers[rdu] = res | 0x80;
+        } else {
+            register_bank.registers[rdu] = res;
+        }
+        flags.carry = value % 2 != 0;
+        flags.zero = res == 0;
+        flags.neg = old_carry;
+        flags.over = flags.neg ^ flags.carry;
+        flags.sign = flags.carry;
+        register_bank.set_flags(flags);
     }
 
     pub fn substract(rdu: usize, rru: usize, register_bank: &mut RegisterBank, carry: u8) {
-        Alu::_substract_base(rdu, rru, register_bank, carry, true);
+        Alu::substract_base(rdu, rru, register_bank, carry, true);
     }
 
-    pub fn _substract_base(rdu: usize, rru: usize, register_bank: &mut RegisterBank,
+    fn substract_base(rdu: usize, rru: usize, register_bank: &mut RegisterBank,
         carry: u8, store_result: bool) {
         // wrapping sub as it could overflow
         let rd = register_bank.registers[rdu] as u8;
@@ -135,7 +228,7 @@ impl Alu {
         }
     }
 
-    pub fn _substract_imm_base(rdu: usize, constant: u8,
+    fn substract_imm_base(rdu: usize, constant: u8,
         register_bank: &mut RegisterBank, carry: u8, store_result: bool) {
         let rd = register_bank.registers[rdu] as u8;
         let const_with_carry = constant.wrapping_add(carry);

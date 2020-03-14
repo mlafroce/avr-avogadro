@@ -43,12 +43,14 @@ impl Alu {
                  *offset, register_bank, memory_bank),
             Instruction::TwoRegOp {op, rd, rr} => Alu::execute_arithmetic(
                 *op, *rd, *rr, register_bank, memory_bank),
+            Instruction::OneRegOp {rd, op} => Alu::execute_one_reg_arithmetic(
+                *op, *rd, register_bank),
             _ => warn!("Execute - Unknown Instruction: {}", instruction)
         }
     }
 
     /// Executes arithmetic instructions
-    pub fn execute_arithmetic(op: RawInstruction, rd: u8, rr: u8,
+    fn execute_arithmetic(op: RawInstruction, rd: u8, rr: u8,
         register_bank: &mut RegisterBank, memory_bank: &MemoryBank) {
         let rdu = rd as usize;
         let rru = rr as usize;
@@ -78,34 +80,33 @@ impl Alu {
         }
     }
 
-    pub fn execute_arith_with_constant(op: RawInstruction, rd: u8, constant: u8,
+    fn execute_arith_with_constant(op: RawInstruction, rd: u8, constant: u8,
         register_bank: &mut RegisterBank) {
         let rdu = rd as usize;
         match op {
-            0x3 => {
-                Alu::cpi(rdu + 16, constant, register_bank)
-            },
-            0x4 => {
-                Alu::sbci(rdu + 16, constant, register_bank)
-            },
-            0x5 => {
-                Alu::subi(rdu + 16, constant, register_bank)
-            },
-            0x6 => {
-                Alu::ori(rdu + 16, constant, register_bank)
-            },
-            0x7 => {
-                Alu::andi(rdu + 16, constant, register_bank)
-            },
-            0xE => { // Technically a transfer instruction
-                Alu::load_immediate(rdu + 16, constant, register_bank)
-            },
-            0x96 => {
-                Alu::adiw(rdu, constant, register_bank)
-            },
-            0x97 => {
-                Alu::sbiw(rdu, constant, register_bank)
-            },
+            0x3 => Alu::cpi(rdu + 16, constant, register_bank),
+            0x4 => Alu::sbci(rdu + 16, constant, register_bank),
+            0x5 => Alu::subi(rdu + 16, constant, register_bank),
+            0x6 => Alu::ori(rdu + 16, constant, register_bank),
+            0x7 => Alu::andi(rdu + 16, constant, register_bank),
+            // Technically a transfer instruction
+            0xE => Alu::load_immediate(rdu + 16, constant, register_bank),
+            0x96 => Alu::adiw(rdu, constant, register_bank),
+            0x97 => Alu::sbiw(rdu, constant, register_bank),
+            _ => warn!("Execute arith - Unknown arithmetic instruction opcode: {:x}", op)
+        }
+    }
+
+    fn execute_one_reg_arithmetic(op: u8, rd: u8, register_bank: &mut RegisterBank) {
+        let rdu = rd as usize;
+        match op {
+            0x0 => Alu::com(rdu, register_bank),
+            0x1 => Alu::neg(rdu, register_bank),
+            0x2 => Alu::swap(rdu, register_bank),
+            0x3 => Alu::inc(rdu, register_bank),
+            0x5 => Alu::asr(rdu, register_bank),
+            0x6 => Alu::lsr(rdu, register_bank),
+            0x7 => Alu::ror(rdu, register_bank),
             _ => warn!("Execute arith - Unknown arithmetic instruction opcode: {:x}", op)
         }
     }
