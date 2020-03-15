@@ -5,6 +5,7 @@ mod arith_word;
 mod branch;
 mod call_jmp;
 mod compare;
+mod decoder;
 mod in_out;
 mod load_store;
 mod logic_ops;

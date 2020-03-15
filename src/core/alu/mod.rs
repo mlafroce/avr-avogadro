@@ -17,6 +17,13 @@ mod call_jmp;
 /// Branch Instruction
 mod branch;
 
+pub const MOVW_OP: RawInstruction = 0x11;
+pub const MULS_OP: RawInstruction = 0x12;
+pub const MULSU_OP: RawInstruction = 0x13;
+pub const FMUL_OP: RawInstruction = 0x14;
+pub const FMULS_OP: RawInstruction = 0x15;
+pub const FMULSU_OP: RawInstruction = 0x16;
+
 impl Alu {
     /// Executes decoded operation, using registers in register_bank and data
     /// in memory_bank
@@ -76,6 +83,11 @@ impl Alu {
             0xA => Alu::or(rdu, rru, register_bank),
             0xB ..= 0xF
                 => Alu::mov(rdu, rru, register_bank), 
+            MOVW_OP => Alu::movw(rdu, rru, register_bank), 
+            MULS_OP => Alu::muls(rdu, rru, register_bank), 
+            MULSU_OP => Alu::mulsu(rdu, rru, register_bank), 
+            FMUL_OP => Alu::fmul(rdu, rru, register_bank), 
+            FMULS_OP => Alu::fmuls(rdu, rru, register_bank), 
             _   => unreachable!()
         }
     }

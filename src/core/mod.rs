@@ -10,11 +10,13 @@ pub mod memory_bank;
 pub mod register_bank;
 /// Instruction decoder. Parses words fetched in the memory bank into structs
 /// that the ALU can execute.
-mod decoder;
+pub mod decoder;
 /// Arithmetic-Logic unit, executes instructions decoded by `Decoder`. Instructions
 /// need register bank to read operands and store results. Some instructions
 /// (like load-store ones) need a memory bank too.
 mod alu;
+/// Implementation of fmt::Display
+mod display_instruction;
 
 type RawInstruction = u16;
 

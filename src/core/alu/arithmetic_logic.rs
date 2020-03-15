@@ -91,6 +91,26 @@ impl Alu {
         register_bank.registers[rdu] = register_bank.registers[rru];
     }
 
+    pub fn movw(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
+        unimplemented!();
+    }
+
+    pub fn muls(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
+        unimplemented!();
+    }
+
+    pub fn mulsu(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
+        unimplemented!();
+    }
+
+    pub fn fmul(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
+        unimplemented!();
+    }
+
+    pub fn fmuls(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
+        unimplemented!();
+    }
+
     // One register - One constant operations
     /// Substracts immediate to register
     pub fn subi(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
