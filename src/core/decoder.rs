@@ -89,12 +89,12 @@ fn decode_reg_const_op(raw_instruction: RawInstruction) -> Instruction {
 
 fn decode_load_store(raw_instruction: RawInstruction) -> Instruction {
     let is_load = raw_instruction & 0x0200 == 0;
-    let base_reg = if raw_instruction & 0x0008 == 0 {PointerRegister::Z} else {PointerRegister::Y};
+    let pointer = if raw_instruction & 0x0008 == 0 {PointerRegister::Z} else {PointerRegister::Y};
     let dest = ((raw_instruction & 0x01F0) >> 4) as u8;
     let (offset_lo, offset_mid, offset_hi) = (raw_instruction & 0x7,
         (raw_instruction & 0x0C00) >> 7, (raw_instruction & 0x2000) >> 8);
     let offset =  offset_lo + offset_mid + offset_hi;
-    Instruction::TransferIndirect{is_load, base_reg, dest, offset: offset as u8}
+    Instruction::TransferIndirect{is_load, pointer, dest, offset: offset as u8}
 }
 
 fn decode_misc_op(raw_instruction: RawInstruction) -> Instruction {
@@ -104,18 +104,40 @@ fn decode_misc_op(raw_instruction: RawInstruction) -> Instruction {
         _ => {
             match raw_instruction & 0x0F00 {
                 0 | 0x0100 | 0x0200 | 0x0300 => {
+                    let dest = ((raw_instruction & 0x01F0) >> 4) as u8;
+                    let is_load = raw_instruction & 0x0200 == 0;
                     match raw_instruction & 0xF {
-                        0xF => {
-                            let is_pop = raw_instruction & 0x0200 == 0;
-                            let reg = ((raw_instruction & 0x01F0) >> 4) as u8;
-                            Instruction::PushPop{is_pop, reg}
+                        0x1 => { // Z post incremented
+                            let pointer = PointerRegister::Z;
+                            Instruction::TransferChangePointer{is_load, pointer, dest, post_inc: true}
+                        },
+                        0x2 => { // Z pre decremented
+                            let pointer = PointerRegister::Z;
+                            Instruction::TransferChangePointer{is_load, pointer, dest, post_inc: false}
+                        },
+                        0x9 => { // Y post incremented
+                            let pointer = PointerRegister::Y;
+                            Instruction::TransferChangePointer{is_load, pointer, dest, post_inc: true}
+                        },
+                        0xA => { // Y pre decremented
+                            let pointer = PointerRegister::Y;
+                            Instruction::TransferChangePointer{is_load, pointer, dest, post_inc: false}
+                        },
+                        0xC => {
+                            let pointer = PointerRegister::X;
+                            Instruction::TransferIndirect{is_load, pointer, dest, offset: 0}
                         },
                         0xD => {
-                            let is_load = raw_instruction & 0x0200 == 0;
-                            let dest = ((raw_instruction & 0x01F0) >> 4) as u8;
-                            let base_reg = PointerRegister::X;
-                            Instruction::TransferIndirect{is_load, base_reg, dest, offset: 0}
+                            let pointer = PointerRegister::X;
+                            Instruction::TransferChangePointer{is_load, pointer, dest, post_inc: true}
+                        },
+                        0xE => {
+                            let pointer = PointerRegister::X;
+                            Instruction::TransferChangePointer{is_load, pointer, dest, post_inc: false}
                         }
+                        0xF => {
+                            Instruction::PushPop{is_pop: is_load, reg: dest}
+                        },
                         _ => Instruction::Unsupported { instruction: raw_instruction }
                     }
                 },

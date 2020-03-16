@@ -19,7 +19,7 @@ impl fmt::Display for Instruction {
                 write!(f, "{}\tr{} 0x{:02X}", op_str, *reg, *address)
             },
             Instruction::Nop => write!(f, "nop"),
-            Instruction::OneRegOp {op, rd} => write!(f, "Parsed but unsupported instruction"),
+            Instruction::OneRegOp {op, rd} => display_one_reg_op(f, *op as RawInstruction, *rd),
             Instruction::PushPop { is_pop, reg } => {
                 let op_str = if *is_pop { "pop" } else { "push" };
                 write!(f, "{}\tr{}", op_str, *reg)
@@ -29,16 +29,11 @@ impl fmt::Display for Instruction {
             Instruction::Ret {is_interrupt} => {
                 let op_str = if *is_interrupt { "reti" } else { "ret" };
                 write!(f, "{}", op_str)
-            }
-            Instruction::TransferIndirect { is_load, base_reg, dest, offset } =>  {
-                let op_str = if *is_load { "ldd" } else { "std" };
-                let base_reg_str = match *base_reg {
-                    PointerRegister::X => "X",
-                    PointerRegister::Y => "Y",
-                    PointerRegister::Z => "Z"
-                };
-                write!(f, "{}\t{}+{}, r{}", op_str, base_reg_str, offset, dest)
             },
+            Instruction::TransferIndirect { is_load, pointer, dest, offset } =>  
+                display_transfer_indirect(f, *is_load, *pointer, *dest, *offset),
+            Instruction::TransferChangePointer {is_load, pointer, dest, post_inc} =>
+                display_transfer_change_pointer(f, *is_load, *pointer, *dest, *post_inc),
             Instruction::TwoRegOp { op, rd, rr } => 
                 display_two_reg_op(f, *op, *rd, *rr),
             Instruction::Unsupported { instruction } => 
@@ -69,6 +64,20 @@ fn display_two_reg_op(f: &mut fmt::Formatter<'_>,
         alu::FMULS_OP => write!(f, "fmuls\tr{}, r{}", rd, rr),
         alu::FMULSU_OP => write!(f, "fmulsu\tr{}, r{}", rd, rr),
         _ => unreachable!()
+    }
+}
+
+fn display_one_reg_op(f: &mut fmt::Formatter<'_>,
+    op: RawInstruction, rd: u8) -> fmt::Result {
+    match op {
+        0x0 => write!(f, "com\tr{}", rd),
+        0x1 => write!(f, "neg\tr{}", rd),
+        0x2 => write!(f, "swap\tr{}", rd),
+        0x3 => write!(f, "inc\tr{}", rd),
+        0x5 => write!(f, "asr\tr{}", rd),
+        0x6 => write!(f, "lsr\tr{}", rd),
+        0x7 => write!(f, "ror\tr{}", rd),
+        _ => write!(f, "????"),
     }
 }
 
@@ -116,5 +125,44 @@ fn display_branch(f: &mut fmt::Formatter<'_>,
             0x7 => write!(f, "brid\t.{:#}", display_offset),
             _ => unreachable!()
         }
+    }
+}
+
+fn display_transfer_indirect(f: &mut fmt::Formatter<'_>,
+    is_load: bool, pointer: PointerRegister, dest: u8, offset: u8) -> fmt::Result {
+    let pointer_str = match pointer {
+        PointerRegister::X => "X",
+        PointerRegister::Y => "Y",
+        PointerRegister::Z => "Z"
+    };
+    let pointer_with_offset = if offset == 0 {
+        pointer_str.to_owned()
+    } else {
+        format!("{}+{}", pointer_str, offset)
+    };
+    let extra_d = if offset == 0 { "" } else { "d" };
+    if is_load {
+        write!(f, "ld{}\tr{}, {}", extra_d, dest, pointer_with_offset)
+    } else {
+        write!(f, "st{}\t{}, r{}", extra_d, pointer_with_offset, dest)
+    }
+}
+
+fn display_transfer_change_pointer(f: &mut fmt::Formatter<'_>,
+    is_load: bool, pointer: PointerRegister, dest: u8, post_inc: bool) -> fmt::Result {
+    let pointer_str = match pointer {
+        PointerRegister::X => "X",
+        PointerRegister::Y => "Y",
+        PointerRegister::Z => "Z"
+    };
+    let pointer_with_sign = if post_inc {
+        format!("{}+", pointer_str)
+    } else {
+        format!("-{}", pointer_str)
+    };
+    if is_load {
+        write!(f, "ld\tr{}, {}", dest, pointer_with_sign)
+    } else {
+        write!(f, "st\t{}, r{}", pointer_with_sign, dest)
     }
 }

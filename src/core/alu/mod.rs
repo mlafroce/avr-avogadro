@@ -45,9 +45,12 @@ impl Alu {
                 *op, *rd, *constant, register_bank),
             Instruction::Ret{is_interrupt} =>
                 Alu::execute_ret(*is_interrupt, register_bank, memory_bank),
-            Instruction::TransferIndirect{is_load, base_reg, dest, offset} =>
-                Alu::execute_transfer_indirect(*is_load, *base_reg, *dest,
+            Instruction::TransferIndirect{is_load, pointer, dest, offset} =>
+                Alu::execute_transfer_indirect(*is_load, *pointer, *dest,
                  *offset, register_bank, memory_bank),
+            Instruction::TransferChangePointer{is_load, pointer, dest, post_inc} =>
+                Alu::execute_transfer_change_pointer(*is_load, *pointer, *dest,
+                 *post_inc, register_bank, memory_bank),
             Instruction::TwoRegOp {op, rd, rr} => Alu::execute_arithmetic(
                 *op, *rd, *rr, register_bank, memory_bank),
             Instruction::OneRegOp {rd, op} => Alu::execute_one_reg_arithmetic(
@@ -133,8 +136,13 @@ impl Alu {
         Alu::push_pop(is_pop, reg, register_bank, memory_bank);
     }
 
-    fn execute_transfer_indirect(is_load: bool, base_reg: PointerRegister, reg: u8, offset: u8,
+    fn execute_transfer_indirect(is_load: bool, pointer: PointerRegister, reg: u8, offset: u8,
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
-        Alu::transfer_indirect(is_load, base_reg, reg, offset, register_bank, memory_bank);
+        Alu::transfer_indirect(is_load, pointer, reg, offset, register_bank, memory_bank);
+    }
+
+    fn execute_transfer_change_pointer(is_load: bool, pointer: PointerRegister, reg: u8, post_inc: bool,
+        register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
+        Alu::transfer_change_pointer(is_load, pointer, reg, post_inc, register_bank, memory_bank);
     }
 }

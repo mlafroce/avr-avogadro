@@ -36,17 +36,17 @@ Summary of AVR instruction set, taken from wikipedia.
 
 10k0 kksd dddd ykkk LDD/STD through Z+k or Y+k
 1001 00sd dddd 0000 iiii iiii iiii iiii lds rd,i/sts i,rd (i: 16-bit immediate sram address)
-1001 00sd dddd y001 ld/st rdthrough z+/y+
-1001 00sd dddd y010 ld/st rdthrough −z/−y
+1001 00sd dddd y001 ld/st rd through z+/y+
+1001 00sd dddd y010 ld/st rd through −z/−y
 1001 000d dddd 01q0 lpm/elpm rd,z
 1001 000d dddd 01q1 lpm/elpm rd,z+
 1001 001d dddd 0100 xch z,rd
 1001 001d dddd 0101 las z,rd
 1001 001d dddd 0110 lac z,rd
 1001 001d dddd 0111 lat z,rd
-1001 00sd dddd 1100 ld/st rdthrough x
-1001 00sd dddd 1101 ld/st rdthrough x+
-1001 00sd dddd 1110 ld/st rdthrough −x
+1001 00sd dddd 1100 ld/st rd through x
+1001 00sd dddd 1101 ld/st rd through x+
+1001 00sd dddd 1110 ld/st rd through −x
 1001 00sd dddd 1111 pop/push rd
 
 * one-operand instructions

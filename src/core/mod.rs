@@ -36,7 +36,9 @@ pub enum Instruction {
     PushPop {is_pop: bool, reg: u8},
     RegConstOp {op: RawInstruction, rd: u8, constant: u8},
     Ret {is_interrupt: bool},
-    TransferIndirect {is_load: bool, base_reg: PointerRegister, dest: u8, offset: u8},
+    TransferIndirect {is_load: bool, pointer: PointerRegister, dest: u8, offset: u8},
+    // For pre increment and post decrement transfers
+    TransferChangePointer {is_load: bool, pointer: PointerRegister, dest: u8, post_inc: bool}, 
     TwoRegOp {op: RawInstruction, rd: u8, rr: u8},
     Unsupported {instruction: RawInstruction}
 }

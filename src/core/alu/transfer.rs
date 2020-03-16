@@ -37,15 +37,15 @@ impl Alu {
         }
     }
 
-    pub fn transfer_indirect(is_load: bool, base_reg: PointerRegister, reg: u8, offset: u8,
+    pub fn transfer_indirect(is_load: bool, pointer: PointerRegister, reg: u8, offset: u8,
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
-        let base_reg_num = match base_reg {
+        let pointer = match pointer {
             PointerRegister::X => 26,
             PointerRegister::Y => 28,
             PointerRegister::Z => 30,
         };
-        let base_address_lo = register_bank.registers[base_reg_num as usize];
-        let base_address_hi = register_bank.registers[base_reg_num as usize + 1];
+        let base_address_lo = register_bank.registers[pointer as usize];
+        let base_address_hi = register_bank.registers[pointer as usize + 1];
         let address : u16 = ((base_address_hi as u16) << 8) + base_address_lo as u16 + offset as u16;
         if is_load {
             let data = memory_bank.get_data_byte(address);
@@ -54,5 +54,46 @@ impl Alu {
             let data = register_bank.registers[reg as usize];
             memory_bank.set_data_byte(address, data);
         } 
+    }
+
+    pub fn transfer_change_pointer(is_load: bool, pointer: PointerRegister, reg: u8, post_inc: bool,
+        register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
+        if post_inc {
+            Alu::transfer_indirect(is_load, pointer, reg, 0, register_bank, memory_bank);
+            Alu::increment_pointer(pointer, register_bank);
+        } else {
+            Alu::decrement_pointer(pointer, register_bank);
+            Alu::transfer_indirect(is_load, pointer, reg, 0, register_bank, memory_bank);
+        }
+    }
+
+    fn decrement_pointer (pointer: PointerRegister, register_bank: &mut RegisterBank) {
+        let rd = match pointer {
+            PointerRegister::X => 26,
+            PointerRegister::Y => 28,
+            PointerRegister::Z => 30,
+        };
+        let rdl = register_bank.registers[rd];
+        let rdh = register_bank.registers[rd+1];
+        let resl = rdl.wrapping_sub(1);
+        register_bank.registers[rd] = resl;
+        if rdl == 0 {
+            register_bank.registers[rd+1] = rdh.wrapping_sub(1);
+        }
+    }
+
+    fn increment_pointer (pointer: PointerRegister, register_bank: &mut RegisterBank) {
+        let rd = match pointer {
+            PointerRegister::X => 26,
+            PointerRegister::Y => 28,
+            PointerRegister::Z => 30,
+        };
+        let rdl = register_bank.registers[rd];
+        let rdh = register_bank.registers[rd+1];
+        let resl = rdl.wrapping_add(1);
+        register_bank.registers[rd] = resl;
+        if resl == 0 {
+            register_bank.registers[rd+1] = rdh.wrapping_add(1);
+        }
     }
 }
