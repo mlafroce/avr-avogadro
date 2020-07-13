@@ -3,7 +3,11 @@ name = "avr-avogadro"
 version = "0.1.0"
 authors = ["Matías Lafroce <mlafroce@gmail.com>"]
 edition = "2018"
+links = "gcc"
 build = "build.rs"
+
+[lib]
+crate-type = ["rlib", "dylib"]
 
 [profile.release]
 debug = true
@@ -15,3 +19,8 @@ env_logger = "0.7.1"
 
 [build-dependencies]
 cmake = "0.1"
+
+[target.'cfg(target_os="android")']
+
+[target.'cfg(target_os="android")'.dependencies]
+jni = { version = "0.5", default-features = false }

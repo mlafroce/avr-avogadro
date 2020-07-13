@@ -109,28 +109,35 @@ fn test_instruction_display() {
     (0x91ff,"pop\tr31"),
     (0x920f,"push\tr0"),
     (0x93ff,"push\tr31"),
-    (0x9400,"com\tr0"), // 1001 010d dddd 0000 com: rd
+    (0x9400,"com\tr0"), // 1001 010d dddd 0000: com rd
     (0x95f0,"com\tr31"), 
-    (0x9401,"neg\tr0"), // 1001 010d dddd 0001 neg: rd
+    (0x9401,"neg\tr0"), // 1001 010d dddd 0001: neg rd
     (0x95f1,"neg\tr31"),
-    (0x9402,"swap\tr0"), // 1001 010d dddd 0010 swap: rd
+    (0x9402,"swap\tr0"), // 1001 010d dddd 0010: swap rd
     (0x95f2,"swap\tr31"), 
-    (0x9403,"inc\tr0"), // 1001 010d dddd 0011 inc: rd
+    (0x9403,"inc\tr0"), // 1001 010d dddd 0011: inc rd
     (0x95f3,"inc\tr31"),
     (0x9404,"????"),// 1001 010d dddd 0100 (reserved)
-    (0x9405,"asr\tr0"), // 1001 010d dddd 0101 asr: rd
+    (0x9405,"asr\tr0"), // 1001 010d dddd 0101: asr rd
     (0x95f5,"asr\tr31"),
-    (0x9406,"lsr\tr0"), // 1001 010d dddd 0110 lsr: rd
+    (0x9406,"lsr\tr0"), // 1001 010d dddd 0110: lsr rd
     (0x95f6,"lsr\tr31"),
-    (0x9407,"ror\tr0"), // 1001 010d dddd 0111 ror: rd
+    (0x9407,"ror\tr0"), // 1001 010d dddd 0111: ror rd
     (0x95f7,"ror\tr31"),
+    // (0x9408,"sec"), // 1001 0100 bbbb 1000: sex/clx status register clear/set bit
+    // (0x9418,"sec"),
+    // (0x9428,"sec"),
+    // (0x9438,"sec"),
+    // (0x9448,"sec"),
+    // (0x9458,"sec"),
+    // (0x9468,"sec"),
+    // (0x9478,"sec"),
+    // (0x9488,"sec"),
     ];
     let mut buf = String::new();
     for instruction in instructions_test_set {
-        println!("Decoding: {:x}", instruction.0);
         let decoded = Decoder::decode(instruction.0);
         write!(buf, "{}", decoded).unwrap();
-        println!("Decoded: {}", buf);
         assert_eq!(buf, instruction.1);
         buf.clear();
     }

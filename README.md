@@ -18,7 +18,7 @@ Currently only linux target is supported.  To build from sources you need
 
 * GCC toolchain  (*g++* needed for GUI)
 
-* CMake (>= 3.9) (Cargo build instructions use cmake to build GUI)
+* CMake (>= 3.9) (Cargo build instructions use *cmake* to build GUI)
 
 From a terminal, you can clone the repo with 
 

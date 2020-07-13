@@ -1,7 +1,11 @@
 extern crate cmake;
 use cmake::Config;
+use std::env;
 
 fn main() {
-    let dst = Config::new("ui").build();
-    println!("cargo:rustc-link-search=native={}", dst.display());
+    let target = env::var("TARGET").unwrap();
+    if !target.contains("android") {
+        let dst = Config::new("ui").build();
+        println!("cargo:rustc-link-search=native={}", dst.display());
+    }
 }
