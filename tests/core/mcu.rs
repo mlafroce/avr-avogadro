@@ -3,7 +3,7 @@ extern crate avr_avogadro;
 use avr_avogadro::core::mcu_factory::McuFactory;
 
 #[test]
-/// Tests símple Nop instruction
+/// Tests simple Nop instruction
 /// Program counter should advance
 fn test_step() {
     let mut mcu = McuFactory::create("attiny85");

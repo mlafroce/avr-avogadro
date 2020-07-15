@@ -16,6 +16,8 @@ mod transfer;
 mod call_jmp;
 /// Branch Instruction
 mod branch;
+/// Misc instructions
+mod zero_reg;
 
 pub const MOVW_OP: RawInstruction = 0x11;
 pub const MULS_OP: RawInstruction = 0x12;
@@ -43,8 +45,6 @@ impl Alu {
             Instruction::RegConstOp {op, rd, constant} =>
                 Alu::execute_arith_with_constant(
                 *op, *rd, *constant, register_bank),
-            Instruction::Ret{is_interrupt} =>
-                Alu::execute_ret(*is_interrupt, register_bank, memory_bank),
             Instruction::TransferIndirect{is_load, pointer, dest, offset} =>
                 Alu::execute_transfer_indirect(*is_load, *pointer, *dest,
                  *offset, register_bank, memory_bank),
@@ -55,6 +55,8 @@ impl Alu {
                 *op, *rd, *rr, register_bank, memory_bank),
             Instruction::OneRegOp {rd, op} => Alu::execute_one_reg_arithmetic(
                 *op, *rd, register_bank),
+            Instruction::ZeroRegOp{op} =>
+                Alu::execute_zero_reg_op(*op, register_bank, memory_bank),
             _ => warn!("Execute - Unknown Instruction: {}", instruction)
         }
     }
@@ -123,6 +125,22 @@ impl Alu {
             0x6 => Alu::lsr(rdu, register_bank),
             0x7 => Alu::ror(rdu, register_bank),
             _ => warn!("Execute arith - Unknown arithmetic instruction opcode: {:x}", op)
+        }
+    }
+
+    fn execute_zero_reg_op(op: u8,
+        register_bank: &mut RegisterBank, memory_bank: &MemoryBank) {
+        match op {
+            0x0 => Alu::ret(false, register_bank, memory_bank),
+            0x1 => Alu::ret(true, register_bank, memory_bank),
+            //0x8 => Alu::sleep(),
+            //0x9 => Alu::break(),
+            //0xa => Alu::wdr(),
+            //0xc => Alu::load_store_pm(),
+            //0xd => Alu::load_store_pm(),
+            //0xe => Alu::load_store_pm(),
+            //0xf => Alu::load_store_pm(),
+            _ => warn!("Execute zero reg op - Unknown instruction opcode: {:x}", op)
         }
     }
 

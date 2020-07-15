@@ -9,14 +9,14 @@ impl fmt::Display for Instruction {
         match self {
             Instruction::Branch { op, test_set, offset }
                 => display_branch(f, *op, *test_set, *offset),
-            Instruction::CallJmp { is_call, relative, address } => {
-                let r_str = if *relative { "r" } else { "" };
-                let op_str = if *is_call { "call" } else { "jmp" };
-                write!(f, "{}{}\t0x{:02X}", r_str, op_str, *address)
-            },
+            Instruction::CallJmp { is_call, relative, address }
+                => display_calljmp(f, *is_call, *relative, *address),
             Instruction::InOut {is_in, reg, address } => {
-                let op_str = if *is_in { "in" } else { "out" };
-                write!(f, "{}\tr{} 0x{:02X}", op_str, *reg, *address)
+                if *is_in {
+                    write!(f, "in\tr{}, 0x{:02x}", *reg, *address)
+                } else {
+                    write!(f, "out\t0x{:02x}, r{}", *address, *reg)
+                }
             },
             Instruction::Nop => write!(f, "nop"),
             Instruction::OneRegOp {op, rd} => display_one_reg_op(f, *op as RawInstruction, *rd),
@@ -26,10 +26,6 @@ impl fmt::Display for Instruction {
             },
             Instruction::RegConstOp {op, rd, constant } => 
                 display_arith_costant(f, *op, *rd, *constant),
-            Instruction::Ret {is_interrupt} => {
-                let op_str = if *is_interrupt { "reti" } else { "ret" };
-                write!(f, "{}", op_str)
-            },
             Instruction::TransferIndirect { is_load, pointer, dest, offset } =>  
                 display_transfer_indirect(f, *is_load, *pointer, *dest, *offset),
             Instruction::TransferChangePointer {is_load, pointer, dest, post_inc} =>
@@ -37,7 +33,9 @@ impl fmt::Display for Instruction {
             Instruction::TwoRegOp { op, rd, rr } => 
                 display_two_reg_op(f, *op, *rd, *rr),
             Instruction::Unsupported { instruction } => 
-                write!(f, "Unsupported instruction: {:02X}", *instruction)
+                write!(f, ".word\t0x{:02x}", *instruction),
+            Instruction::ZeroRegOp { op } =>
+                display_zero_reg_op(f, *op)
         }
     }
 }
@@ -77,7 +75,48 @@ fn display_one_reg_op(f: &mut fmt::Formatter<'_>,
         0x5 => write!(f, "asr\tr{}", rd),
         0x6 => write!(f, "lsr\tr{}", rd),
         0x7 => write!(f, "ror\tr{}", rd),
-        _ => write!(f, "????"),
+        0x8 => display_set_clear(f, rd),
+        _ => { let word = 0x9404 + ((rd as u16) << 4);
+            write!(f,".word\t0x{:x}", word)
+        }
+    }
+}
+
+
+fn display_set_clear (f: &mut fmt::Formatter<'_>, op: u8) -> fmt::Result {
+    match op {
+        0x0 => write!(f, "sec"),
+        0x1 => write!(f, "sez"),
+        0x2 => write!(f, "sen"),
+        0x3 => write!(f, "sev"),
+        0x4 => write!(f, "ses"),
+        0x5 => write!(f, "seh"),
+        0x6 => write!(f, "set"),
+        0x7 => write!(f, "sei"),
+        0x8 => write!(f, "clc"),
+        0x9 => write!(f, "clz"),
+        0xa => write!(f, "cln"),
+        0xb => write!(f, "clv"),
+        0xc => write!(f, "cls"),
+        0xd => write!(f, "clh"),
+        0xe => write!(f, "clt"),
+        0xf => write!(f, "cli"),
+        _ => unreachable!()
+    }
+}
+
+fn display_zero_reg_op(f: &mut fmt::Formatter<'_>, op: u8) -> fmt::Result {
+    match op {
+        0x0 => write!(f, "ret"),
+        0x1 => write!(f, "reti"),
+        0x8 => write!(f, "sleep"),
+        0x9 => write!(f, "break"),
+        0xa => write!(f, "wdr"),
+        0xc => write!(f, "lpm"),
+        0xd => write!(f, "elpm"),
+        0xe => write!(f, "spm"),
+        0xf => write!(f, "spm\tz+"),
+        _ => write!(f,".word\t0x{:x}", op)
     }
 }
 
@@ -103,28 +142,43 @@ fn display_branch(f: &mut fmt::Formatter<'_>,
     let display_offset = offset * 2;
     if test_set {
         match op {
-            0x0 => write!(f, "brcs\t.{:#}", display_offset),
-            0x1 => write!(f, "breq\t.{:#}", display_offset),
-            0x2 => write!(f, "brmi\t.{:#}", display_offset),
-            0x3 => write!(f, "brvs\t.{:#}", display_offset),
-            0x4 => write!(f, "brlt\t.{:#}", display_offset),
-            0x5 => write!(f, "brhs\t.{:#}", display_offset),
-            0x6 => write!(f, "brts\t.{:#}", display_offset),
-            0x7 => write!(f, "brie\t.{:#}", display_offset),
+            0x0 => write!(f, "brcs\t.{:+#}", display_offset),
+            0x1 => write!(f, "breq\t.{:+#}", display_offset),
+            0x2 => write!(f, "brmi\t.{:+#}", display_offset),
+            0x3 => write!(f, "brvs\t.{:+#}", display_offset),
+            0x4 => write!(f, "brlt\t.{:+#}", display_offset),
+            0x5 => write!(f, "brhs\t.{:+#}", display_offset),
+            0x6 => write!(f, "brts\t.{:+#}", display_offset),
+            0x7 => write!(f, "brie\t.{:+#}", display_offset),
             _ => unreachable!()
         }
     } else {
         match op {
-            0x0 => write!(f, "brcc\t.{:#}", display_offset),
-            0x1 => write!(f, "brne\t.{:#}", display_offset),
-            0x2 => write!(f, "brpl\t.{:#}", display_offset),
-            0x3 => write!(f, "brvc\t.{:#}", display_offset),
-            0x4 => write!(f, "brge\t.{:#}", display_offset),
-            0x5 => write!(f, "brhc\t.{:#}", display_offset),
-            0x6 => write!(f, "brtc\t.{:#}", display_offset),
-            0x7 => write!(f, "brid\t.{:#}", display_offset),
+            0x0 => write!(f, "brcc\t.{:+#}", display_offset),
+            0x1 => write!(f, "brne\t.{:+#}", display_offset),
+            0x2 => write!(f, "brpl\t.{:+#}", display_offset),
+            0x3 => write!(f, "brvc\t.{:+#}", display_offset),
+            0x4 => write!(f, "brge\t.{:+#}", display_offset),
+            0x5 => write!(f, "brhc\t.{:+#}", display_offset),
+            0x6 => write!(f, "brtc\t.{:+#}", display_offset),
+            0x7 => write!(f, "brid\t.{:+#}", display_offset),
             _ => unreachable!()
         }
+    }
+}
+
+fn display_calljmp(f: &mut fmt::Formatter<'_>,
+    is_call: bool, relative: bool, address: u16) -> fmt::Result {
+    let op_str = if is_call { "call" } else { "jmp" };
+    if relative {
+        let offset: i16 = if address & 0x800 == 0 {
+            address as i16 & 0xFFF
+        } else {
+            (address as i16 & 0xFFF) - 0x1000
+        };
+        write!(f, "r{}\t.{:+}", op_str, offset * 2)
+    } else {
+        write!(f, "{}\t, 0x{:x}", op_str, address)
     }
 }
 
