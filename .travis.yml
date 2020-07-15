@@ -1,4 +1,8 @@
 language: rust
+# tarpaulin has only been tested on bionic and trusty other distros may have issues
+dist: bionic
+
+cache: cargo
 
 rust:
   - stable
@@ -12,6 +16,7 @@ matrix:
 addons:
   apt:
     packages:
+      - libssl-dev
       - libcurl4-openssl-dev
       - libelf-dev
       - libdw-dev
@@ -21,17 +26,22 @@ addons:
       - libiberty-dev
       - qt5-default
 
+before_script: |
+  if [[ "$TRAVIS_RUST_VERSION" == stable ]]; then
+    cargo install cargo-tarpaulin
+  fi
+
+script:
+- cargo clean
+- cargo build
+- cargo test
+
 after_success: |
-  wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz &&
-  tar xzf master.tar.gz &&
-  cd kcov-master &&
-  mkdir build &&
-  cd build &&
-  cmake .. &&
-  make &&
-  make install DESTDIR=../../kcov-build &&
-  cd ../.. &&
-  rm -rf kcov-master &&
-  for file in target/debug/*; do [ -x "${file}" ] || continue; mkdir -p "target/cov/$(basename $file)"; ./kcov-build/usr/local/bin/kcov --exclude-pattern=/.cargo,/usr/lib,target/debug/avr-avogadro --verify "target/cov/$(basename $file)" "$file"; done &&
-  bash <(curl -s https://codecov.io/bash) &&
-  echo "Uploaded code coverage"
+  if [[ "$TRAVIS_RUST_VERSION" == stable ]]; then
+    # Uncomment the following line for coveralls.io
+    # cargo tarpaulin --ciserver travis-ci --coveralls $TRAVIS_JOB_ID
+
+    # Uncomment the following two lines create and upload a report for codecov.io
+    cargo tarpaulin --out Xml
+    bash <(curl -s https://codecov.io/bash)
+  fi
