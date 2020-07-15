@@ -159,3 +159,21 @@ fn test_mov_zero() {
     assert_eq!(mcu.get_program_counter(), 0x2);
     assert_eq!(mcu.get_register(2), 0x00);
 }
+
+/// Tests simple movw
+///
+/// MOVW opcode: 0000 0001 dddd rrrr
+/// movw r16:r17, r0:r1 -> 0000 0001 1000 0000 -> 0180
+#[test]
+fn test_movw() {
+    let mut mcu = McuFactory::create("attiny85");
+    mcu.set_register(0, 0xC5);
+    mcu.set_register(1, 0x95);
+    let memory_data = vec![0x80, 0x01];
+    mcu.load_program_memory(&memory_data);
+    assert_eq!(mcu.get_program_counter(), 0x0);
+    mcu.step();
+    assert_eq!(mcu.get_program_counter(), 0x2);
+    assert_eq!(mcu.get_register(16), 0xC5);
+    assert_eq!(mcu.get_register(17), 0x95);
+}

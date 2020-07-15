@@ -10,6 +10,8 @@ use super::PointerRegister;
 pub struct Alu;
 /// Arithmetic instructions (sum, substract, etc) and logic (and, or, etc)
 mod arithmetic_logic;
+/// Arithmetic instructions (sum, substract, etc) and logic (and, or, etc)
+mod multiplication;
 /// Transfer instructions (load, store and their variants)
 mod transfer;
 /// Call and jump Instruction
@@ -124,6 +126,7 @@ impl Alu {
             0x5 => Alu::asr(rdu, register_bank),
             0x6 => Alu::lsr(rdu, register_bank),
             0x7 => Alu::ror(rdu, register_bank),
+            0xA => Alu::dec(rdu, register_bank),
             _ => warn!("Execute arith - Unknown arithmetic instruction opcode: {:x}", op)
         }
     }

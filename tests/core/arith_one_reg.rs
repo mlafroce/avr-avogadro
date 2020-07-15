@@ -123,7 +123,7 @@ fn test_swap() {
 ///
 fn test_inc() {
     let mut mcu = McuFactory::create("attiny85");
-    let program_memory = vec![0x03, 0x95, 0x03, 0x95];
+    let program_memory = vec![0x03, 0x95, 0x03, 0x95, 0x03, 0x95];
     mcu.load_program_memory(&program_memory);
     mcu.set_register(16, 0xFE);
     // 0xFE -> 0xFF
@@ -140,6 +140,57 @@ fn test_inc() {
     assert_eq!(0x02, flag_as_byte,
             "Flags assertion failed: {:08b} != {:08b}",
             0x02, flag_as_byte);
+    // Test overflow
+    mcu.set_register(16, 0x7F);
+    mcu.step();
+    flag_as_byte = mcu.get_flags().into();
+    assert_eq!(mcu.get_register(16), 0x80);
+    assert_eq!(0xc, flag_as_byte,
+            "Flags assertion failed: {:08b} != {:08b}",
+            0xc, flag_as_byte);
+}
+
+#[test]
+/// Tests decrement (DEC) instruction
+///
+/// INC opcode: 1001 010d dddd 1010
+/// dec r16 ->  1001 0101 0000 1010 -> 950A
+///
+/// Remember AVR is little endian!
+///
+fn test_dec() {
+    let mut mcu = McuFactory::create("attiny85");
+    let program_memory = vec![0x0A, 0x95, 0x0A, 0x95, 0x0A, 0x95, 0x0A, 0x95];
+    mcu.load_program_memory(&program_memory);
+    mcu.set_register(16, 0x02);
+    // 0x02 -> 0x01
+    mcu.step();
+    let mut flag_as_byte : u8 = mcu.get_flags().into();
+    assert_eq!(mcu.get_register(16), 0x01);
+    assert_eq!(0x0, flag_as_byte,
+            "Flags assertion failed: {:08b} != {:08b}",
+            0x0, flag_as_byte);
+    // 0x01 -> 0x00
+    mcu.step();
+    flag_as_byte = mcu.get_flags().into();
+    assert_eq!(mcu.get_register(16), 0);
+    assert_eq!(0x02, flag_as_byte,
+            "Flags assertion failed: {:08b} != {:08b}",
+            0x02, flag_as_byte);
+    mcu.step();
+    flag_as_byte = mcu.get_flags().into();
+    assert_eq!(mcu.get_register(16), 0xFF);
+    assert_eq!(0x14, flag_as_byte,
+            "Flags assertion failed: {:08b} != {:08b}",
+            0x14, flag_as_byte);
+    // Test overflow
+    mcu.set_register(16, 0x80);
+    mcu.step();
+    flag_as_byte = mcu.get_flags().into();
+    assert_eq!(mcu.get_register(16), 0x7F);
+    assert_eq!(0x18, flag_as_byte,
+            "Flags assertion failed: {:08b} != {:08b}",
+            0x18, flag_as_byte);
 }
 
 #[test]

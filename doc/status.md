@@ -26,7 +26,7 @@
 * [ ] `SBR`: Set bits in register
 * [ ] `CBR`: Clear bits in register
 * [x] `INC`: Increment
-* [ ] `DEC`: Decrement
+* [x] `DEC`: Decrement
 * [ ] `TST`: Test for zero or minus
 * [ ] `CLR`: Clear register
 * [ ] `SER`: Set all bits in register

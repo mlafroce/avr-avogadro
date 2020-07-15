@@ -92,23 +92,8 @@ impl Alu {
     }
 
     pub fn movw(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
-        unimplemented!();
-    }
-
-    pub fn muls(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
-        unimplemented!();
-    }
-
-    pub fn mulsu(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
-        unimplemented!();
-    }
-
-    pub fn fmul(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
-        unimplemented!();
-    }
-
-    pub fn fmuls(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
-        unimplemented!();
+        register_bank.registers[rdu] = register_bank.registers[rru];
+        register_bank.registers[rdu+1] = register_bank.registers[rru+1];
     }
 
     // One register - One constant operations
@@ -170,6 +155,18 @@ impl Alu {
         flags.zero = res == 0;
         flags.neg = res & 0x80 != 0;
         flags.over = res == 0x80;
+        flags.sign = flags.neg ^ flags.over;
+        register_bank.set_flags(flags);
+    }
+
+    /// Decrement by 1 register, without affecting carry flag
+    pub fn dec(rdu: usize, register_bank: &mut RegisterBank) {
+        let res = register_bank.registers[rdu].wrapping_sub(1);
+        register_bank.registers[rdu] = res;
+        let mut flags = register_bank.get_flags();
+        flags.zero = res == 0;
+        flags.neg = res & 0x80 != 0;
+        flags.over = res == 0x7F;
         flags.sign = flags.neg ^ flags.over;
         register_bank.set_flags(flags);
     }
