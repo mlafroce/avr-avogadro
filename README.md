@@ -1,6 +1,7 @@
 # AVR-Avogadro
 
 [![Build Status](https://travis-ci.org/mlafroce/avr-avogadro.svg?branch=development)](https://travis-ci.org/mlafroce/avr-avogadro)
+[![codecov](https://codecov.io/gh/mlafroce/avr-avogadro/branch/development/graph/badge.svg)](https://codecov.io/gh/mlafroce/avr-avogadro)
 
 AVR simulator made in Rust and C++
 
