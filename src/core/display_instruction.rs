@@ -7,6 +7,8 @@ use std::fmt;
 impl fmt::Display for Instruction {
     fn fmt (&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Instruction::BitManipOp {address, bit, set} =>
+                display_bit_manip_op(f, *address, *bit, *set),
             Instruction::Branch { op, test_set, offset }
                 => display_branch(f, *op, *test_set, *offset),
             Instruction::CallJmp { is_call, relative, address }
@@ -26,6 +28,8 @@ impl fmt::Display for Instruction {
             },
             Instruction::RegConstOp {op, rd, constant } => 
                 display_arith_costant(f, *op, *rd, *constant),
+            Instruction::SkipOp {address, bit, set} =>
+                display_skip_op(f, *address, *bit, *set),
             Instruction::TransferIndirect { is_load, pointer, dest, offset } =>  
                 display_transfer_indirect(f, *is_load, *pointer, *dest, *offset),
             Instruction::TransferChangePointer {is_load, pointer, dest, post_inc} =>
@@ -37,6 +41,16 @@ impl fmt::Display for Instruction {
             Instruction::ZeroRegOp { op } =>
                 display_zero_reg_op(f, *op)
         }
+    }
+}
+
+
+fn display_bit_manip_op(f: &mut fmt::Formatter<'_>,
+    address: u8, bit: u8, set: bool) -> fmt::Result {
+    if set {
+        write!(f, "sbi\t0x{:02x}, {:x}", address, bit)
+    } else {
+        write!(f, "cbi\t0x{:02x}, {:x}", address, bit)
     }
 }
 
@@ -79,6 +93,15 @@ fn display_one_reg_op(f: &mut fmt::Formatter<'_>,
         _ => { let word = 0x9404 + ((rd as u16) << 4);
             write!(f,".word\t0x{:x}", word)
         }
+    }
+}
+
+fn display_skip_op(f: &mut fmt::Formatter<'_>,
+    address: u8, bit: u8, set: bool) -> fmt::Result {
+    if set {
+        write!(f, "sbis\t0x{:02x}, {:x}", address, bit)
+    } else {
+        write!(f, "sbic\t0x{:02x}, {:x}", address, bit)
     }
 }
 

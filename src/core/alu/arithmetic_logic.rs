@@ -3,7 +3,6 @@ use crate::core::memory_bank::MemoryBank;
 use super::Alu;
 use super::RawInstruction;
 
-const LDS_STS_MASK: RawInstruction = 0xFC0F;
 
 impl Alu {
     // Two Registers instructions
@@ -33,13 +32,7 @@ impl Alu {
         let rd_value = register_bank.registers[rdu];
         let rr_value = register_bank.registers[rru];
         if rd_value == rr_value {
-            register_bank.increment_pc();
-        }
-        // If next instruction is `LDS` or `STS`, should skip again
-        let pc = register_bank.get_program_counter();
-        let next_instruction = memory_bank.get_program_word(pc);
-        if next_instruction & LDS_STS_MASK == 0x9000 {
-            register_bank.increment_pc();
+            register_bank.increment_pc(memory_bank);
         }
     }
 
@@ -305,5 +298,16 @@ impl Alu {
         flags.zero = resh == 0 && resl == 0;
         flags.sign = flags.neg ^ flags.over;
         register_bank.set_flags(flags);
+    }
+
+    pub fn execute_bit_manip(address: u8, bit: u8, set: bool, memory_bank: &mut MemoryBank) {
+        let io_reg = memory_bank.get_data_byte((address + 0x20).into());
+        let mask = 1 << bit;
+        let new_val = if set {
+            io_reg | mask
+        } else {
+            io_reg & !mask
+        };
+        memory_bank.set_data_byte((address + 0x20).into(), new_val);
     }
 }

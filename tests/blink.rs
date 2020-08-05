@@ -44,8 +44,8 @@ fn test_blink() {
     pathbuf.push("tests");
     pathbuf.push("blink.bin");
     let path = pathbuf.into_os_string().into_string().unwrap();
-    mcu.load_from_file(&path, true);
-    mcu.load_from_file(&path, true);
+    mcu.load_from_file(&path, true).unwrap();
+    mcu.load_from_file(&path, true).unwrap();
     assert_eq!(mcu.get_data_byte(PORT_B), 0);
     mcu.step_n(16);
     assert_eq!(mcu.get_program_counter(), 0x40);

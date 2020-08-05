@@ -1,4 +1,5 @@
 use crate::core::register_bank::RegisterBank;
+use crate::core::memory_bank::MemoryBank;
 use super::Alu;
 
 
@@ -20,5 +21,16 @@ impl Alu {
             _ => unreachable!()
         }
         register_bank.set_program_counter(pc as u16);
+    }
+
+    pub fn execute_skip(address: u8, bit: u8, set: bool,
+        register_bank: &mut RegisterBank, memory_bank: &MemoryBank) {
+        let io_reg = memory_bank.get_data_byte((address + 0x20).into());
+        let mask = 1 << bit;
+        let skip_bit_set = io_reg & mask != 0;
+        let should_skip = skip_bit_set == set;
+        if should_skip {
+            register_bank.increment_pc(memory_bank);
+        }
     }
 }

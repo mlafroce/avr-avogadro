@@ -1,5 +1,11 @@
 # Development status
 
+**Reference**:
+
+* [ ] Not implemented
+* [-] Not tested / tests incomplete
+* [x] Tested
+
 ## Instruction set
 
 ### Minimal AVR1 Core
@@ -11,91 +17,91 @@
 * [x] `ADD`: Add without carry
 * [x] `ADC`: Add with carry
 * [x] `SUB`: Substract without carry 
-* [x] `SUBI`: Substract immediate without carry
-* [x] `SBC`: Substract with carry
-* [x] `SBCI`: Substract with carry, set bit on I/O registry
+* [-] `SUBI`: Substract immediate without carry
+* [-] `SBC`: Substract with carry
+* [-] `SBCI`: Substract with carry, set bit on I/O registry
 
 * **Logic**
-* [x] `AND`: Logical *AND*
-* [x] `ANDI`: Logical *AND* with immediate
-* [x] `OR`: Logical *OR*
-* [x] `ORI`: Logical *OR* with immediate
-* [x] `EOR`: Logical *XOR* (exclusive or)
-* [x] `COM`: One's complement
-* [x] `NEG`: Two's complement
-* [ ] `SBR`: Set bits in register
-* [ ] `CBR`: Clear bits in register
-* [x] `INC`: Increment
-* [x] `DEC`: Decrement
-* [ ] `TST`: Test for zero or minus
-* [ ] `CLR`: Clear register
-* [ ] `SER`: Set all bits in register
+* [-] `AND`: Logical *AND*
+* [-] `ANDI`: Logical *AND* with immediate
+* [-] `OR`: Logical *OR*
+* [-] `ORI`: Logical *OR* with immediate
+* [-] `EOR`: Logical *XOR* (exclusive or)
+* [-] `COM`: One's complement
+* [-] `NEG`: Two's complement
+* [-] `SBR`: Set bits in register (meta-op)
+* [-] `CBR`: Clear bits in register (meta-op)
+* [-] `INC`: Increment
+* [-] `DEC`: Decrement
+* [-] `TST`: Test for zero or minus (meta-op)
+* [-] `CLR`: Clear register (meta-op)
+* [-] `SER`: Set all bits in register (meta-op)
 
 * **Comparison**
-* [x] `CP`: Compare
-* [x] `CPC`: Compare with carry
-* [x] `CPI`: Compare with immediate
+* [-] `CP`: Compare
+* [-] `CPC`: Compare with carry
+* [-] `CPI`: Compare with immediate
 
 
 * **Call / Jumps**
 
-* [x] `RJMP`: Relative jump
-* [x] `RCALL`: Relative call to subroutine
-* [x] `RET`: Return from subroutine
-* [x] `RETI`: Return from interrupt
+* [-] `RJMP`: Relative jump
+* [-] `RCALL`: Relative call to subroutine
+* [-] `RET`: Return from subroutine
+* [-] `RETI`: Return from interrupt
 
 
 * **Skips**
 
-* [x] `CPSE`: Compare skip if equals
-* [ ] `SBIC`: Skip if bit in I/O register is cleared
-* [ ] `SBIS`: Skip if bit in I/O register is set
+* [-] `CPSE`: Compare skip if equals
+* [-] `SBIC`: Skip if bit in I/O register is cleared
+* [-] `SBIS`: Skip if bit in I/O register is set
 * [ ] `SBRC`: Skip if bit in register is cleared
 * [ ] `SBRS`: Skip if bit in register is set
 
 
 * **Branches**
 
-* [x] `BRBC`: Branch if bit in SREG is cleared
-* [x] `BRBS`: Branch if bit in SREG is set
-* [x] `BREQ`: Branch if equal
-* [x] `BRNE`: Branch if not equal
-* [x] `BRCC`: Branch if carry cleared
-* [x] `BRCS`: Branch if carry set
-* [x] `BRSH`: Branch if same or higher
-* [x] `BRLO`: Branch if lower (unsigned)
-* [x] `BRMI`: Branch if minus
-* [x] `BRPL`: Branch if plus
-* [x] `BRGE`: Branch if greater or equal
-* [x] `BRLT`: Branch if less than (signed)
-* [x] `BRHC`: Branch if half carry is cleared
-* [x] `BRHS`: Branch if half carry is set
-* [x] `BRTC`: Branch if T flag is cleared
-* [x] `BRTS`: Branch if T flag is set
-* [x] `BRVS`: Branch if overflow is set
-* [x] `BRVC`: Branch if overflow is cleared
-* [x] `BRIE`: Branch if global interrupt is enabled
-* [x] `BRID`: Branch if global interrupt is disabled
+* [-] `BRBC`: Branch if bit in SREG is cleared
+* [-] `BRBS`: Branch if bit in SREG is set
+* [-] `BREQ`: Branch if equal
+* [-] `BRNE`: Branch if not equal
+* [-] `BRCC`: Branch if carry cleared
+* [-] `BRCS`: Branch if carry set
+* [-] `BRSH`: Branch if same or higher
+* [-] `BRLO`: Branch if lower (unsigned)
+* [-] `BRMI`: Branch if minus
+* [-] `BRPL`: Branch if plus
+* [-] `BRGE`: Branch if greater or equal
+* [-] `BRLT`: Branch if less than (signed)
+* [-] `BRHC`: Branch if half carry is cleared
+* [-] `BRHS`: Branch if half carry is set
+* [-] `BRTC`: Branch if T flag is cleared
+* [-] `BRTS`: Branch if T flag is set
+* [-] `BRVS`: Branch if overflow is set
+* [-] `BRVC`: Branch if overflow is cleared
+* [-] `BRIE`: Branch if global interrupt is enabled
+* [-] `BRID`: Branch if global interrupt is disabled
 
 * **Transfers**:
-* [x] `LD`:
-* [x] `ST`:
-* [x] `MOV`,
-* [x] `LDI`:
-* [x] `IN`:
-* [x] `OUT`:
+* [-] `LD`:
+* [-] `ST`:
+* [-] `MOV`,
+* [-] `LDI`:
+* [-] `IN`:
+* [-] `OUT`:
 * [ ] `LPM`:
 
 * **Bitwise**:
 
-* [ ] `SBI`: Set bit in I/O register
-* [ ] `CBI`: Clear bit in I/O register
+* [-] `SBI`: Set bit in I/O register
+* [-] `CBI`: Clear bit in I/O register
 * [ ] `LSL`: Logical shift left
-* [x] `LSR`: Logical shift right
+* [-] `LSR`: Logical shift right
 * [ ] `ROL`: Rotate left through carry
-* [x] `ROR`: Rotate right through carry
-* [x] `ASR`: Arithmetic shift right:
-* [x] `SWAP`: Swap nibbles
+* [-] `ROR`: Rotate right through carry
+* [-] `ASR`: Arithmetic shift right:
+* [-] `SWAP`: Swap nibbles
 
 * **Status register**
 
@@ -122,7 +128,7 @@
 
 * **Special**
 
-* [x] `NOP`: No operation
+* [-] `NOP`: No operation
 * [ ] `SLEEP`
 * [ ] `WDR`: Watchdog reset
 
@@ -133,12 +139,12 @@
 
 * **Arithmetic**:
 
-* [x] `ADIW`: Add immediate to word
-* [x] `SBIW`: Substract immediate from word
+* [-] `ADIW`: Add immediate to word
+* [-] `SBIW`: Substract immediate from word
 
 * **Transfers**:
 
-* [x] `LD`: LD X, LD Y + k, LD Z + k
-* [x] `ST`: ST X, ST Y + k, ST Z + k
-* [x] `PUSH`: Push register on stack
-* [x] `POP`: Pop register from stack
+* [-] `LD`: LD X, LD Y + k, LD Z + k
+* [-] `ST`: ST X, ST Y + k, ST Z + k
+* [-] `PUSH`: Push register on stack
+* [-] `POP`: Pop register from stack

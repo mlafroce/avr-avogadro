@@ -9,6 +9,7 @@ mod decoder;
 mod in_out;
 mod load_store;
 mod logic_ops;
+mod skip;
 mod sub;
 mod subi;
 mod transfer_indirect;

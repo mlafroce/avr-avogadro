@@ -28,6 +28,7 @@ pub enum PointerRegister{
 #[derive(Debug)]
 /// Decoded instructions
 pub enum Instruction {
+    BitManipOp{address: u8, bit: u8, set: bool},
     Branch {op: u8, test_set: bool, offset: i8},
     CallJmp {is_call: bool, relative: bool, address: u16},
     InOut {is_in: bool, reg: u8, address: u8},
@@ -39,6 +40,7 @@ pub enum Instruction {
     // For pre increment and post decrement transfers
     TransferChangePointer {is_load: bool, pointer: PointerRegister, dest: u8, post_inc: bool}, 
     TwoRegOp {op: RawInstruction, rd: u8, rr: u8},
+    SkipOp{address: u8, bit: u8, set: bool},
     Unsupported {instruction: RawInstruction},
     ZeroRegOp { op: u8 }
 }

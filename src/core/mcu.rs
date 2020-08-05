@@ -25,22 +25,22 @@ impl Mcu {
 
     pub fn step(&mut self) {
         self.execute_step();
-        self.reg_bank.increment_pc();
+        self.reg_bank.increment_pc(&self.memory_bank);
     }
 
     pub fn step_n(&mut self, n: usize) {
         for _ in 0..n {
             self.execute_step();
-            self.reg_bank.increment_pc();
+            self.reg_bank.increment_pc(&self.memory_bank);
         }
     }
 
     pub fn load_data_memory(&mut self, memory: &[u8]) {
-        self.memory_bank.set_data_memory(memory)
+        self.memory_bank.copy_into_data_memory(memory);
     }
 
     pub fn load_program_memory(&mut self, memory: &[u8]) {
-        self.memory_bank.set_program_memory(memory)
+        self.memory_bank.copy_into_program_memory(memory);
     }
 
     pub fn load_from_file(&mut self, filename: &str, is_program: bool) -> io::Result<()> {

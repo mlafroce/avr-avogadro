@@ -148,7 +148,7 @@ fn decode_misc_op(raw_instruction: RawInstruction) -> Instruction {
             if op  == 0x8 {
                 let sub_op = ((raw_instruction & 0x00F0) >> 4) as u8;
                 match sub_op {
-                    0x2..=0x7 | 0xb => Instruction::Unsupported { instruction: raw_instruction },
+                    0x2..=0x7 | 0xB => Instruction::Unsupported { instruction: raw_instruction },
                     _ =>Instruction::ZeroRegOp { op: sub_op }
                 }
             } else {
@@ -162,6 +162,18 @@ fn decode_misc_op(raw_instruction: RawInstruction) -> Instruction {
             let constant = (((raw_instruction & 0xC0) >> 2) + raw_instruction & 0xF) as u8;
             Instruction::RegConstOp{op, rd, constant}
         },
+        0x0800 | 0x0A00 => {
+            let sub_op = ((raw_instruction & 0x0F00) >> 8) as u8;
+            let address = ((raw_instruction & 0x0F8) >> 3) as u8;
+            let bit = (raw_instruction & 7) as u8;
+            Instruction::BitManipOp{address, bit, set: sub_op == 0xA}
+        }
+        0x0900 | 0x0B00 => {
+            let sub_op = ((raw_instruction & 0x0F00) >> 8) as u8;
+            let address = ((raw_instruction & 0x0F8) >> 3) as u8;
+            let bit = (raw_instruction & 7) as u8;
+            Instruction::SkipOp{address, bit, set: sub_op == 0xB}
+        }
         _ => Instruction::Unsupported { instruction: raw_instruction }
     } // end match raw_instruction & 0x0F00
 }

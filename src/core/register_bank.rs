@@ -1,3 +1,6 @@
+use crate::core::memory_bank::MemoryBank;
+const LDS_STS_MASK: u16 = 0xFC0F;
+
 ///# RegisterBank
 ///
 /// MCU's general purpouse and specific registers
@@ -34,8 +37,13 @@ impl RegisterBank {
     }
 
     /// Increments program counter by 2, which is the size of an instruction.
-    pub fn increment_pc(&mut self) {
+    pub fn increment_pc(&mut self, memory_bank: &MemoryBank) {
         self.program_counter += INSTRUCTION_SIZE;
+        // If next instruction is `LDS` or `STS`, should skip 
+        let next_instruction = memory_bank.get_program_word(self.program_counter);
+        if next_instruction & LDS_STS_MASK == 0x9000 {
+            self.program_counter += INSTRUCTION_SIZE;
+        }
     }
 
     /// Program counter getter

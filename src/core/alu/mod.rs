@@ -35,6 +35,8 @@ impl Alu {
         register_bank: &mut RegisterBank, memory_bank: &mut MemoryBank) {
         match instruction {
             Instruction::Nop => (),
+            Instruction::BitManipOp {address, bit, set} =>
+                Alu::execute_bit_manip(*address, *bit, *set, memory_bank),
             Instruction::Branch { op, test_set, offset } =>
                 Alu::execute_branch(*op, *test_set, *offset, register_bank),
             Instruction::CallJmp {is_call, relative, address} =>
@@ -47,6 +49,8 @@ impl Alu {
             Instruction::RegConstOp {op, rd, constant} =>
                 Alu::execute_arith_with_constant(
                 *op, *rd, *constant, register_bank),
+            Instruction::SkipOp {address, bit, set} =>
+                Alu::execute_skip(*address, *bit, *set, register_bank, memory_bank),
             Instruction::TransferIndirect{is_load, pointer, dest, offset} =>
                 Alu::execute_transfer_indirect(*is_load, *pointer, *dest,
                  *offset, register_bank, memory_bank),

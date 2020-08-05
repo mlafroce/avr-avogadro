@@ -2,6 +2,12 @@
 
 Small programs to be run on the simulator
 
+## Compiler instalation
+
+~~~{.bash}
+sudo apt install gcc-avr avr-libc
+~~~
+
 ## Useful commands
 
 * Compile a source file
