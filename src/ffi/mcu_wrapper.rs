@@ -3,6 +3,7 @@ use crate::core::mcu::Mcu;
 use crate::core::register_bank::Flags;
 
 use std::ffi::CStr;
+use std::mem::MaybeUninit;
 use std::os::raw::c_char;
 use std::ptr;
 
@@ -20,8 +21,7 @@ pub extern "C" fn mcu_step(p_mcu: &mut Mcu) {
 /// `p_filename` must be a valid C string
 #[no_mangle]
 pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char, is_program: bool) -> u8 {
-    let filename;
-    filename = CStr::from_ptr(p_filename).to_str();
+    let filename = CStr::from_ptr(p_filename).to_str();
     if p_mcu.load_from_file(filename.unwrap(), is_program).is_ok() {
         0
     } else {
@@ -36,12 +36,14 @@ pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char, is_progr
 ///
 /// `p_mcu` must be a pointer to a valid Mcu
 /// `p_memory` should be a char array with  size equals or larger than memory_size
+#[allow(clippy::unsound_collection_transmute)]
 #[no_mangle]
 pub unsafe fn mcu_load_data_memory(p_mcu: &mut Mcu, p_memory: *const u8, memory_size: usize) {
-    let mut rust_mem = Vec::with_capacity(memory_size);
-    rust_mem.set_len(memory_size);
-    ptr::copy_nonoverlapping(p_memory, rust_mem.as_mut_ptr(), memory_size);
-    p_mcu.load_data_memory(&rust_mem);
+    let mut buffer: Vec<MaybeUninit<u8>> = Vec::with_capacity(memory_size);
+    buffer.set_len(memory_size);
+    ptr::copy_nonoverlapping(p_memory, buffer.as_mut_ptr() as *mut u8, memory_size);
+    let init_buf = std::mem::transmute::<_,Vec<u8>>(buffer);
+    p_mcu.load_data_memory(&init_buf);
 }
 
 /// Creates a Rust vector with size `memory_size` and contents of `p_memory`
@@ -50,12 +52,14 @@ pub unsafe fn mcu_load_data_memory(p_mcu: &mut Mcu, p_memory: *const u8, memory_
 ///
 /// `p_mcu` must be a pointer to a valid Mcu
 /// `p_memory` should be a char array with  size equals or larger than memory_size
+#[allow(clippy::unsound_collection_transmute)]
 #[no_mangle]
 pub unsafe fn mcu_load_program_memory(p_mcu: &mut Mcu, p_memory: *const u8, memory_size: usize) {
-    let mut rust_mem = Vec::with_capacity(memory_size);
-    rust_mem.set_len(memory_size);
-    ptr::copy_nonoverlapping(p_memory, rust_mem.as_mut_ptr(), memory_size);
-    p_mcu.load_program_memory(&rust_mem);
+    let mut buffer: Vec<MaybeUninit<u8>> = Vec::with_capacity(memory_size);
+    buffer.set_len(memory_size);
+    ptr::copy_nonoverlapping(p_memory, buffer.as_mut_ptr() as *mut u8, memory_size);
+    let init_buf = std::mem::transmute::<_,Vec<u8>>(buffer);
+    p_mcu.load_program_memory(&init_buf);
 }
 
 /// Gets data stored in a single register
