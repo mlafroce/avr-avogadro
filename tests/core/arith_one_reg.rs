@@ -17,30 +17,35 @@ fn test_com() {
     mcu.set_register(24, 0);
     mcu.set_register(25, 0xFF);
     mcu.set_register(26, 0x77);
-    
+
     // 0x00 -> 0xFF
     mcu.step();
-    let mut flag_as_byte : u8 = mcu.get_flags().into();
+    let mut flag_as_byte: u8 = mcu.get_flags().into();
     assert_eq!(mcu.get_register(24), 0xFF);
-    assert_eq!(0x15, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x15, flag_as_byte);
+    assert_eq!(
+        0x15, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x15, flag_as_byte
+    );
     // 0xFF -> 0x00
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(25), 0x00);
-    assert_eq!(0x3, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x3, flag_as_byte);
+    assert_eq!(
+        0x3, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x3, flag_as_byte
+    );
     // 0x77 -> 0x88
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(26), 0x88);
-    assert_eq!(0x15, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x15, flag_as_byte);
+    assert_eq!(
+        0x15, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x15, flag_as_byte
+    );
 }
-
 
 #[test]
 /// Tests Two's complement (NEG) instruction
@@ -61,39 +66,49 @@ fn test_neg() {
     mcu.set_register(28, 0x80);
     // 0x00 -> 0x00
     mcu.step();
-    let mut flag_as_byte : u8 = mcu.get_flags().into();
+    let mut flag_as_byte: u8 = mcu.get_flags().into();
     assert_eq!(mcu.get_register(24), 0);
-    assert_eq!(0x22, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x22, flag_as_byte);
+    assert_eq!(
+        0x22, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x22, flag_as_byte
+    );
     // 0xFF -> 0x01
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(25), 0x01);
-    assert_eq!(0x1, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x1, flag_as_byte);
+    assert_eq!(
+        0x1, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x1, flag_as_byte
+    );
     // 0x77 -> 0x89
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(26), 0x89);
-    assert_eq!(0x35, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x35, flag_as_byte);
+    assert_eq!(
+        0x35, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x35, flag_as_byte
+    );
     // 0x78 -> 0x88
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(27), 0x88);
-    assert_eq!(0x35, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x35, flag_as_byte);
+    assert_eq!(
+        0x35, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x35, flag_as_byte
+    );
     // 0x80 -> 0x80
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(28), 0x80);
-    assert_eq!(0x2D, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x2D, flag_as_byte);
+    assert_eq!(
+        0x2D, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x2D, flag_as_byte
+    );
 }
 
 #[test]
@@ -128,26 +143,32 @@ fn test_inc() {
     mcu.set_register(16, 0xFE);
     // 0xFE -> 0xFF
     mcu.step();
-    let mut flag_as_byte : u8 = mcu.get_flags().into();
+    let mut flag_as_byte: u8 = mcu.get_flags().into();
     assert_eq!(mcu.get_register(16), 0xFF);
-    assert_eq!(0x14, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x14, flag_as_byte);
+    assert_eq!(
+        0x14, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x14, flag_as_byte
+    );
     // 0xFF -> 0x00
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(16), 0);
-    assert_eq!(0x02, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x02, flag_as_byte);
+    assert_eq!(
+        0x02, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x02, flag_as_byte
+    );
     // Test overflow
     mcu.set_register(16, 0x7F);
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(16), 0x80);
-    assert_eq!(0xc, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0xc, flag_as_byte);
+    assert_eq!(
+        0xc, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0xc, flag_as_byte
+    );
 }
 
 #[test]
@@ -165,32 +186,40 @@ fn test_dec() {
     mcu.set_register(16, 0x02);
     // 0x02 -> 0x01
     mcu.step();
-    let mut flag_as_byte : u8 = mcu.get_flags().into();
+    let mut flag_as_byte: u8 = mcu.get_flags().into();
     assert_eq!(mcu.get_register(16), 0x01);
-    assert_eq!(0x0, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x0, flag_as_byte);
+    assert_eq!(
+        0x0, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x0, flag_as_byte
+    );
     // 0x01 -> 0x00
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(16), 0);
-    assert_eq!(0x02, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x02, flag_as_byte);
+    assert_eq!(
+        0x02, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x02, flag_as_byte
+    );
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(16), 0xFF);
-    assert_eq!(0x14, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x14, flag_as_byte);
+    assert_eq!(
+        0x14, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x14, flag_as_byte
+    );
     // Test overflow
     mcu.set_register(16, 0x80);
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(16), 0x7F);
-    assert_eq!(0x18, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x18, flag_as_byte);
+    assert_eq!(
+        0x18, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x18, flag_as_byte
+    );
 }
 
 #[test]
@@ -207,11 +236,13 @@ fn test_asr() {
     mcu.load_program_memory(&program_memory);
     mcu.set_register(18, 0xF2);
     mcu.step();
-    let mut flag_as_byte : u8 = mcu.get_flags().into();
+    let mut flag_as_byte: u8 = mcu.get_flags().into();
     assert_eq!(mcu.get_register(18), 0xF9);
-    assert_eq!(0xC, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0xC, flag_as_byte);
+    assert_eq!(
+        0xC, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0xC, flag_as_byte
+    );
 }
 
 #[test]
@@ -228,17 +259,21 @@ fn test_lsr() {
     mcu.load_program_memory(&program_memory);
     mcu.set_register(2, 0xF2);
     mcu.step();
-    let mut flag_as_byte : u8 = mcu.get_flags().into();
+    let mut flag_as_byte: u8 = mcu.get_flags().into();
     assert_eq!(mcu.get_register(2), 0x79);
-    assert_eq!(0, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0, flag_as_byte);
+    assert_eq!(
+        0, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0, flag_as_byte
+    );
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(2), 0x3C);
-    assert_eq!(0x19, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x19, flag_as_byte);
+    assert_eq!(
+        0x19, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x19, flag_as_byte
+    );
 }
 
 #[test]
@@ -256,15 +291,19 @@ fn test_ror() {
     mcu.set_register(2, 0xF1);
     mcu.step();
     // carry 0, 0xF1 = 0 1111 0001 -> 1 0111 1000 = carry 1, 0x78
-    let mut flag_as_byte : u8 = mcu.get_flags().into();
+    let mut flag_as_byte: u8 = mcu.get_flags().into();
     assert_eq!(mcu.get_register(2), 0x78);
-    assert_eq!(0x19, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0x19, flag_as_byte);
+    assert_eq!(
+        0x19, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0x19, flag_as_byte
+    );
     mcu.step();
     flag_as_byte = mcu.get_flags().into();
     assert_eq!(mcu.get_register(2), 0xBC);
-    assert_eq!(0xC, flag_as_byte,
-            "Flags assertion failed: {:08b} != {:08b}",
-            0xC, flag_as_byte);
+    assert_eq!(
+        0xC, flag_as_byte,
+        "Flags assertion failed: {:08b} != {:08b}",
+        0xC, flag_as_byte
+    );
 }

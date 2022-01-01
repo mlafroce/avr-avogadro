@@ -15,7 +15,7 @@ fn test_cp_equals() {
     mcu.set_register(2, 5);
     let memory_data = vec![0x12, 0x14];
     mcu.load_program_memory(&memory_data);
-    
+
     mcu.step();
     assert_eq!(mcu.get_register(1), 0x05);
     let flags = mcu.get_flags();
@@ -34,7 +34,7 @@ fn test_cp_with_carry_equals() {
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
-    
+
     mcu.step();
     assert_eq!(mcu.get_register(1), 0x05);
     let flags = mcu.get_flags();
@@ -51,7 +51,7 @@ fn test_cp_rd_greater() {
     mcu.set_register(2, 127);
     let memory_data = vec![0x12, 0x14];
     mcu.load_program_memory(&memory_data);
-    
+
     mcu.step();
     assert_eq!(mcu.get_register(1), 200);
     let flags = mcu.get_flags();
@@ -68,7 +68,7 @@ fn test_cp_rd_less() {
     mcu.set_register(2, 200);
     let memory_data = vec![0x12, 0x14];
     mcu.load_program_memory(&memory_data);
-    
+
     mcu.step();
     assert_eq!(mcu.get_register(1), 150);
     let flags = mcu.get_flags();
@@ -111,7 +111,7 @@ fn test_cpc_rr_overflow() {
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
-    
+
     mcu.step();
     flags = mcu.get_flags();
     // Set if the absolute value of rr plus carry is larger than absolute value of rd
@@ -131,7 +131,7 @@ fn test_cpc_rd_less() {
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
-    
+
     mcu.step();
     flags = mcu.get_flags();
     assert!(flags.carry);
@@ -150,7 +150,7 @@ fn test_cpse_no_skip() {
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
-    
+
     assert_eq!(mcu.get_program_counter(), 0x0);
     flags = mcu.get_flags();
     mcu.step();
@@ -158,7 +158,6 @@ fn test_cpse_no_skip() {
     assert_eq!(mcu.get_program_counter(), 0x2);
     assert_eq!(flags, new_flags);
 }
-
 
 /// Tests compare-skip instruction. Rd and rr are equals
 /// Next instruction is 1 word, should skip only one
@@ -172,7 +171,7 @@ fn test_cpse_skip_simple() {
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
-    
+
     assert_eq!(mcu.get_program_counter(), 0x0);
     flags = mcu.get_flags();
     mcu.step();
@@ -194,7 +193,7 @@ fn test_cpse_skip_double() {
     let mut flags = mcu.get_flags();
     flags.carry = true;
     mcu.set_flags(flags);
-    
+
     assert_eq!(mcu.get_program_counter(), 0x0);
     flags = mcu.get_flags();
     mcu.step();

@@ -13,14 +13,14 @@ pub struct Flags {
     pub sign: bool,
     pub half: bool,
     pub trans: bool,
-    pub int: bool
+    pub int: bool,
 }
 
 pub struct RegisterBank {
     pub registers: [u8; 32],
     pub program_counter: u16,
     pub stack_pointer: u16,
-    flags: Flags
+    flags: Flags,
 }
 
 const INSTRUCTION_SIZE: u16 = 2;
@@ -30,16 +30,29 @@ impl RegisterBank {
     pub fn new() -> RegisterBank {
         let registers = [0; 32];
         let program_counter = 0;
-        let flags = Flags{carry: false, zero: false, neg: false, over: false,
-                         sign: false, half: false, trans: false, int: false};
+        let flags = Flags {
+            carry: false,
+            zero: false,
+            neg: false,
+            over: false,
+            sign: false,
+            half: false,
+            trans: false,
+            int: false,
+        };
         let stack_pointer = 0;
-        RegisterBank {registers, program_counter, stack_pointer, flags}
+        RegisterBank {
+            registers,
+            program_counter,
+            stack_pointer,
+            flags,
+        }
     }
 
     /// Increments program counter by 2, which is the size of an instruction.
     pub fn increment_pc(&mut self, memory_bank: &MemoryBank) {
         self.program_counter += INSTRUCTION_SIZE;
-        // If next instruction is `LDS` or `STS`, should skip 
+        // If next instruction is `LDS` or `STS`, should skip
         let next_instruction = memory_bank.get_program_word(self.program_counter);
         if next_instruction & LDS_STS_MASK == 0x9000 {
             self.program_counter += INSTRUCTION_SIZE;
@@ -73,7 +86,11 @@ impl RegisterBank {
 
     /// Returns 1 if carry flag is true, otherwise 0
     pub fn get_carry_as_u8(&self) -> u8 {
-        if self.get_flags().carry {1} else {0}
+        if self.get_flags().carry {
+            1
+        } else {
+            0
+        }
     }
 }
 
@@ -86,14 +103,30 @@ impl Default for RegisterBank {
 impl From<Flags> for u8 {
     fn from(flags: Flags) -> u8 {
         let mut result = 0;
-        if flags.carry { result += 1 };
-        if flags.zero { result += 1 << 1 };
-        if flags.neg { result += 1 << 2 };
-        if flags.over { result += 1 << 3 };
-        if flags.sign { result += 1 << 4 };
-        if flags.half { result += 1 << 5 };
-        if flags.trans { result += 1 << 6 };
-        if flags.int { result += 1 << 7 };
+        if flags.carry {
+            result += 1
+        };
+        if flags.zero {
+            result += 1 << 1
+        };
+        if flags.neg {
+            result += 1 << 2
+        };
+        if flags.over {
+            result += 1 << 3
+        };
+        if flags.sign {
+            result += 1 << 4
+        };
+        if flags.half {
+            result += 1 << 5
+        };
+        if flags.trans {
+            result += 1 << 6
+        };
+        if flags.int {
+            result += 1 << 7
+        };
         result
     }
 }

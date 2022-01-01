@@ -2,7 +2,7 @@
 pub struct MemoryBank {
     data_memory: Vec<u8>,
     program_memory: Vec<u8>,
-    address_mask: u16
+    address_mask: u16,
 }
 
 type AvogadroError = u8;
@@ -17,7 +17,11 @@ impl MemoryBank {
         let data_memory = vec![0; data_size];
         let program_memory = vec![0; program_size];
         let address_mask = (data_size - 1) as u16;
-        Ok(MemoryBank {data_memory, program_memory, address_mask})
+        Ok(MemoryBank {
+            data_memory,
+            program_memory,
+            address_mask,
+        })
     }
 
     pub fn set_data_memory(&mut self, data: &[u8]) {
@@ -34,18 +38,17 @@ impl MemoryBank {
         self.data_memory[wrapped_address as usize]
     }
 
-    /// Sets a byte at `address` position 
+    /// Sets a byte at `address` position
     pub fn set_data_byte(&mut self, address: u16, data: u8) {
         let wrapped_address = address & self.address_mask;
         self.data_memory[wrapped_address as usize] = data
     }
 
-    /// Returns a 2 byte word located at `address` 
+    /// Returns a 2 byte word located at `address`
     pub fn get_program_word(&self, address: u16) -> u16 {
         let wrapped_address = address & self.address_mask;
         let instruction = u16::from(self.program_memory[wrapped_address as usize]);
-        instruction + ((u16::from(
-            self.program_memory[wrapped_address as usize + 1])) << 8)
+        instruction + ((u16::from(self.program_memory[wrapped_address as usize + 1])) << 8)
     }
 
     /// Copies values at array `data` into memory bank.

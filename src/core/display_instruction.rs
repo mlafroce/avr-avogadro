@@ -1,52 +1,71 @@
+use super::alu;
 use super::Instruction;
 use super::PointerRegister;
 use super::RawInstruction;
-use super::alu;
 use std::fmt;
 
 impl fmt::Display for Instruction {
-    fn fmt (&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Instruction::BitManipOp {address, bit, set} =>
-                display_bit_manip_op(f, *address, *bit, *set),
-            Instruction::Branch { op, test_set, offset }
-                => display_branch(f, *op, *test_set, *offset),
-            Instruction::CallJmp { is_call, relative, address }
-                => display_calljmp(f, *is_call, *relative, *address),
-            Instruction::InOut {is_in, reg, address } => {
+            Instruction::BitManipOp { address, bit, set } => {
+                display_bit_manip_op(f, *address, *bit, *set)
+            }
+            Instruction::Branch {
+                op,
+                test_set,
+                offset,
+            } => display_branch(f, *op, *test_set, *offset),
+            Instruction::CallJmp {
+                is_call,
+                relative,
+                address,
+            } => display_calljmp(f, *is_call, *relative, *address),
+            Instruction::InOut {
+                is_in,
+                reg,
+                address,
+            } => {
                 if *is_in {
                     write!(f, "in\tr{}, 0x{:02x}", *reg, *address)
                 } else {
                     write!(f, "out\t0x{:02x}, r{}", *address, *reg)
                 }
-            },
+            }
             Instruction::Nop => write!(f, "nop"),
-            Instruction::OneRegOp {op, rd} => display_one_reg_op(f, *op as RawInstruction, *rd),
+            Instruction::OneRegOp { op, rd } => display_one_reg_op(f, *op as RawInstruction, *rd),
             Instruction::PushPop { is_pop, reg } => {
                 let op_str = if *is_pop { "pop" } else { "push" };
                 write!(f, "{}\tr{}", op_str, *reg)
-            },
-            Instruction::RegConstOp {op, rd, constant } => 
-                display_arith_costant(f, *op, *rd, *constant),
-            Instruction::SkipOp {address, bit, set} =>
-                display_skip_op(f, *address, *bit, *set),
-            Instruction::TransferIndirect { is_load, pointer, dest, offset } =>  
-                display_transfer_indirect(f, *is_load, *pointer, *dest, *offset),
-            Instruction::TransferChangePointer {is_load, pointer, dest, post_inc} =>
-                display_transfer_change_pointer(f, *is_load, *pointer, *dest, *post_inc),
-            Instruction::TwoRegOp { op, rd, rr } => 
-                display_two_reg_op(f, *op, *rd, *rr),
-            Instruction::Unsupported { instruction } => 
-                write!(f, ".word\t0x{:02x}", *instruction),
-            Instruction::ZeroRegOp { op } =>
-                display_zero_reg_op(f, *op)
+            }
+            Instruction::RegConstOp { op, rd, constant } => {
+                display_arith_costant(f, *op, *rd, *constant)
+            }
+            Instruction::SkipOp { address, bit, set } => display_skip_op(f, *address, *bit, *set),
+            Instruction::TransferIndirect {
+                is_load,
+                pointer,
+                dest,
+                offset,
+            } => display_transfer_indirect(f, *is_load, *pointer, *dest, *offset),
+            Instruction::TransferChangePointer {
+                is_load,
+                pointer,
+                dest,
+                post_inc,
+            } => display_transfer_change_pointer(f, *is_load, *pointer, *dest, *post_inc),
+            Instruction::TwoRegOp { op, rd, rr } => display_two_reg_op(f, *op, *rd, *rr),
+            Instruction::Unsupported { instruction } => write!(f, ".word\t0x{:02x}", *instruction),
+            Instruction::ZeroRegOp { op } => display_zero_reg_op(f, *op),
         }
     }
 }
 
-
-fn display_bit_manip_op(f: &mut fmt::Formatter<'_>,
-    address: u8, bit: u8, set: bool) -> fmt::Result {
+fn display_bit_manip_op(
+    f: &mut fmt::Formatter<'_>,
+    address: u8,
+    bit: u8,
+    set: bool,
+) -> fmt::Result {
     if set {
         write!(f, "sbi\t0x{:02x}, {:x}", address, bit)
     } else {
@@ -54,8 +73,12 @@ fn display_bit_manip_op(f: &mut fmt::Formatter<'_>,
     }
 }
 
-fn display_two_reg_op(f: &mut fmt::Formatter<'_>,
-    op: RawInstruction, rd: u8, rr: u8) -> fmt::Result {
+fn display_two_reg_op(
+    f: &mut fmt::Formatter<'_>,
+    op: RawInstruction,
+    rd: u8,
+    rr: u8,
+) -> fmt::Result {
     match op {
         0x1 => write!(f, "cpc\tr{}, r{}", rd, rr),
         0x2 => write!(f, "sbc\tr{}, r{}", rd, rr),
@@ -67,20 +90,18 @@ fn display_two_reg_op(f: &mut fmt::Formatter<'_>,
         0x8 => write!(f, "and\tr{}, r{}", rd, rr),
         0x9 => write!(f, "eor\tr{}, r{}", rd, rr),
         0xA => write!(f, "or\tr{}, r{}", rd, rr),
-        0xB ..=
-        0xF => write!(f, "mov\tr{}, r{}", rd, rr),
+        0xB..=0xF => write!(f, "mov\tr{}, r{}", rd, rr),
         alu::MOVW_OP => write!(f, "movw\tr{}, r{}", rd, rr),
         alu::MULS_OP => write!(f, "muls\tr{}, r{}", rd, rr),
         alu::MULSU_OP => write!(f, "mulsu\tr{}, r{}", rd, rr),
         alu::FMUL_OP => write!(f, "fmul\tr{}, r{}", rd, rr),
         alu::FMULS_OP => write!(f, "fmuls\tr{}, r{}", rd, rr),
         alu::FMULSU_OP => write!(f, "fmulsu\tr{}, r{}", rd, rr),
-        _ => unreachable!()
+        _ => unreachable!(),
     }
 }
 
-fn display_one_reg_op(f: &mut fmt::Formatter<'_>,
-    op: RawInstruction, rd: u8) -> fmt::Result {
+fn display_one_reg_op(f: &mut fmt::Formatter<'_>, op: RawInstruction, rd: u8) -> fmt::Result {
     match op {
         0x0 => write!(f, "com\tr{}", rd),
         0x1 => write!(f, "neg\tr{}", rd),
@@ -90,14 +111,14 @@ fn display_one_reg_op(f: &mut fmt::Formatter<'_>,
         0x6 => write!(f, "lsr\tr{}", rd),
         0x7 => write!(f, "ror\tr{}", rd),
         0x8 => display_set_clear(f, rd),
-        _ => { let word = 0x9404 + ((rd as u16) << 4);
-            write!(f,".word\t0x{:x}", word)
+        _ => {
+            let word = 0x9404 + ((rd as u16) << 4);
+            write!(f, ".word\t0x{:x}", word)
         }
     }
 }
 
-fn display_skip_op(f: &mut fmt::Formatter<'_>,
-    address: u8, bit: u8, set: bool) -> fmt::Result {
+fn display_skip_op(f: &mut fmt::Formatter<'_>, address: u8, bit: u8, set: bool) -> fmt::Result {
     if set {
         write!(f, "sbis\t0x{:02x}, {:x}", address, bit)
     } else {
@@ -105,8 +126,7 @@ fn display_skip_op(f: &mut fmt::Formatter<'_>,
     }
 }
 
-
-fn display_set_clear (f: &mut fmt::Formatter<'_>, op: u8) -> fmt::Result {
+fn display_set_clear(f: &mut fmt::Formatter<'_>, op: u8) -> fmt::Result {
     match op {
         0x0 => write!(f, "sec"),
         0x1 => write!(f, "sez"),
@@ -124,7 +144,7 @@ fn display_set_clear (f: &mut fmt::Formatter<'_>, op: u8) -> fmt::Result {
         0xd => write!(f, "clh"),
         0xe => write!(f, "clt"),
         0xf => write!(f, "cli"),
-        _ => unreachable!()
+        _ => unreachable!(),
     }
 }
 
@@ -139,12 +159,16 @@ fn display_zero_reg_op(f: &mut fmt::Formatter<'_>, op: u8) -> fmt::Result {
         0xd => write!(f, "elpm"),
         0xe => write!(f, "spm"),
         0xf => write!(f, "spm\tz+"),
-        _ => write!(f,".word\t0x{:x}", op)
+        _ => write!(f, ".word\t0x{:x}", op),
     }
 }
 
-fn display_arith_costant(f: &mut fmt::Formatter<'_>,
-    op: RawInstruction, rd: u8, constant: u8) -> fmt::Result {
+fn display_arith_costant(
+    f: &mut fmt::Formatter<'_>,
+    op: RawInstruction,
+    rd: u8,
+    constant: u8,
+) -> fmt::Result {
     let real_rd = rd + 16;
     match op {
         0x3 => write!(f, "cpi\tr{}, 0x{:02X}", real_rd, constant),
@@ -154,14 +178,13 @@ fn display_arith_costant(f: &mut fmt::Formatter<'_>,
         0x7 => write!(f, "andi\tr{}, 0x{:02X}", real_rd, constant),
         // ldi is technically a transfer instruction
         0xE => write!(f, "ldi\tr{}, 0x{:02X}", real_rd, constant),
-        0x96 =>write!(f, "adiw\tr{}, 0x{:02X}", real_rd, constant),
-        0x97 =>write!(f, "sbiw\tr{}, 0x{:02X}", real_rd, constant),
-        _ => unreachable!()
+        0x96 => write!(f, "adiw\tr{}, 0x{:02X}", real_rd, constant),
+        0x97 => write!(f, "sbiw\tr{}, 0x{:02X}", real_rd, constant),
+        _ => unreachable!(),
     }
 }
 
-fn display_branch(f: &mut fmt::Formatter<'_>,
-    op: u8, test_set: bool, offset: i8) -> fmt::Result {
+fn display_branch(f: &mut fmt::Formatter<'_>, op: u8, test_set: bool, offset: i8) -> fmt::Result {
     let display_offset = offset * 2;
     if test_set {
         match op {
@@ -173,7 +196,7 @@ fn display_branch(f: &mut fmt::Formatter<'_>,
             0x5 => write!(f, "brhs\t.{:+#}", display_offset),
             0x6 => write!(f, "brts\t.{:+#}", display_offset),
             0x7 => write!(f, "brie\t.{:+#}", display_offset),
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     } else {
         match op {
@@ -185,13 +208,17 @@ fn display_branch(f: &mut fmt::Formatter<'_>,
             0x5 => write!(f, "brhc\t.{:+#}", display_offset),
             0x6 => write!(f, "brtc\t.{:+#}", display_offset),
             0x7 => write!(f, "brid\t.{:+#}", display_offset),
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 }
 
-fn display_calljmp(f: &mut fmt::Formatter<'_>,
-    is_call: bool, relative: bool, address: u16) -> fmt::Result {
+fn display_calljmp(
+    f: &mut fmt::Formatter<'_>,
+    is_call: bool,
+    relative: bool,
+    address: u16,
+) -> fmt::Result {
     let op_str = if is_call { "call" } else { "jmp" };
     if relative {
         let offset: i16 = if address & 0x800 == 0 {
@@ -205,12 +232,17 @@ fn display_calljmp(f: &mut fmt::Formatter<'_>,
     }
 }
 
-fn display_transfer_indirect(f: &mut fmt::Formatter<'_>,
-    is_load: bool, pointer: PointerRegister, dest: u8, offset: u8) -> fmt::Result {
+fn display_transfer_indirect(
+    f: &mut fmt::Formatter<'_>,
+    is_load: bool,
+    pointer: PointerRegister,
+    dest: u8,
+    offset: u8,
+) -> fmt::Result {
     let pointer_str = match pointer {
         PointerRegister::X => "X",
         PointerRegister::Y => "Y",
-        PointerRegister::Z => "Z"
+        PointerRegister::Z => "Z",
     };
     let pointer_with_offset = if offset == 0 {
         pointer_str.to_owned()
@@ -225,12 +257,17 @@ fn display_transfer_indirect(f: &mut fmt::Formatter<'_>,
     }
 }
 
-fn display_transfer_change_pointer(f: &mut fmt::Formatter<'_>,
-    is_load: bool, pointer: PointerRegister, dest: u8, post_inc: bool) -> fmt::Result {
+fn display_transfer_change_pointer(
+    f: &mut fmt::Formatter<'_>,
+    is_load: bool,
+    pointer: PointerRegister,
+    dest: u8,
+    post_inc: bool,
+) -> fmt::Result {
     let pointer_str = match pointer {
         PointerRegister::X => "X",
         PointerRegister::Y => "Y",
-        PointerRegister::Z => "Z"
+        PointerRegister::Z => "Z",
     };
     let pointer_with_sign = if post_inc {
         format!("{}+", pointer_str)

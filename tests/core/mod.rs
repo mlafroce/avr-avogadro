@@ -1,4 +1,3 @@
-mod mcu;
 mod add;
 mod arith_one_reg;
 mod arith_word;
@@ -9,6 +8,7 @@ mod decoder;
 mod in_out;
 mod load_store;
 mod logic_ops;
+mod mcu;
 mod skip;
 mod sub;
 mod subi;

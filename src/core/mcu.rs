@@ -1,7 +1,7 @@
 use super::alu::Alu;
 use super::decoder::Decoder;
-use super::register_bank::{RegisterBank, Flags};
 use super::memory_bank::MemoryBank;
+use super::register_bank::{Flags, RegisterBank};
 
 use std::fmt::Write;
 use std::fs::File;
@@ -12,7 +12,7 @@ use std::slice::from_raw_parts_mut;
 pub struct Mcu {
     memory_bank: MemoryBank,
     reg_bank: RegisterBank,
-    cycle_count: usize
+    cycle_count: usize,
 }
 
 impl Mcu {
@@ -20,7 +20,11 @@ impl Mcu {
         let memory_bank = MemoryBank::new(data_size, program_size).unwrap();
         let reg_bank = RegisterBank::new();
         let cycle_count = 0;
-        Mcu {reg_bank, memory_bank, cycle_count}
+        Mcu {
+            reg_bank,
+            memory_bank,
+            cycle_count,
+        }
     }
 
     pub fn step(&mut self) {
@@ -73,7 +77,7 @@ impl Mcu {
     /// If buffer is smaller than memory copies at most *buf_size* elements.
     /// # Safety
     ///
-    /// `buffer` must be an array with size in bytes equals or larger than buf_size 
+    /// `buffer` must be an array with size in bytes equals or larger than buf_size
     pub unsafe fn get_data_memory(&self, buffer: *mut u8, buf_size: usize) {
         let slice = from_raw_parts_mut(buffer, buf_size);
         self.memory_bank.copy_from_data_memory(slice);
@@ -83,7 +87,7 @@ impl Mcu {
     /// If buffer is smaller than memory copies at most *buf_size* elements.
     /// # Safety
     ///
-    /// `buffer` must be an array with size in bytes equals or larger than buf_size 
+    /// `buffer` must be an array with size in bytes equals or larger than buf_size
     pub unsafe fn get_program_memory(&self, buffer: *mut u8, buf_size: usize) {
         let slice = from_raw_parts_mut(buffer, buf_size);
         self.memory_bank.copy_from_program_memory(slice);
@@ -142,6 +146,7 @@ impl Mcu {
     }
 
     fn fetch(&self) -> u16 {
-        self.memory_bank.get_program_word(self.reg_bank.get_program_counter())
+        self.memory_bank
+            .get_program_word(self.reg_bank.get_program_counter())
     }
 }

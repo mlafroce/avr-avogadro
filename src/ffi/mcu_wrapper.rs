@@ -8,7 +8,7 @@ use std::ptr;
 
 /// Calls `Mcu::step()`, executing one clock cycle of the mcu
 #[no_mangle]
-pub extern fn mcu_step(p_mcu: &mut Mcu) {
+pub extern "C" fn mcu_step(p_mcu: &mut Mcu) {
     p_mcu.step();
 }
 
@@ -19,8 +19,7 @@ pub extern fn mcu_step(p_mcu: &mut Mcu) {
 /// `p_mcu` must be a pointer to a valid Mcu
 /// `p_filename` must be a valid C string
 #[no_mangle]
-pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char,
-    is_program: bool) -> u8 {
+pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char, is_program: bool) -> u8 {
     let filename;
     filename = CStr::from_ptr(p_filename).to_str();
     if p_mcu.load_from_file(filename.unwrap(), is_program).is_ok() {
@@ -38,8 +37,7 @@ pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char,
 /// `p_mcu` must be a pointer to a valid Mcu
 /// `p_memory` should be a char array with  size equals or larger than memory_size
 #[no_mangle]
-pub unsafe fn mcu_load_data_memory(p_mcu: &mut Mcu,
-        p_memory: *const u8, memory_size: usize) {
+pub unsafe fn mcu_load_data_memory(p_mcu: &mut Mcu, p_memory: *const u8, memory_size: usize) {
     let mut rust_mem = Vec::with_capacity(memory_size);
     rust_mem.set_len(memory_size);
     ptr::copy_nonoverlapping(p_memory, rust_mem.as_mut_ptr(), memory_size);
@@ -53,8 +51,7 @@ pub unsafe fn mcu_load_data_memory(p_mcu: &mut Mcu,
 /// `p_mcu` must be a pointer to a valid Mcu
 /// `p_memory` should be a char array with  size equals or larger than memory_size
 #[no_mangle]
-pub unsafe fn mcu_load_program_memory(p_mcu: &mut Mcu,
-        p_memory: *const u8, memory_size: usize) {
+pub unsafe fn mcu_load_program_memory(p_mcu: &mut Mcu, p_memory: *const u8, memory_size: usize) {
     let mut rust_mem = Vec::with_capacity(memory_size);
     rust_mem.set_len(memory_size);
     ptr::copy_nonoverlapping(p_memory, rust_mem.as_mut_ptr(), memory_size);
@@ -122,8 +119,7 @@ pub fn mcu_get_data_byte(p_mcu: &Mcu, address: u16) -> u8 {
 /// `buffer` must be a char array with `buf_size` size
 ///
 #[no_mangle]
-pub unsafe fn mcu_display_current_instruction(p_mcu: &Mcu,
-    c_buffer: *mut u8, buf_size: usize) {
+pub unsafe fn mcu_display_current_instruction(p_mcu: &Mcu, c_buffer: *mut u8, buf_size: usize) {
     let mut string_buf = String::new();
     p_mcu.display_current_instruction(&mut string_buf);
     let bytes_to_copy = std::cmp::min(buf_size - 1, string_buf.len());
@@ -139,7 +135,7 @@ pub unsafe fn mcu_display_current_instruction(p_mcu: &Mcu,
 #[no_mangle]
 pub unsafe fn mcu_get_data_size(p_mcu: &Mcu) -> usize {
     p_mcu.get_data_size()
-}    
+}
 
 /// Gets memory bank contents
 /// # Safety
@@ -153,7 +149,7 @@ pub unsafe fn mcu_get_data_memory(p_mcu: &Mcu, c_buffer: *mut u8, buf_size: usiz
 }
 
 #[no_mangle]
-pub fn mcu_get_flags(p_mcu: &Mcu) -> u8{
+pub fn mcu_get_flags(p_mcu: &Mcu) -> u8 {
     p_mcu.get_flags().into()
 }
 

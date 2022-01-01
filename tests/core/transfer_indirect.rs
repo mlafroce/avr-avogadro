@@ -21,7 +21,7 @@ fn test_ldd_x() {
     mcu.load_data_memory(data_memory.as_ref());
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
-    assert_eq!(mcu.get_register(9), 42); 
+    assert_eq!(mcu.get_register(9), 42);
 }
 
 /// Tests load indirect
@@ -42,7 +42,7 @@ fn test_ldd_y() {
     mcu.load_data_memory(&data_memory);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step(); // Y + 2 = 0xE + 2 = 0x10
-    assert_eq!(mcu.get_register(24), 42); 
+    assert_eq!(mcu.get_register(24), 42);
 }
 
 /// Tests load indirect with Z
@@ -61,7 +61,7 @@ fn test_ldd_z() {
     mcu.set_register(31, 0x0);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step(); // Z + 2 = 40 + 2
-    assert_eq!(mcu.get_register(24), 42); 
+    assert_eq!(mcu.get_register(24), 42);
 }
 
 /// Tests store indirect
@@ -80,7 +80,7 @@ fn test_std() {
     mcu.set_register(0, 42);
     assert_eq!(mcu.get_program_counter(), 0x0);
     mcu.step();
-    assert_eq!(mcu.get_data_byte(0x40), 42); 
+    assert_eq!(mcu.get_data_byte(0x40), 42);
 }
 
 /// Tests store indirect with Z

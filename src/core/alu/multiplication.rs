@@ -1,5 +1,5 @@
-use crate::core::register_bank::RegisterBank;
 use super::Alu;
+use crate::core::register_bank::RegisterBank;
 
 impl Alu {
     pub fn muls(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {

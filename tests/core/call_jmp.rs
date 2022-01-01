@@ -88,11 +88,11 @@ fn test_ret() {
     mcu.step(); // pc -> 8
     mcu.step(); // pc -> A
     mcu.step(); // pc -> C
-    mcu.step(); // pc -> E 
+    mcu.step(); // pc -> E
     assert_eq!(mcu.get_program_counter(), 0xE);
     mcu.step(); // exec ret -> PC should be 0x6 + 2
     assert_eq!(mcu.get_stack_pointer(), 0);
     assert_eq!(mcu.get_program_counter(), 0x8);
-    mcu.step(); // pc -> E     
+    mcu.step(); // pc -> E
     assert_eq!(mcu.get_program_counter(), 0xA);
 }

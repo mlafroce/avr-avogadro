@@ -55,15 +55,15 @@ fn test_sum_general() {
 
     // rd, rr, result, flags (ithsvnzc)
     let test_set = vec![
-    (0x00, 0x00, 0x00, 0b00000010),
-    (0x01, 0x01, 0x02, 0b00000000),
-    (0x03, 0x07, 0x0a, 0b00000000),
-    (0xf8, 0x00, 0xf8, 0b00010100),
-    (0xff, 0x01, 0x00, 0b00100011),
-    (0x01, 0x7f, 0x80, 0b00101100),
-    (0x40, 0x40, 0x80, 0b00001100),
-    (0xA0, 0xA0, 0x40, 0b00011001),
-    (0xC0, 0xC0, 0x80, 0b00010101),
+        (0x00, 0x00, 0x00, 0b00000010),
+        (0x01, 0x01, 0x02, 0b00000000),
+        (0x03, 0x07, 0x0a, 0b00000000),
+        (0xf8, 0x00, 0xf8, 0b00010100),
+        (0xff, 0x01, 0x00, 0b00100011),
+        (0x01, 0x7f, 0x80, 0b00101100),
+        (0x40, 0x40, 0x80, 0b00001100),
+        (0xA0, 0xA0, 0x40, 0b00011001),
+        (0xC0, 0xC0, 0x80, 0b00010101),
     ];
     for (i, test_case) in test_set.iter().enumerate() {
         mcu.set_program_counter(0);
@@ -72,12 +72,17 @@ fn test_sum_general() {
         mcu.step();
 
         let result = mcu.get_register(1);
-        let flag_as_byte : u8 = mcu.get_flags().into();
-        assert_eq!(result, test_case.2,
-            "Test case {} - Add assertion failed: {:x} != {:x}", i, result, test_case.2);
-        assert_eq!(flag_as_byte, test_case.3,
+        let flag_as_byte: u8 = mcu.get_flags().into();
+        assert_eq!(
+            result, test_case.2,
+            "Test case {} - Add assertion failed: {:x} != {:x}",
+            i, result, test_case.2
+        );
+        assert_eq!(
+            flag_as_byte, test_case.3,
             "Test case {} - Flags assertion failed: {:08b} != {:08b}",
-             i, flag_as_byte, test_case.3);
+            i, flag_as_byte, test_case.3
+        );
     }
 }
 
@@ -118,15 +123,15 @@ fn test_adc_with_carry_general() {
 
     // rd, rr, result, flags (ithsvnzc)
     let add_test_set = vec![
-    (0x00, 0x00, 0x00, 0b00000010),
-    (0x01, 0x01, 0x02, 0b00000000),
-    (0x03, 0x07, 0x0a, 0b00000000),
-    (0xf8, 0x00, 0xf8, 0b00010100),
-    (0xff, 0x01, 0x00, 0b00100011),
-    (0x01, 0x7f, 0x80, 0b00101100),
-    (0x40, 0x40, 0x80, 0b00001100),
-    (0xA0, 0xA0, 0x40, 0b00011001),
-    (0xC0, 0xC0, 0x80, 0b00010101),
+        (0x00, 0x00, 0x00, 0b00000010),
+        (0x01, 0x01, 0x02, 0b00000000),
+        (0x03, 0x07, 0x0a, 0b00000000),
+        (0xf8, 0x00, 0xf8, 0b00010100),
+        (0xff, 0x01, 0x00, 0b00100011),
+        (0x01, 0x7f, 0x80, 0b00101100),
+        (0x40, 0x40, 0x80, 0b00001100),
+        (0xA0, 0xA0, 0x40, 0b00011001),
+        (0xC0, 0xC0, 0x80, 0b00010101),
     ];
     for (i, test_case) in add_test_set.iter().enumerate() {
         let mut flags = mcu.get_flags();
@@ -138,27 +143,32 @@ fn test_adc_with_carry_general() {
         mcu.step();
 
         let result = mcu.get_register(1);
-        let flag_as_byte : u8 = mcu.get_flags().into();
-        assert_eq!(result, test_case.2,
-            "Test case {} - Add assertion failed: {:x} != {:x}", i, result, test_case.2);
-        assert_eq!(flag_as_byte, test_case.3,
+        let flag_as_byte: u8 = mcu.get_flags().into();
+        assert_eq!(
+            result, test_case.2,
+            "Test case {} - Add assertion failed: {:x} != {:x}",
+            i, result, test_case.2
+        );
+        assert_eq!(
+            flag_as_byte, test_case.3,
             "Test case {} - Flags assertion failed: {:08b} != {:08b}",
-             i, flag_as_byte, test_case.3);
+            i, flag_as_byte, test_case.3
+        );
     }
 
     // rd, rr, result, flags (ithsvnzc)
     let adc_test_set = vec![
-    (0x00, 0x00, 0x01, 0b00000000),
-    (0x01, 0x01, 0x03, 0b00000000),
-    (0x03, 0x07, 0x0b, 0b00000000),
-    (0xf8, 0x00, 0xf9, 0b00010100),
-    (0xff, 0x00, 0x00, 0b00100011),
-    (0xff, 0x01, 0x01, 0b00100001),
-    (0x01, 0x7e, 0x80, 0b00101100),
-    (0x01, 0x7f, 0x81, 0b00101100),
-    (0x40, 0x40, 0x81, 0b00001100),
-    (0xA0, 0xA0, 0x41, 0b00011001),
-    (0xC0, 0xC0, 0x81, 0b00010101),
+        (0x00, 0x00, 0x01, 0b00000000),
+        (0x01, 0x01, 0x03, 0b00000000),
+        (0x03, 0x07, 0x0b, 0b00000000),
+        (0xf8, 0x00, 0xf9, 0b00010100),
+        (0xff, 0x00, 0x00, 0b00100011),
+        (0xff, 0x01, 0x01, 0b00100001),
+        (0x01, 0x7e, 0x80, 0b00101100),
+        (0x01, 0x7f, 0x81, 0b00101100),
+        (0x40, 0x40, 0x81, 0b00001100),
+        (0xA0, 0xA0, 0x41, 0b00011001),
+        (0xC0, 0xC0, 0x81, 0b00010101),
     ];
     for (i, test_case) in adc_test_set.iter().enumerate() {
         let mut flags = mcu.get_flags();
@@ -170,11 +180,16 @@ fn test_adc_with_carry_general() {
         mcu.step();
 
         let result = mcu.get_register(1);
-        let flag_as_byte : u8 = mcu.get_flags().into();
-        assert_eq!(result, test_case.2,
-            "Test case {} - Add assertion failed: {:x} != {:x}", i, result, test_case.2);
-        assert_eq!(flag_as_byte, test_case.3,
+        let flag_as_byte: u8 = mcu.get_flags().into();
+        assert_eq!(
+            result, test_case.2,
+            "Test case {} - Add assertion failed: {:x} != {:x}",
+            i, result, test_case.2
+        );
+        assert_eq!(
+            flag_as_byte, test_case.3,
             "Test case {} - Flags assertion failed: {:08b} != {:08b}",
-             i, flag_as_byte, test_case.3);
+            i, flag_as_byte, test_case.3
+        );
     }
 }

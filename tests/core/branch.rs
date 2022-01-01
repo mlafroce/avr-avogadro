@@ -46,7 +46,6 @@ fn test_branch_carry_clear() {
     assert_eq!(mcu.get_program_counter(), 0x18); // 0x2 + 0x14 + 0x2
 }
 
-
 #[test]
 /// Tests branch on bit set instruction
 ///

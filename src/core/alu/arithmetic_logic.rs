@@ -1,8 +1,7 @@
-use crate::core::register_bank::RegisterBank;
-use crate::core::memory_bank::MemoryBank;
 use super::Alu;
 use super::RawInstruction;
-
+use crate::core::memory_bank::MemoryBank;
+use crate::core::register_bank::RegisterBank;
 
 impl Alu {
     // Two Registers instructions
@@ -17,7 +16,7 @@ impl Alu {
         flags.half = hc_flags & 0x08 != 0;
         flags.neg = sum & 0x80 != 0;
         let tmp_overflow = (rd & rr & !sum) | (!rd & !rr & sum);
-        flags.over = tmp_overflow & 0x80 != 0; 
+        flags.over = tmp_overflow & 0x80 != 0;
         flags.zero = sum == 0;
         flags.sign = flags.neg ^ flags.over;
         register_bank.set_flags(flags);
@@ -27,8 +26,12 @@ impl Alu {
         Alu::substract_base(rdu, rru, register_bank, carry, false);
     }
 
-    pub fn comp_skip(rdu: usize, rru: usize, register_bank: &mut RegisterBank,
-        memory_bank: &MemoryBank) {
+    pub fn comp_skip(
+        rdu: usize,
+        rru: usize,
+        register_bank: &mut RegisterBank,
+        memory_bank: &MemoryBank,
+    ) {
         let rd_value = register_bank.registers[rdu];
         let rr_value = register_bank.registers[rru];
         if rd_value == rr_value {
@@ -53,8 +56,7 @@ impl Alu {
     }
 
     pub fn eor(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
-        let result = register_bank.registers[rdu] ^
-            register_bank.registers[rru];
+        let result = register_bank.registers[rdu] ^ register_bank.registers[rru];
         register_bank.registers[rdu] = result;
         let mut flags = register_bank.get_flags();
         flags.zero = result == 0;
@@ -86,7 +88,7 @@ impl Alu {
 
     pub fn movw(rdu: usize, rru: usize, register_bank: &mut RegisterBank) {
         register_bank.registers[rdu] = register_bank.registers[rru];
-        register_bank.registers[rdu+1] = register_bank.registers[rru+1];
+        register_bank.registers[rdu + 1] = register_bank.registers[rru + 1];
     }
 
     // One register - One constant operations
@@ -216,8 +218,13 @@ impl Alu {
         Alu::substract_base(rdu, rru, register_bank, carry, true);
     }
 
-    fn substract_base(rdu: usize, rru: usize, register_bank: &mut RegisterBank,
-        carry: u8, store_result: bool) {
+    fn substract_base(
+        rdu: usize,
+        rru: usize,
+        register_bank: &mut RegisterBank,
+        carry: u8,
+        store_result: bool,
+    ) {
         // wrapping sub as it could overflow
         let rd = register_bank.registers[rdu] as u8;
         let rr = register_bank.registers[rru];
@@ -229,7 +236,7 @@ impl Alu {
         flags.half = hc_flags & 0x08 != 0;
         flags.neg = result & 0x80 != 0;
         let tmp_overflow = (rd & !rr & !result) | (!rd & rr & result);
-        flags.over = tmp_overflow & 0x80 != 0; 
+        flags.over = tmp_overflow & 0x80 != 0;
         flags.zero = result == 0;
         flags.sign = flags.neg ^ flags.over;
         register_bank.set_flags(flags);
@@ -238,8 +245,13 @@ impl Alu {
         }
     }
 
-    fn substract_imm_base(rdu: usize, constant: u8,
-        register_bank: &mut RegisterBank, carry: u8, store_result: bool) {
+    fn substract_imm_base(
+        rdu: usize,
+        constant: u8,
+        register_bank: &mut RegisterBank,
+        carry: u8,
+        store_result: bool,
+    ) {
         let rd = register_bank.registers[rdu] as u8;
         let const_with_carry = constant.wrapping_add(carry);
         let result = rd.wrapping_sub(const_with_carry);
@@ -249,7 +261,7 @@ impl Alu {
         flags.half = hc_flags & 0x08 != 0;
         flags.neg = result & 0x80 != 0;
         let tmp_overflow = (rd & !const_with_carry & !result) | (!rd & const_with_carry & result);
-        flags.over = tmp_overflow & 0x80 != 0; 
+        flags.over = tmp_overflow & 0x80 != 0;
         flags.zero = result == 0;
         flags.sign = flags.neg ^ flags.over;
         register_bank.set_flags(flags);
@@ -263,13 +275,13 @@ impl Alu {
     pub fn adiw(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
         let rd = 24 + rdu * 2;
         let rdl = register_bank.registers[rd];
-        let rdh = register_bank.registers[rd+1];
+        let rdh = register_bank.registers[rd + 1];
         let resl = rdl.wrapping_add(constant);
         register_bank.registers[rd] = resl;
         if resl < rdl && resl < constant {
-            register_bank.registers[rd+1] = rdh.wrapping_add(1);
+            register_bank.registers[rd + 1] = rdh.wrapping_add(1);
         }
-        let resh = register_bank.registers[rd+1];
+        let resh = register_bank.registers[rd + 1];
         let mut flags = register_bank.get_flags();
         flags.carry = (rdh & !resh) & 0x80 != 0;
         flags.over = (!rdh & resh) & 0x80 != 0;
@@ -284,13 +296,13 @@ impl Alu {
     pub fn sbiw(rdu: usize, constant: u8, register_bank: &mut RegisterBank) {
         let rd = 24 + rdu * 2;
         let rdl = register_bank.registers[rd];
-        let rdh = register_bank.registers[rd+1];
+        let rdh = register_bank.registers[rd + 1];
         let resl = rdl.wrapping_sub(constant);
         register_bank.registers[rd] = resl;
         if constant > rdl {
-            register_bank.registers[rd+1] = rdh.wrapping_sub(1);
+            register_bank.registers[rd + 1] = rdh.wrapping_sub(1);
         }
-        let resh = register_bank.registers[rd+1];
+        let resh = register_bank.registers[rd + 1];
         let mut flags = register_bank.get_flags();
         flags.carry = (!rdh & resh) & 0x80 != 0;
         flags.over = (rdh & !resh) & 0x80 != 0;
@@ -303,11 +315,7 @@ impl Alu {
     pub fn execute_bit_manip(address: u8, bit: u8, set: bool, memory_bank: &mut MemoryBank) {
         let io_reg = memory_bank.get_data_byte((address + 0x20).into());
         let mask = 1 << bit;
-        let new_val = if set {
-            io_reg | mask
-        } else {
-            io_reg & !mask
-        };
+        let new_val = if set { io_reg | mask } else { io_reg & !mask };
         memory_bank.set_data_byte((address + 0x20).into(), new_val);
     }
 }
