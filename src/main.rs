@@ -12,13 +12,17 @@ use crate::core::mcu_factory::McuFactory;
 use libc::{c_char, c_void};
 use std::ffi::CString;
 
-#[link(name = "avogadrogui")]
-#[link(name = "Qt5Widgets")]
-#[link(name = "Qt5Gui")]
-#[link(name = "Qt5Core")]
-#[link(name = "stdc++")]
-extern "C" {
-    fn run_avogadro_gui(argc: usize, argv: *const *const c_char, mcu: *const c_void);
+#[cfg(not(test))]
+mod qt {
+    use libc::{c_char, c_void};
+    #[link(name = "avogadrogui")]
+    #[link(name = "Qt5Widgets")]
+    #[link(name = "Qt5Gui")]
+    #[link(name = "Qt5Core")]
+    #[link(name = "stdc++")]
+    extern "C" {
+        pub fn run_avogadro_gui(argc: usize, argv: *const *const c_char, mcu: *const c_void);
+    }
 }
 
 fn main() {
@@ -35,7 +39,8 @@ fn main() {
     // Init logger
     env_logger::init();
     unsafe {
-        run_avogadro_gui(
+        #[cfg(not(test))]
+            qt::run_avogadro_gui(
             c_args.len(),
             c_args.as_ptr(),
             &mcu as *const Mcu as *const c_void,

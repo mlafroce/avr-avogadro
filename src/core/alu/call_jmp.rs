@@ -1,4 +1,5 @@
 use super::Alu;
+use crate::core::decoder::CALL_JMP_ABS_22_ADDRESS;
 use crate::core::memory_bank::MemoryBank;
 use crate::core::register_bank::RegisterBank;
 
@@ -25,7 +26,19 @@ impl Alu {
                 register_bank.set_program_counter(new_pc as u16);
             }
         } else {
-            warn!("call jmp absolute not implemented");
+            match address_bits {
+                CALL_JMP_ABS_22_ADDRESS => {
+                    let pc = register_bank.get_program_counter();
+                    let cur_instruction = memory_bank.get_program_word(pc);
+                    let next_word = memory_bank.get_program_word(pc + 2) as u32;
+                    let addr_1 = (cur_instruction as u32 & 0x1F0) << 13;
+                    let addr_2 = (cur_instruction as u32 & 1) << 16;
+                    let new_pc = (next_word + addr_1 + addr_2) * 2;
+                    warn!("FIX: discarding new PC higher bits!");
+                    register_bank.set_program_counter(new_pc as u16)
+                }
+                _ => warn!("Invalid jmp!"),
+            }
         }
         if is_call {
             let pc_to_store = (pc + 2).to_le_bytes();

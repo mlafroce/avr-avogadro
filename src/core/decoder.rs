@@ -3,6 +3,10 @@ use super::Instruction;
 use super::PointerRegister;
 use super::RawInstruction;
 
+pub const CALL_JMP_ABS_22_ADDRESS: u16 = 0;
+pub const CALL_JMP_Z_ADDRESS: u16 = 1;
+pub const CALL_JMP_EINDZ_ADDRESS: u16 = 2;
+
 /// # Decoder
 ///
 /// Decodes and executes instructions
@@ -222,22 +226,8 @@ fn decode_misc_op(raw_instruction: RawInstruction) -> Instruction {
                 },
             }
         }
-        0x0400 => {
-            if is_call_jmp(raw_instruction) {
-                Instruction::CallJmp {
-                    is_call: false,
-                    relative: false,
-                    address: 0,
-                }
-            } else {
-                let rd = ((raw_instruction & 0x01F0) >> 4) as u8;
-                let op = (raw_instruction & 0xF) as u8;
-                Instruction::OneRegOp { rd, op }
-            }
-        }
-        0x0500 => {
-            let op = (raw_instruction & 0xF) as u8;
-            if op == 0x8 {
+        0x0400 | 0x500 => {
+            if raw_instruction & 0x0F0F == 0x508 {
                 let sub_op = ((raw_instruction & 0x00F0) >> 4) as u8;
                 match sub_op {
                     0x2..=0x7 | 0xB => Instruction::Unsupported {
@@ -245,7 +235,15 @@ fn decode_misc_op(raw_instruction: RawInstruction) -> Instruction {
                     },
                     _ => Instruction::ZeroRegOp { op: sub_op },
                 }
+            } else if is_call_jmp(raw_instruction) {
+                let is_call = raw_instruction & 0x2 == 0;
+                Instruction::CallJmp {
+                    is_call,
+                    relative: false,
+                    address: CALL_JMP_ABS_22_ADDRESS,
+                }
             } else {
+                let op = (raw_instruction & 0xF) as u8;
                 let rd = ((raw_instruction & 0x01F0) >> 4) as u8;
                 Instruction::OneRegOp { rd, op }
             }
@@ -318,5 +316,5 @@ fn decode_branch_skip_status_op(raw_instruction: RawInstruction) -> Instruction 
 }
 
 fn is_call_jmp(raw_instruction: u16) -> bool {
-    false
+    raw_instruction & 0x0E0C == 0x40C
 }
