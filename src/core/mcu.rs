@@ -47,6 +47,26 @@ impl Mcu {
         self.memory_bank.copy_into_program_memory(memory);
     }
 
+    pub fn load_ihex_file(&mut self, filename: &str) -> io::Result<()> {
+        let mut buffer = String::new();
+        let mut file = File::open(filename)?;
+        file.read_to_string(&mut buffer)?;
+        let reader = ihex::Reader::new(&buffer);
+        let buffer = reader
+            .flatten()
+            .filter_map(|record| {
+                if let ihex::Record::Data { offset: _, value } = record {
+                    Some(value)
+                } else {
+                    None
+                }
+            })
+            .flatten()
+            .collect::<Vec<_>>();
+        self.memory_bank.copy_into_program_memory(&buffer);
+        Ok(())
+    }
+
     pub fn load_from_file(&mut self, filename: &str, is_program: bool) -> io::Result<()> {
         let mut file = File::open(filename)?;
         let mut buffer = Vec::new();

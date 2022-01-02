@@ -1,10 +1,13 @@
 # Core
 /target
 **/*.rs.bk
+**/*.o
 
-# UI
+# IDE
 *.kdev4
+.idea
 ui/build
+ui/cmake-build-debug/
 
 # Examples
 *.bin

@@ -13,14 +13,13 @@ crate-type = ["rlib", "dylib"]
 debug = true
 
 [dependencies]
-libc = "0.2.62"
-log = "0.4.0"
-env_logger = "0.7.1"
+libc = "0.2"
+log = "0.4"
+env_logger = "0.9"
+ihex = "3.0"
 
 [build-dependencies]
 cmake = "0.1"
-
-[target.'cfg(target_os="android")']
 
 [target.'cfg(target_os="android")'.dependencies]
 jni = { version = "0.5", default-features = false }

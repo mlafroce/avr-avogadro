@@ -12,7 +12,7 @@ private:
     /**
      * Executes a single isntruction
      */
-    void mcuStep();
+    void mcuStep() const;
     /**
      * Opens a QFileDialog and gets selected file name
      */
@@ -24,7 +24,7 @@ private:
     /**
      * Opens online help
      */
-    void goToHelpUrl();
+    void goToHelpUrl() const;
     /**
      * Connects UI events
      */
@@ -32,16 +32,20 @@ private:
     /**
      * Refreshes GUI contents
      */
-    void updateMcuStatus();
-    void updateRegisters();
-    void updateProgramCounter();
-    void updateDecodedInstruction();
-    void updateMemoryBank();
-    void updateFlags();
+    void updateMcuStatus() const;
+    void updateRegisters() const;
+    void updateProgramCounter() const;
+    void updateDecodedInstruction() const;
+    void updateMemoryBank() const;
+    void updateFlags() const;
     /**
      * Fired when program counter line input changes
      */
-    void onProgramCounterChanged();
+    void onProgramCounterChanged() const;
+    /**
+     * Checks file extension
+     */
+    bool isIhex(const std::string& filename) const;
     McuWrapper mcu;
 };
 

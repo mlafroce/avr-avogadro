@@ -20,9 +20,30 @@ pub extern "C" fn mcu_step(p_mcu: &mut Mcu) {
 /// `p_mcu` must be a pointer to a valid Mcu
 /// `p_filename` must be a valid C string
 #[no_mangle]
-pub unsafe fn mcu_load_file(p_mcu: &mut Mcu, p_filename: *const c_char, is_program: bool) -> u8 {
+pub unsafe fn mcu_load_bin_file(
+    p_mcu: &mut Mcu,
+    p_filename: *const c_char,
+    is_program: bool,
+) -> u8 {
     let filename = CStr::from_ptr(p_filename).to_str();
     if p_mcu.load_from_file(filename.unwrap(), is_program).is_ok() {
+        0
+    } else {
+        warn!("Error");
+        1
+    }
+}
+
+/// Calls `Mcu::load_ihex_file(filename)`
+/// Returns 0 if memory was loaded correctly
+/// # Safety
+///
+/// `p_mcu` must be a pointer to a valid Mcu
+/// `p_filename` must be a valid C string
+#[no_mangle]
+pub unsafe fn mcu_load_ihex_file(p_mcu: &mut Mcu, p_filename: *const c_char) -> u8 {
+    let filename = CStr::from_ptr(p_filename).to_str();
+    if p_mcu.load_ihex_file(filename.unwrap()).is_ok() {
         0
     } else {
         warn!("Error");
@@ -42,7 +63,7 @@ pub unsafe fn mcu_load_data_memory(p_mcu: &mut Mcu, p_memory: *const u8, memory_
     let mut buffer: Vec<MaybeUninit<u8>> = Vec::with_capacity(memory_size);
     buffer.set_len(memory_size);
     ptr::copy_nonoverlapping(p_memory, buffer.as_mut_ptr() as *mut u8, memory_size);
-    let init_buf = std::mem::transmute::<_,Vec<u8>>(buffer);
+    let init_buf = std::mem::transmute::<_, Vec<u8>>(buffer);
     p_mcu.load_data_memory(&init_buf);
 }
 
@@ -58,7 +79,7 @@ pub unsafe fn mcu_load_program_memory(p_mcu: &mut Mcu, p_memory: *const u8, memo
     let mut buffer: Vec<MaybeUninit<u8>> = Vec::with_capacity(memory_size);
     buffer.set_len(memory_size);
     ptr::copy_nonoverlapping(p_memory, buffer.as_mut_ptr() as *mut u8, memory_size);
-    let init_buf = std::mem::transmute::<_,Vec<u8>>(buffer);
+    let init_buf = std::mem::transmute::<_, Vec<u8>>(buffer);
     p_mcu.load_program_memory(&init_buf);
 }
 

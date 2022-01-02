@@ -23,32 +23,32 @@ MainWindow::MainWindow(QMainWindow *parent, void* rustMcu)
 
 MainWindow::~MainWindow() {}
 
-void MainWindow::mcuStep() {
+void MainWindow::mcuStep() const {
     this->mcu.step();
     this->updateMcuStatus();
 }
 
-void MainWindow::updateMcuStatus() {
+void MainWindow::updateMcuStatus() const {
     updateProgramCounter();
     updateRegisters();
     updateDecodedInstruction();
     updateFlags();
 }
 
-void MainWindow::updateMemoryBank() {
+void MainWindow::updateMemoryBank() const {
     std::vector<char> buf;
     this->mcu.getMemoryBank(buf);
     QByteArray bytes(buf.data(), buf.size());
     findChild<QHexEdit*>("hexEdit")->setData(bytes);
 }
 
-void MainWindow::updateRegisters() {
+void MainWindow::updateRegisters() const {
     unsigned char registers[NUM_REGISTERS];
     this->mcu.getRegisterArray(registers);
     findChild<RegisterWidget*>("registerWidget")->updateRegisters(registers);
 }
 
-void MainWindow::updateProgramCounter() {
+void MainWindow::updateProgramCounter() const {
     NumericEdit* pcEdit = findChild<NumericEdit*>("pcEdit");
     NumericEdit* instructionEdit = findChild<NumericEdit*>("instructionEdit");
     NumericEdit* stackPointerEdit = findChild<NumericEdit*>("stackPointerEdit");
@@ -60,13 +60,13 @@ void MainWindow::updateProgramCounter() {
     stackPointerEdit->setWord(stackPointer);
 }
 
-void MainWindow::updateDecodedInstruction() {
+void MainWindow::updateDecodedInstruction() const {
     char buf[DECODED_INSTRUCTION_BUF];
     this->mcu.displayCurrentInstruction(buf, sizeof(buf));
     findChild<QLabel*>("decodedInstructionLabel")->setText(buf);
 }
 
-void MainWindow::updateFlags() {
+void MainWindow::updateFlags() const {
     unsigned char flags = this->mcu.getFlags();
     findChild<QCheckBox*>("iCheckBox")->setChecked((flags & 0x80) != 0);
     findChild<QCheckBox*>("tCheckBox")->setChecked((flags & 0x40) != 0);
@@ -78,7 +78,7 @@ void MainWindow::updateFlags() {
     findChild<QCheckBox*>("cCheckBox")->setChecked((flags & 0x01) != 0);
 }
 
-void MainWindow::onProgramCounterChanged() {
+void MainWindow::onProgramCounterChanged() const {
     NumericEdit* pcEdit = findChild<NumericEdit*>("pcEdit");
     short value = pcEdit->getWord();
     this->mcu.setProgramCounter(value);
@@ -102,19 +102,31 @@ void MainWindow::connectEvents() {
 void MainWindow::loadProgramFile() {
     std::string filename = getSelectedFilename();
     if (filename.size() != 0) {
-        this->mcu.loadFile(filename.c_str(), true);
+        if (isIhex(filename)) {
+            this->mcu.loadIhexFile(filename.c_str());
+        } else {
+            this->mcu.loadBinFile(filename.c_str(), true);
+        }
         this->updateMcuStatus();
     }
     this->updateMemoryBank();
 }
 
-void MainWindow::goToHelpUrl() {
+void MainWindow::goToHelpUrl() const {
     QUrl helpUrl("https://mlafroce.github.io/avr-avogadro/getting-started");
     QDesktopServices::openUrl(helpUrl);
+}
+
+bool MainWindow::isIhex(const std::string& filename) const {
+    if (filename.length() >= 4) {
+        return (0 == filename.compare (filename.length() - 4, 4, ".hex"));
+    } else {
+        return false;
+    }
 }
 
 std::string MainWindow::getSelectedFilename() {
     return QFileDialog::getOpenFileName(this,
         tr("Load memory"), "",
-        tr("Binary file (*.bin);;All Files (*)")).toStdString();
+        tr("Binary file (*.bin);;IHex file (*.hex);;All Files (*)")).toStdString();
 }

@@ -21,10 +21,10 @@ jobs:
     name: Clippy
     runs-on: ubuntu-latest
     steps:
+      - uses: jurplel/install-qt-action@v2
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - uses: jurplel/install-qt-action@v2
       - run: rustup component add clippy
       - uses: actions-rs/cargo@v1
         with:
@@ -33,10 +33,10 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
+      - uses: jurplel/install-qt-action@v2
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - uses: jurplel/install-qt-action@v2
       - uses: actions-rs/cargo@v1
         with:
           command: check
@@ -46,10 +46,10 @@ jobs:
     name: Test Suite
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2          
+      - uses: jurplel/install-qt-action@v2
+      - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - uses: jurplel/install-qt-action@v2
       - uses: actions-rs/cargo@v1
         with:
           command: test

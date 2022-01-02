@@ -223,9 +223,17 @@ fn decode_misc_op(raw_instruction: RawInstruction) -> Instruction {
             }
         }
         0x0400 => {
-            let rd = ((raw_instruction & 0x01F0) >> 4) as u8;
-            let op = (raw_instruction & 0xF) as u8;
-            Instruction::OneRegOp { rd, op }
+            if is_call_jmp(raw_instruction) {
+                Instruction::CallJmp {
+                    is_call: false,
+                    relative: false,
+                    address: 0,
+                }
+            } else {
+                let rd = ((raw_instruction & 0x01F0) >> 4) as u8;
+                let op = (raw_instruction & 0xF) as u8;
+                Instruction::OneRegOp { rd, op }
+            }
         }
         0x0500 => {
             let op = (raw_instruction & 0xF) as u8;
@@ -307,4 +315,8 @@ fn decode_branch_skip_status_op(raw_instruction: RawInstruction) -> Instruction 
             instruction: raw_instruction,
         }
     }
+}
+
+fn is_call_jmp(raw_instruction: u16) -> bool {
+    false
 }
