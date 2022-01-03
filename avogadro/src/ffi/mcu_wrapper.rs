@@ -152,7 +152,7 @@ pub unsafe fn mcu_display_current_instruction(p_mcu: &Mcu, c_buffer: *mut u8, bu
     *(c_buffer.add(bytes_to_copy)) = 0;
 }
 
-/// Gets memory bank size
+/// Gets data memory size
 /// # Safety
 ///
 /// `p_mcu` must be a pointer to a valid Mcu
@@ -162,7 +162,7 @@ pub unsafe fn mcu_get_data_size(p_mcu: &Mcu) -> usize {
     p_mcu.get_data_size()
 }
 
-/// Gets memory bank contents
+/// Gets data memory contents
 /// # Safety
 ///
 /// `p_mcu` must be a pointer to a valid Mcu
@@ -171,6 +171,27 @@ pub unsafe fn mcu_get_data_size(p_mcu: &Mcu) -> usize {
 #[no_mangle]
 pub unsafe fn mcu_get_data_memory(p_mcu: &Mcu, c_buffer: *mut u8, buf_size: usize) {
     p_mcu.get_data_memory(c_buffer, buf_size);
+}
+
+/// Gets program memory size
+/// # Safety
+///
+/// `p_mcu` must be a pointer to a valid Mcu
+///
+#[no_mangle]
+pub unsafe fn mcu_get_program_size(p_mcu: &Mcu) -> usize {
+    p_mcu.get_program_size()
+}
+
+/// Gets memory bank contents
+/// # Safety
+///
+/// `p_mcu` must be a pointer to a valid Mcu
+/// `buffer` must be a char array with `buf_size` size
+///
+#[no_mangle]
+pub unsafe fn mcu_get_program_memory(p_mcu: &Mcu, c_buffer: *mut u8, buf_size: usize) {
+    p_mcu.get_program_memory(c_buffer, buf_size);
 }
 
 #[no_mangle]

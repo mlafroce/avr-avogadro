@@ -51,28 +51,28 @@ impl MemoryBank {
         instruction + ((u16::from(self.program_memory[wrapped_address as usize + 1])) << 8)
     }
 
-    /// Copies values at array `data` into memory bank.
+    /// Copies values at array `data` into data memory.
     pub fn copy_into_data_memory(&mut self, data: &[u8]) {
         let n_bytes = std::cmp::min(data.len(), self.data_memory.len());
         self.data_memory[..n_bytes].copy_from_slice(&data);
     }
 
-    /// Copies values from memory bank into array `data`.
+    /// Copies values from data memory into array `data`.
     pub fn copy_from_data_memory(&self, data: &mut [u8]) {
         let n_bytes = std::cmp::min(data.len(), self.data_memory.len());
         data[..n_bytes].copy_from_slice(&self.data_memory);
     }
 
-    /// Copies values at array `data` into memory bank.
+    /// Copies values at array `data` into program memory.
     pub fn copy_into_program_memory(&mut self, data: &[u8]) {
         let n_bytes = std::cmp::min(data.len(), self.program_memory.len());
         self.program_memory[..n_bytes].copy_from_slice(&data);
     }
 
-    /// Copies values from memory bank into array `data`.
+    /// Copies values from program memory into array `data`.
     pub fn copy_from_program_memory(&self, data: &mut [u8]) {
-        let n_bytes = std::cmp::min(data.len(), self.data_memory.len());
-        data[..n_bytes].copy_from_slice(&self.data_memory);
+        let n_bytes = std::cmp::min(data.len(), self.program_memory.len());
+        data[..n_bytes].copy_from_slice(&self.program_memory);
     }
 
     /// SRAM memory size in bytes

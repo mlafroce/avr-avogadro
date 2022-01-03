@@ -17,7 +17,8 @@ public:
     void displayCurrentInstruction(const char* buffer, std::size_t size) const;
     void loadBinFile(const char* filename, bool isProgram) const;
     void loadIhexFile(const char* filename) const;
-    void getMemoryBank(std::vector<char>& buffer) const;
+    void getDataMemory(std::vector<char>& buffer) const;
+    void getProgramMemory(std::vector<char>& buffer) const;
     unsigned char getDataByte(short int);
     unsigned char getFlags() const;
 private:

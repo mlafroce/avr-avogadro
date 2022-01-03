@@ -15,6 +15,8 @@ extern "C" {
     void mcu_load_ihex_file(void* mcu, const char* filename);
     size_t mcu_get_data_size(void* mcu);
     void mcu_get_data_memory(void* mcu, const char* buffer, size_t size);
+    size_t mcu_get_program_size(void* mcu);
+    void mcu_get_program_memory(void* mcu, const char* buffer, size_t size);
     unsigned char mcu_get_data_byte(void* mcu, short address);
     unsigned char mcu_get_flags(void* mcu);
     void mcu_set_flags(void* mcu, unsigned char flags);
@@ -62,10 +64,16 @@ unsigned char McuWrapper::getDataByte(short address) {
     return mcu_get_data_byte(this->mcu, address);
 }
 
-void McuWrapper::getMemoryBank(std::vector<char>& buffer) const {
+void McuWrapper::getDataMemory(std::vector<char>& buffer) const {
     size_t buf_size = mcu_get_data_size(this->mcu);
     buffer.resize(buf_size);
     mcu_get_data_memory(this->mcu, buffer.data(), buf_size);
+}
+
+void McuWrapper::getProgramMemory(std::vector<char>& buffer) const {
+    size_t buf_size = mcu_get_program_size(this->mcu);
+    buffer.resize(buf_size);
+    mcu_get_program_memory(this->mcu, buffer.data(), buf_size);
 }
 
 unsigned char McuWrapper::getFlags() const {

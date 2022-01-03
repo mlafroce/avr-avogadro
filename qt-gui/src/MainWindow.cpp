@@ -37,9 +37,12 @@ void MainWindow::updateMcuStatus() const {
 
 void MainWindow::updateMemoryBank() const {
     std::vector<char> buf;
-    this->mcu.getMemoryBank(buf);
-    QByteArray bytes(buf.data(), buf.size());
-    findChild<QHexEdit*>("hexEdit")->setData(bytes);
+    this->mcu.getDataMemory(buf);
+    QByteArray dataMemory(buf.data(), buf.size());
+    findChild<QHexEdit*>("dataHexEdit")->setData(dataMemory);
+    this->mcu.getProgramMemory(buf);
+    QByteArray programMemory(buf.data(), buf.size());
+    findChild<QHexEdit*>("programHexEdit")->setData(programMemory);
 }
 
 void MainWindow::updateRegisters() const {

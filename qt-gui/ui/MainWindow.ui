@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>375</width>
+    <width>415</width>
     <height>435</height>
    </rect>
   </property>
@@ -241,21 +241,35 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="memoryTab">
+      <widget class="QWidget" name="programTab">
        <attribute name="title">
-        <string>Memory</string>
+        <string>Program</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="programTabLayout">
         <item>
-         <widget class="QHexEdit" name="hexEdit" native="true">
+         <widget class="QHexEdit" name="programHexEdit" native="true">
           <property name="toolTip">
-           <string>QHexEditWidget</string>
+           <string>Program memory</string>
           </property>
           <property name="whatsThis">
-           <string>QHexEdit widget allow to edit the data in hex view.</string>
+           <string>Program memory hex editor</string>
           </property>
-          <property name="asciiArea" stdset="0">
-           <bool>true</bool>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="dataTab">
+       <attribute name="title">
+        <string>Data</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="dataTabLayout">
+        <item>
+         <widget class="QHexEdit" name="dataHexEdit" native="true">
+          <property name="toolTip">
+           <string>Data memory</string>
+          </property>
+          <property name="whatsThis">
+           <string>Data memory hex editor</string>
           </property>
          </widget>
         </item>
@@ -270,8 +284,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>390</width>
-     <height>19</height>
+     <width>415</width>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="fileMenu">
