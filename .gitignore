@@ -6,8 +6,8 @@
 # IDE
 *.kdev4
 .idea
-ui/build
-ui/cmake-build-debug/
+qt-gui/build
+qt-gui/cmake-build-debug/
 
 # Examples
 *.bin

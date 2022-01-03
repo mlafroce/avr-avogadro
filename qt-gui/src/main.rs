@@ -1,16 +1,11 @@
-#[macro_use]
 extern crate log;
 extern crate env_logger;
 extern crate ihex;
 
-mod core;
-mod ffi;
-
-use crate::core::mcu::Mcu;
-use crate::core::mcu_factory::McuFactory;
-
 use libc::{c_char, c_void};
 use std::ffi::CString;
+use avr_avogadro::core::mcu::Mcu;
+use avr_avogadro::core::mcu_factory::McuFactory;
 
 #[cfg(not(test))]
 mod qt {

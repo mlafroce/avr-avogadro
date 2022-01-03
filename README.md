@@ -11,6 +11,17 @@ This simulator aims to be suited for performance analysis.
 
 # Building from sources
 
+From a terminal, you can clone the repo with 
+
+~~~
+git clone --recurse-submodules https://github.com/mlafroce/avr-avogadro.git
+~~~
+
+This will download [QHexEdit2](https://github.com/Simsys/qhexedit2/) as a dependency.
+
+If you choose "Download as a zip", copy QHexEdit2 sources into `qt-gui/3rd-party/qhexedit2`
+
+
 ## Dependencies
 
 Currently only linux target is supported.  To build from sources you need
@@ -21,17 +32,7 @@ Currently only linux target is supported.  To build from sources you need
 
 * CMake (>= 3.9) (Cargo build instructions use *cmake* to build GUI)
 
-From a terminal, you can clone the repo with 
-
-~~~
-git clone --recurse-submodules https://github.com/mlafroce/avr-avogadro.git
-~~~
-
-This will download [QHexEdit2](https://github.com/Simsys/qhexedit2/) as a dependency.
-
-If you choose "Download as a zip", copy QHexEdit2 sources into `ui/3rd-party/qhexedit2`
-
-To get their last version, download Rust compiler following instructions on their [site](https://www.rust-lang.org/tools/install).
+To get Rust last version, download Rust compiler following instructions on their [site](https://www.rust-lang.org/tools/install).
 
 Install *GCC* and *Qt5* with the following commands
 
