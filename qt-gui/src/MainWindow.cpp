@@ -5,15 +5,17 @@
 #include "qhexedit.h"
 #include <cstddef>
 #include <QByteArray>
-#include <QLineEdit>
-#include <QFileDialog>
 #include <QDesktopServices>
+#include <QFileDialog>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QThread>
 
 const std::size_t NUM_REGISTERS = 32;
 const std::size_t DECODED_INSTRUCTION_BUF = 64;
 
 MainWindow::MainWindow(QMainWindow *parent, void* rustMcu)
- : QMainWindow(parent), mcu(rustMcu) {
+ : QMainWindow(parent), mcu(rustMcu), runner(mcu) {
     Ui::MainWindow window;
     window.setupUi(this);
     findChild<RegisterWidget*>("registerWidget")->setMcu(this->mcu);
@@ -88,12 +90,15 @@ void MainWindow::onProgramCounterChanged() const {
 }
 
 void MainWindow::connectEvents() {
-    QPushButton* buttonGreet = findChild<QPushButton*>("stepButton");
-    QAction* loadProgamFileMenuAction = findChild<QAction*>("loadProgamFileMenuAction");
-    QAction* gettingStartedMenuAction = findChild<QAction*>("gettingStartedMenuAction");
-    QLineEdit* pcEdit = findChild<QLineEdit*>("pcEdit");
-    QObject::connect(buttonGreet, &QPushButton::clicked,
+    QPushButton *stepButton = findChild<QPushButton *>("stepButton");
+    QPushButton *startButton = findChild<QPushButton *>("startButton");
+    QAction *loadProgamFileMenuAction = findChild<QAction *>("loadProgamFileMenuAction");
+    QAction *gettingStartedMenuAction = findChild<QAction *>("gettingStartedMenuAction");
+    QLineEdit *pcEdit = findChild<QLineEdit *>("pcEdit");
+    QObject::connect(stepButton, &QPushButton::clicked,
                      this, &MainWindow::mcuStep);
+    QObject::connect(startButton, &QPushButton::clicked,
+                     this, &MainWindow::mcuStartClicked);
     QObject::connect(loadProgamFileMenuAction, &QAction::triggered,
                      this, &MainWindow::loadProgramFile);
     QObject::connect(gettingStartedMenuAction, &QAction::triggered,
@@ -113,6 +118,17 @@ void MainWindow::loadProgramFile() {
         this->updateMcuStatus();
     }
     this->updateMemoryBank();
+}
+
+void MainWindow::mcuStartClicked(const bool enabled) {
+    QPushButton *startButton = findChild<QPushButton *>("startButton");
+    if (enabled) {
+        runner.start();
+        startButton->setText("Stop");
+    } else {
+        runner.stop();
+        startButton->setText("Start");
+    }
 }
 
 void MainWindow::goToHelpUrl() const {

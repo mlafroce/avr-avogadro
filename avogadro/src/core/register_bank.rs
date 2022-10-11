@@ -4,6 +4,7 @@ const LDS_STS_MASK: u16 = 0xFC0F;
 ///# RegisterBank
 ///
 /// MCU's general purpouse and specific registers
+#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Flags {
     pub carry: bool,
@@ -51,11 +52,11 @@ impl RegisterBank {
 
     /// Increments program counter by 2, which is the size of an instruction.
     pub fn increment_pc(&mut self, memory_bank: &MemoryBank) {
-        self.program_counter += INSTRUCTION_SIZE;
+        self.program_counter = self.program_counter.wrapping_add(INSTRUCTION_SIZE);
         // If next instruction is `LDS` or `STS`, should skip
         let next_instruction = memory_bank.get_program_word(self.program_counter);
         if next_instruction & LDS_STS_MASK == 0x9000 {
-            self.program_counter += INSTRUCTION_SIZE;
+            self.program_counter = self.program_counter.wrapping_add(INSTRUCTION_SIZE);
         }
     }
 

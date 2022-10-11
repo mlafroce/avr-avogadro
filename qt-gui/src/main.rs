@@ -1,11 +1,11 @@
-extern crate log;
 extern crate env_logger;
 extern crate ihex;
+extern crate log;
 
-use libc::{c_char, c_void};
-use std::ffi::CString;
 use avr_avogadro::core::mcu::Mcu;
 use avr_avogadro::core::mcu_factory::McuFactory;
+use libc::{c_char, c_void};
+use std::ffi::CString;
 
 #[link(name = "avogadrogui")]
 #[link(name = "Qt5Widgets")]
@@ -15,7 +15,6 @@ use avr_avogadro::core::mcu_factory::McuFactory;
 extern "C" {
     pub fn run_avogadro_gui(argc: usize, argv: *const *const c_char, mcu: *const c_void);
 }
-
 
 fn main() {
     let mcu = McuFactory::create("attiny85");
@@ -32,7 +31,7 @@ fn main() {
     env_logger::init();
     unsafe {
         #[cfg(not(test))]
-            run_avogadro_gui(
+        run_avogadro_gui(
             c_args.len(),
             c_args.as_ptr(),
             &mcu as *const Mcu as *const c_void,

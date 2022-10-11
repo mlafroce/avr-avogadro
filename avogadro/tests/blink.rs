@@ -46,17 +46,17 @@ fn test_blink() {
     mcu.load_from_file(&path, true).unwrap();
     mcu.load_from_file(&path, true).unwrap();
     assert_eq!(mcu.get_data_byte(PORT_B), 0);
-    mcu.step_n(16);
+    mcu.step();
     assert_eq!(mcu.get_program_counter(), 0x40);
     assert_eq!(mcu.get_data_byte(PORT_B), 1);
-    mcu.step_n(50006);
+    //mcu.step_n(50006);
     assert_eq!(mcu.get_data_byte(PORT_B), 0);
-    mcu.step_n(50006);
+   // mcu.step_n(50006);
     assert_eq!(mcu.get_data_byte(PORT_B), 1);
-    mcu.step_n(50006);
+    //mcu.step_n(50006);
     assert_eq!(mcu.get_data_byte(PORT_B), 0);
-    mcu.step_n(50006);
+    //mcu.step_n(50006);
     assert_eq!(mcu.get_data_byte(PORT_B), 1);
-    mcu.step_n(50006);
+    //mcu.step_n(50006);
     assert_eq!(mcu.get_data_byte(PORT_B), 0);
 }

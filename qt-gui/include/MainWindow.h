@@ -2,6 +2,7 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include "McuRunner.h"
 #include "McuWrapper.h"
 
 class MainWindow : public QMainWindow {
@@ -10,7 +11,7 @@ public:
     virtual ~MainWindow();
 private:
     /**
-     * Executes a single isntruction
+     * Executes a single instruction
      */
     void mcuStep() const;
     /**
@@ -46,7 +47,12 @@ private:
      * Checks file extension
      */
     bool isIhex(const std::string& filename) const;
+    /**
+     * Fired when Start button is toggled
+     */
+    void mcuStartClicked(bool enabled);
     McuWrapper mcu;
+    McuRunner runner;
 };
 
 #endif // MAIN_WINDOW_H

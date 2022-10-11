@@ -35,6 +35,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 add_library(avogadrogui
   api.cpp
   src/MainWindow.cpp
+  src/McuRunner.cpp
   src/McuWrapper.cpp
   src/NumericEdit.cpp
   src/RegisterLineEdit.cpp
@@ -42,7 +43,8 @@ add_library(avogadrogui
   ${QHEXEDIT_SRC}/chunks.cpp
   ${QHEXEDIT_SRC}/commands.cpp
   ${QHEXEDIT_SRC}/qhexedit.cpp
-  ${UIS_HEADERS})
+  ${UIS_HEADERS}
+)
 
 
 # Use the Widgets module from Qt 5.
